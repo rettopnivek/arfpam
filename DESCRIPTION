@@ -1,15 +1,13 @@
 Package: arfpam
-Title: What the Package Does (One Line, Title Case)
+Title: Assorted R Functions for Processing, Analysis, and Modeling
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+Authors@R: person("Kevin", "Potter", 
+  email = "kevin.w.potter@gmail.com", role = c("aut", "cre"))
+Description:
+  Assorted functions to help with a variety of common 
+  tasks when processing, plotting, analyzing, 
+  and modeling data.
+License: MIT + License
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
