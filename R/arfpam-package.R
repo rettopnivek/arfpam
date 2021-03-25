@@ -10,6 +10,9 @@
 # library(roxygen2)
 # devtools::test()
 
+# Github page link
+# https://rettopnivek.github.io/arfpam/
+
 #' Assorted R Functions for Processing, Analysis, and Modeling
 #'
 #' @docType package
