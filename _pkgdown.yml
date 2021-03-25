@@ -5,3 +5,12 @@ reference:
 - contents:
   - Assignment
   - "`%p%`"
+- title: "Math"
+  desc: >
+
+- contents:
+  - erf
+  - logit
+  - logistic
+  - pow
+  - softmax
