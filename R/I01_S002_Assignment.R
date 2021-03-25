@@ -31,16 +31,16 @@
 #'
 #' # Order of operations can be tricky
 #' x <- 1; y <- 1
-#' x %+=% y/2
+#' invisible( x %+=% y/2 ); x
 #' # Above is equivalent to (x %+=% y)/2
 #'
 #' # Therefore embed multiple operations in parentheses
 #' x <- 1; y <- 1
-#' x %+=% (y/2)
+#' x %+=% (y/2); x
 #'
 #' # Vectorized
 #' x <- 1:3; x %+=% 3; x
-#' x <- 1:3; x %+=% 2:0; x
+#' x <- 3:1; x %-=% 2:0; x
 #'
 NULL
 
