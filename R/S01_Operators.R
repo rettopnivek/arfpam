@@ -1,3 +1,52 @@
+# Operators
+# Written by Kevin Potter
+# email: kevin.w.potter@gmail.com
+# Please email me directly if you
+# have any questions or comments
+# Last updated 2021-03-30
+
+# Table of contents
+# 1) `%p%`
+# 2) Assignment
+#   2.1) `%+=%`
+#   2.2) `%-=%`
+
+###
+### 1)
+###
+
+#' Operator to Concatenate Two Strings
+#'
+#' The operator \code{%p%} combines character vectors.
+#'
+#' @param x,y \strong{R} objects that can be converted
+#'   to character vectors.
+#'
+#' @return A character vector of the concatenated values.
+#'
+#' @details The call \code{ x %p% y } is equivalent to the
+#' call \code{ paste0(x,y)}; see \code{\link[base]{paste}}
+#' for more details.
+#'
+#' @examples
+#' # Combine strings via operator
+#' 'Hello' %p% ' ' %p% 'world'
+#'
+#' # Vectorized
+#' x <- 'I like '
+#' y <- c( 'cats', 'dogs', 'fish' )
+#' x %p% y
+#'
+#' @export
+
+`%p%` <- function( x, y ) {
+  return( paste0( x, y ) )
+}
+
+###
+### 2)
+###
+
 #' Addition/Subtraction Assignment Operators
 #'
 #' The operator \code{%+=%} adds the right operand
@@ -44,12 +93,16 @@
 #'
 NULL
 
+# 2.1)
+
 #' @rdname Assignment
 #' @export
 
 `%+=%` <- function(x,y) {
   eval.parent(substitute(x <- x + y))
 }
+
+# 2.2)
 
 #' @rdname Assignment
 #' @export
