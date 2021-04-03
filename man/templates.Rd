@@ -4,22 +4,38 @@
 \alias{templates}
 \title{Create Templates for Annotations and Code}
 \usage{
-templates(type, author = "Kevin Potter", email = "kevin.w.potter@gmail.com")
+templates(type)
 }
 \arguments{
-\item{type}{...}
-
-\item{author}{...}
-
-\item{email}{...}
-}
-\value{
-...
+\item{type}{The type of template to return,
+with options for...
+\itemize{
+\item 'Function (function documentation);
+\item 'Header' (header for a R script);
+\item 'Progress' (progress bar for a loop);
+\item 'Segment' (code segment to conditionally run).
+}}
 }
 \description{
-...
+Outputs a template of common annotations
+and code segments to the console for
+easy copying and pasting.
 }
 \examples{
-# Forthcoming
+# List of possible inputs to argument
+# 'type' for each template
+templates()
+
+# Function documentation
+templates( 'Function' )
+
+# Header for R script
+templates( 'Header' )
+
+# Progress bar for loop
+templates( 'Progress' )
+
+# Code segment in a script
+templates( 'Segment' )
 
 }

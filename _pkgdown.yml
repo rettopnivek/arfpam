@@ -14,3 +14,14 @@ reference:
   - logistic
   - pow
   - softmax
+- title: "Utilities"
+  desc: >
+
+- contents:
+  - over
+  - templates
+  - palettes
+  - section
+  - every
+  - findNA
+  - printTable

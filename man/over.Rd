@@ -2,12 +2,12 @@
 % Please edit documentation in R/S03_Utilities.R
 \name{over}
 \alias{over}
-\title{A Range Adjusted by an Iterator}
+\title{A Sequence Adjusted by an Iterator}
 \usage{
 over(x, iter, per = NULL, adj = -1)
 }
 \arguments{
-\item{x}{A range (converted to integers).}
+\item{x}{A sequence of values (converted to integers).}
 
 \item{iter}{An iterator value, typically the
 variable defined within a loop.}
@@ -23,9 +23,10 @@ any adjustments to the iterator.}
 A vector of values.
 }
 \description{
-A function that takes a range and scales it
-by an iterator. Useful when extracting a
-set of multiple values within a loop.
+A function that takes a sequence of values
+and scales it by an iterator. Useful when
+extracting a set of multiple values within
+a loop.
 }
 \examples{
 # Pull 3 values per iteration
