@@ -25,3 +25,5 @@ reference:
   - every
   - findNA
   - printTable
+  - lin
+  - emptyList

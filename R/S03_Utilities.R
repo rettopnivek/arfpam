@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-03
+# Last updated 2021-04-07
 
 # Table of contents
 # 1) over
@@ -15,6 +15,8 @@
 #   5.2) `every<-`
 # 6) findNA
 # 7) printTable
+# 8) lin
+# 9) emptyList
 
 # TO DO
 # - Add unit tests for every
@@ -78,7 +80,7 @@ over <- function( x, iter,
   x <- as.integer( round( x ) )
 
   if ( is.null( per ) ) {
-    per = max( x )
+    per <- max( x )
   }
 
   return( x + per * (iter + adj) )
@@ -186,13 +188,13 @@ templates <- function( type ) {
 
   if ( type %in% types$script_header  ) {
 
-    author = getOption( 'arfpam.author' )
-    email = getOption( 'arfpam.email' )
+    author <- getOption( 'arfpam.author' )
+    email <- getOption( 'arfpam.email' )
 
     if ( is.null( author ) )
-      author = 'Kevin Potter'
+      author <- 'Kevin Potter'
     if ( is.null( email ) )
-      email = 'kevin.w.potter@gmail.com'
+      email <- 'kevin.w.potter@gmail.com'
 
     string <- paste0(
       '# Title\n',
@@ -549,10 +551,10 @@ every <- function( x, step = 2, start = 1 ) {
 #'
 #' @export
 
-findNA = function( x, any = TRUE ) {
+findNA <- function( x, any = TRUE ) {
 
   # Initialize output
-  out = NULL
+  out <- NULL
 
   # If input is matrix or data frame
   if ( is.matrix( x ) |
@@ -560,13 +562,13 @@ findNA = function( x, any = TRUE ) {
     # Check whether NA values are present in
     # any of the rows
     if ( any ) {
-      out = apply( x, 1, function(r) any( is.na(r) ) )
+      out <- apply( x, 1, function(r) any( is.na(r) ) )
     } else {
-      out = apply( x, 1, function(r) all( is.na(r) ) )
+      out <- apply( x, 1, function(r) all( is.na(r) ) )
     }
   } else {
     # Throw an error message
-    string = "Input should be a matrix or data frame"
+    string <- "Input should be a matrix or data frame"
     stop( string, call. = FALSE )
   }
 
@@ -600,46 +602,46 @@ findNA = function( x, any = TRUE ) {
 #'
 #' @export
 
-printTable = function( tbl, return = F ) {
+printTable <- function( tbl, return = F ) {
 
   # Initialize output
-  out = matrix( " ", nrow( tbl ) + 1, ncol( tbl ) )
+  out <- matrix( " ", nrow( tbl ) + 1, ncol( tbl ) )
 
   # Loop over columns of table
   for ( i in 1:ncol( tbl ) ) {
 
     # Determine maximum number of characters for elements
     # in the table's column (including the column name)
-    nc = max( c( sapply( as.character( tbl[[i]] ), nchar ),
-                 nchar( colnames(tbl)[i] ) ) )
+    nc <- max( c( sapply( as.character( tbl[[i]] ), nchar ),
+                  nchar( colnames(tbl)[i] ) ) )
 
     # Loop over the table's rows
     for ( j in 1:( nrow( tbl ) + 1 ) ) {
 
       if ( j > 1 ) {
         # Elements in column
-        val = as.character( tbl[[i]] )[j-1]
+        val <- as.character( tbl[[i]] )[j-1]
       } else {
         # Column name
-        val = colnames( tbl )[i]
+        val <- colnames( tbl )[i]
       }
       # Current number of characters
-      cur_nc = nchar( val )
+      cur_nc <- nchar( val )
       # If necessary pad out characters with empty spaces
       if ( cur_nc < nc ) {
-        val = paste( paste( rep( " ", nc - cur_nc ), collapse = "" ),
+        val <- paste( paste( rep( " ", nc - cur_nc ), collapse = "" ),
                      val, sep = "" )
-        out[j,i] = val
+        out[j,i] <- val
       } else {
-        out[j,i] = val
+        out[j,i] <- val
       }
 
     }
   }
 
   # Convert to vector of strings
-  output = apply( out, 1, paste, collapse = " | " )
-  output = sapply( output, function(x) paste( x, "|" ) )
+  output <- apply( out, 1, paste, collapse = " | " )
+  output <- sapply( output, function(x) paste( x, "|" ) )
 
   if ( !return ) {
     for ( i in 1:length( output ) ) {
@@ -649,5 +651,75 @@ printTable = function( tbl, return = F ) {
     return( output )
   }
 
+}
+
+###
+### 8)
+###
+
+#' Create Evenly Spaced Intervals
+#'
+#' Generates a sequence of evenly spaced
+#' intervals between a lower and upper limit.
+#'
+#' @param start The starting value.
+#' @param end The final value.
+#' @param n_intervals The number of evenly spaced intervals.
+#'
+#' @return A numeric vector.
+#'
+#' @examples
+#' # Five evenly spaced intervals from 0 to 1
+#' lin( 0, 1, 5 )
+#'
+#' @export
+
+lin <- function( start, end, n_intervals ) {
+
+  return( seq( start, end, length.out = n_intervals ) )
+
+}
+
+###
+### 9)
+###
+
+#' Create an Empty List
+#'
+#' Creates a list with a specified
+#' number of empty slots.
+#'
+#' @param size The number of slots.
+#' @param labels An optional character
+#'   vector (whose length equals
+#'   \code{size}) with labels for the
+#'   slots.
+#'
+#' @return A list.
+#'
+#' @examples
+#' # An empty list with 3 slots
+#' emptyList( 3 )
+#'
+#' # An empty list with labels
+#' emptyList( 3, c( 'S01', 'S02', 'S03' ) )
+#'
+#' @export
+
+emptyList <- function( size, labels = NULL ) {
+
+  lst <- lapply( 1:size, function(x) {
+    return( NULL )
+  } )
+
+  if ( !is.null( labels ) ) {
+    if ( length( labels ) == length( lst ) ) {
+      names( lst ) <- labels
+    } else {
+      warning( 'Vector of labels does not match length of list' )
+    }
+  }
+
+  return( lst )
 }
 
