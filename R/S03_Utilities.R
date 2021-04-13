@@ -13,10 +13,10 @@
 # 5) every
 #   5.1) every
 #   5.2) `every<-`
-# 6) findNA
-# 7) printTable
+# 6) has_NA
+# 7) print_table
 # 8) lin
-# 9) emptyList
+# 9) empty_list
 
 # TO DO
 # - Add unit tests for every
@@ -541,17 +541,17 @@ every <- function( x, step = 2, start = 1 ) {
 #' @examples
 #' x = matrix( rnorm(9), 3, 3 )
 #' x[2,3] = NA
-#' findNA( x )
+#' has_NA( x )
 #' x = data.frame( A = c( 1, 2, NA ), B = 0 )
-#' findNA( x )
+#' has_NA( x )
 #'
 #' #' x = matrix( rnorm(9), 3, 3 )
 #' x[2,] = NA; x[3,1] = NA
-#' findNA( x, any = FALSE )
+#' has_NA( x, any = FALSE )
 #'
 #' @export
 
-findNA <- function( x, any = TRUE ) {
+has_NA <- function( x, any = TRUE ) {
 
   # Initialize output
   out <- NULL
@@ -598,11 +598,11 @@ findNA <- function( x, any = TRUE ) {
 #' tbl = aggregate( mtcars$mpg, mtcars[,c('cyl','vs')], mean )
 #' tbl$x = round( tbl$x, 1 )
 #' colnames( tbl ) = c( "# of cylinders", "Engine type", "Miles per gallon" )
-#' printTable( tbl )
+#' print_table( tbl )
 #'
 #' @export
 
-printTable <- function( tbl, return = F ) {
+print_table <- function( tbl, return = F ) {
 
   # Initialize output
   out <- matrix( " ", nrow( tbl ) + 1, ncol( tbl ) )
@@ -699,14 +699,14 @@ lin <- function( start, end, n_intervals ) {
 #'
 #' @examples
 #' # An empty list with 3 slots
-#' emptyList( 3 )
+#' empty_list( 3 )
 #'
 #' # An empty list with labels
-#' emptyList( 3, c( 'S01', 'S02', 'S03' ) )
+#' empty_list( 3, c( 'S01', 'S02', 'S03' ) )
 #'
 #' @export
 
-emptyList <- function( size, labels = NULL ) {
+empty_list <- function( size, labels = NULL ) {
 
   lst <- lapply( 1:size, function(x) {
     return( NULL )

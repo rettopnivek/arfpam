@@ -23,7 +23,7 @@ reference:
   - palettes
   - section
   - every
-  - findNA
-  - printTable
+  - find_NA
+  - print_table
   - lin
-  - emptyList
+  - empty_list

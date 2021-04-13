@@ -30,17 +30,16 @@
 #'
 #' @examples
 #' # Combine strings via operator
-#' 'Hello' %p% ' ' %p% 'world'
+#' "Hello" %p% " " %p% "world"
 #'
 #' # Vectorized
-#' x <- 'I like '
-#' y <- c( 'cats', 'dogs', 'fish' )
+#' x <- "I like "
+#' y <- c("cats", "dogs", "fish")
 #' x %p% y
-#'
 #' @export
 
-`%p%` <- function( x, y ) {
-  return( paste0( x, y ) )
+`%p%` <- function(x, y) {
+  return(paste0(x, y))
 }
 
 ###
@@ -75,22 +74,33 @@
 #'
 #' @examples
 #' # Simple assignment
-#' x <- 1; x %+=% 1; x
-#' y <- 1; y %-=% 2; y
+#' x <- 1
+#' x %+=% 1
+#' x
+#' y <- 1
+#' y %-=% 2
+#' y
 #'
 #' # Order of operations can be tricky
-#' x <- 1; y <- 1
-#' invisible( x %+=% y/2 ); x
+#' x <- 1
+#' y <- 1
+#' invisible(x %+=% y / 2)
+#' x
 #' # Above is equivalent to (x %+=% y)/2
 #'
 #' # Therefore embed multiple operations in parentheses
-#' x <- 1; y <- 1
-#' x %+=% (y/2); x
+#' x <- 1
+#' y <- 1
+#' x %+=% (y / 2)
+#' x
 #'
 #' # Vectorized
-#' x <- 1:3; x %+=% 3; x
-#' x <- 3:1; x %-=% 2:0; x
-#'
+#' x <- 1:3
+#' x %+=% 3
+#' x
+#' x <- 3:1
+#' x %-=% 2:0
+#' x
 NULL
 
 # 2.1)
@@ -98,7 +108,7 @@ NULL
 #' @rdname Assignment
 #' @export
 
-`%+=%` <- function(x,y) {
+`%+=%` <- function(x, y) {
   eval.parent(substitute(x <- x + y))
 }
 
@@ -107,6 +117,6 @@ NULL
 #' @rdname Assignment
 #' @export
 
-`%-=%` <- function(x,y) {
+`%-=%` <- function(x, y) {
   eval.parent(substitute(x <- x - y))
 }
