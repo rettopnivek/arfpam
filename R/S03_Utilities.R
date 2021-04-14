@@ -581,22 +581,53 @@ empty_list <- function( size, labels = NULL ) {
 
 # 9.1)
 
-#' ...
+#' Check if a File Name can be Found
 #'
-#' ...
+#' Checks if a file name can be found
+#' in a folder via partial string matching.
+#' Multiple types of output are supported.
 #'
-#' @param string ...
-#' @param output ...
+#' @param string A character string, used
+#'   for partial string matching.
+#' @param output The type of output to return.
+#'   Options include...
+#'   \itemize{
+#'     \item \code{'logical'};
+#'     \item \code{'vector'};
+#'     \item \code{'index'};
+#'     \item \code{'name'}.
+#'   }
 #'
-#' @return ...
+#' @return Either...
+#'   \itemize{
+#'     \item A single logical value, \code{TRUE} if
+#'           any matching file names are found
+#'           (\code{'logical'}).
+#'     \item A logical vector, \code{TRUE} for all
+#'           matching files in the vector of file
+#'           names (\code{'vector'}).
+#'     \item An integer vector giving the position of
+#'           any matches in the vector of file names
+#'           (\code{'index'}).
+#'     \item A character vector with any matching
+#'           file names, otherwise \code{NULL}
+#'           (\code{'name'}).
+#'   }
 #'
 #' @examples
 #' # Forthcoming
+#' setwd( find.package( 'arfpam' )[1] )
+#' setwd( 'html' )
+#'
+#' find_filename( 'every' )
+#' find_filename( 'every', output = 'vector' )
+#' find_filename( 'every', output = 'index' )
+#' find_filename( 'every', output = 'name' )
 #'
 #' @export
 
 find_filename <- function( string,
-                           output = 'Logical' ) {
+                           output = 'logical' ) {
 
   # All files and folders present
   # in working directory

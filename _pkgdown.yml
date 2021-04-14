@@ -20,10 +20,15 @@ reference:
 - contents:
   - over
   - templates
-  - palettes
   - section
   - every
   - find_NA
   - print_table
   - lin
   - empty_list
+- title: "Plotting"
+  desc: >
+
+- contents:
+  - blank_plot
+  - palettes
