@@ -3,23 +3,25 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-07
+# Last updated 2021-04-13
 
 # Table of contents
 # 1) over
 # 2) templates
-# 3) palettes
-# 4) section
-# 5) every
-#   5.1) every
-#   5.2) `every<-`
-# 6) has_NA
-# 7) print_table
-# 8) lin
-# 9) empty_list
+# 3) section
+# 4) every
+#   4.1) every
+#   4.2) `every<-`
+# 5) has_NA
+# 6) print_table
+# 7) lin
+# 8) empty_list
+# 9) Filename functions
+#   9.1) find_filename
+#   9.2) make_filename
 
 # TO DO
-# - Add unit tests for every
+# - Add unit tests
 # - Add section for website
 
 ###
@@ -254,156 +256,6 @@ templates <- function( type ) {
 ### 3)
 ###
 
-#' Various Color Palettes
-#'
-#' Returns a vector of hex color values
-#' for a specified color palette.
-#'
-#' @param type The color palette to return. Options
-#'   include...
-#'   \itemize{
-#'     \item 'Colorblind' (a colorblind-friendly palette);
-#'     \item 'Grayscale' (4-bit grayscale palette).
-#'   }
-#' @param index An optional vector of integers or color
-#'   names to extract a subset of colors from the
-#'   specified palette.
-#' @param plot Logical; if \code{TRUE}, generates
-#'   a plot showcasing the specified color palette.
-#'
-#' @return A character vector of hex color values
-#'   for the specified palette.
-#'
-#' @examples
-#' # List of possible inputs to argument
-#' # 'type' for each palette
-#' palettes()
-#'
-#' # Plot of colors in each palette
-#' palettes( 'Colorblind', plot = TRUE )
-#' palettes( 'Grayscale', plot = TRUE )
-#'
-#' # Example of taking subset of colors
-#' palettes( 'Colorblind', 1:2 )
-#'
-#' @export
-
-palettes <- function( type = NULL, index = NULL, plot = FALSE ) {
-
-  types <- list(
-    colorblind = c(
-      'Colorblind', 'colorblind',
-      'CB', 'cb',
-      '1'
-    ),
-    grayscale = c(
-      'Grayscale', 'grayscale',
-      'Greyscale', 'greyscale',
-      'Gray', 'gray',
-      'Grey', 'grey',
-      '2'
-    )
-  )
-
-  if ( is.null( type ) ) {
-
-    for ( i in 1:length( types ) ) {
-
-      message( paste0( names( types[i] ) ) )
-      message( paste0(
-        '\t', types[[i]], '\n'
-      ) )
-
-    }
-
-  }
-
-  list_of_colors <- NULL
-
-  if ( type %in% types$colorblind ) {
-
-    list_of_colors <- c(
-      orange = "#E69F00",
-      `light blue` = "#56B4E9",
-      red = "#D55E00",
-      green = "#009E73",
-      yellow = "#F0E442",
-      blue = "#0072B2",
-      pink = "#CC79A7"
-    )
-
-  }
-
-  if ( type %in% types$grayscale ) {
-
-    list_of_colors <- c(
-      black = "#000000FF",
-      gray01 = "#111111FF",
-      gray02 = "#222222FF",
-      gray03 = "#333333FF",
-      gray04 = "#444444FF",
-      gray05 = "#555555FF",
-      gray06 = "#666666FF",
-      gray07 = "#777777FF",
-      gray08 = "#888888FF",
-      gray09 = "#999999FF",
-      gray10 = "#AAAAAAFF",
-      gray11 = "#BBBBBBFF",
-      gray12 = "#CCCCCCFF",
-      gray13 = "#DDDDDDFF",
-      gray14 = "#EEEEEEFF",
-      white = "#FFFFFFFF"
-    )
-
-  }
-
-  if ( !is.null( list_of_colors ) ) {
-
-    if ( is.null( index ) ) {
-      index <- 1:length( list_of_colors )
-    }
-
-    if ( plot ) {
-
-      n <- length( list_of_colors )
-
-      par( mar = c( 5.1, 5.1, .5, .5 ) )
-      plot( 1:n, 1:n,
-            xlab = '', ylab = '',
-            xaxt = 'n', yaxt = 'n',
-            bty = 'n',
-            pch = 15, cex = 4,
-            col = list_of_colors )
-      axis( 1, 1:n, tick = F, cex = 1.25 )
-      axis( 2, 1:n, names( list_of_colors ),
-            tick = F, cex = 1.25, las = 1 )
-      par( mar = c( 5.1, 4.1, 4.1, 2.1 ) )
-
-    }
-
-    return( list_of_colors[ index ] )
-
-  } else {
-
-    stop(
-      paste0(
-        'Specified palette not found - options are...\n',
-        paste(
-          sapply( 1:length( types ), function(i) {
-            types[[i]][1]
-          } ), collapse = '\n'
-        )
-      )
-    )
-
-  }
-
-}
-
-###
-### 4)
-###
-
 #' Section Numbers for Tracking Progress
 #'
 #' Output section numbers to the console via
@@ -456,7 +308,7 @@ section <- function( x, run = TRUE,
 }
 
 ###
-### 5)
+### 4)
 ###
 
 #' Sequence of Values in Regular Increments
@@ -495,7 +347,7 @@ section <- function( x, run = TRUE,
 #'
 NULL
 
-# 5.1)
+# 4.1)
 
 #' @rdname every
 #' @export
@@ -506,7 +358,7 @@ every <- function( x, step = 2, start = 1 ) {
 
 }
 
-# 5.2)
+# 4.2)
 
 #' @rdname every
 #' @export
@@ -519,7 +371,7 @@ every <- function( x, step = 2, start = 1 ) {
 }
 
 ###
-### 6)
+### 5)
 ###
 
 #' Identify NA Values by Row
@@ -576,7 +428,7 @@ has_NA <- function( x, any = TRUE ) {
 }
 
 ###
-### 7)
+### 6)
 ###
 
 #' Print a Nicely Formatted Table
@@ -654,7 +506,7 @@ print_table <- function( tbl, return = F ) {
 }
 
 ###
-### 8)
+### 7)
 ###
 
 #' Create Evenly Spaced Intervals
@@ -681,7 +533,7 @@ lin <- function( start, end, n_intervals ) {
 }
 
 ###
-### 9)
+### 8)
 ###
 
 #' Create an Empty List
@@ -721,5 +573,230 @@ empty_list <- function( size, labels = NULL ) {
   }
 
   return( lst )
+}
+
+###
+### 9) Filename functions
+###
+
+# 9.1)
+
+#' ...
+#'
+#' ...
+#'
+#' @param string ...
+#' @param output ...
+#'
+#' @return ...
+#'
+#' @examples
+#' # Forthcoming
+#'
+#' @export
+
+find_filename <- function( string,
+                           output = 'Logical' ) {
+
+  # All files and folders present
+  # in working directory
+  all_files <- dir()
+
+  # Determine if (standard) file name is present
+  # in list of files/folders
+  check <- grepl( string, all_files, fixed = T )
+
+  # Output
+  if ( output %in% c( 'Logical', 'logical', 'L', 'l' ) ) {
+    return( any( check ) )
+  }
+  if ( output %in% c( 'Vector', 'vector', 'vec', 'V', 'v' ) ) {
+    return( check )
+  }
+  if ( output %in% c( 'Index', 'index', 'I', 'i' ) ) {
+    return( which( check ) )
+  }
+  if ( output %in% c( 'Name', 'name', 'N', 'n' ) ) {
+    if ( any( check ) ) {
+      return( all_files[ check ] )
+    } else {
+      return( NULL )
+    }
+  }
+
+}
+
+# 9.2)
+
+#' ...
+#'
+#' ...
+#'
+#' @param description ...
+#' @param extension ...
+#' @param tag ...
+#' @param number ...
+#' @param file_date ...
+#' @param additional ...
+#' @param remove ...
+#'
+#' @return ...
+#'
+#' @examples
+#' # Forthcoming
+#'
+#' @export
+
+make_filename <- function( description,
+                           extension,
+                           tag = NULL,
+                           number = NULL,
+                           file_date = NULL,
+                           additional = NULL,
+                           remove = FALSE ) {
+
+  # Determine files in directory
+  all_files <- dir()
+
+  # If not specified, auto-generate file tag
+  # based on extension
+  if ( is.null( tag ) ) {
+
+    # Word document
+    if ( extension == 'docx' ) {
+      tag <- 'W'
+    }
+    # Standard figure extentions
+    if ( extension %in% c( 'pdf', 'jpg', 'jpeg', 'png' ) ) {
+      tag <- 'F'
+    }
+    # Data files
+    if ( extension %in% c( 'RData', 'csv' ) ) {
+      tag <- 'D'
+    }
+    # R script file
+    if ( extension %in% c( 'R' ) ) {
+      tag <- 'S'
+    }
+    # Text file
+    if ( extension %in% c( 'txt' ) ) {
+      tag <- 'T'
+    }
+
+  }
+
+  # If not specified, auto-generate file_date
+  if ( is.null( file_date ) ) {
+    file_date = format(
+      Sys.Date(),
+      '%m_%d_%Y'
+    )
+    file_date <- '-' %p% file_date
+  } else {
+    if ( file_date != '' ) {
+      file_date <- '-' %p% file_date
+    }
+  }
+
+  # Check for matching tags and descriptions for
+  # files present in folder
+  if ( length( all_files ) > 0 ) {
+
+    only_files_no_placeholder <-
+      # Exclude folders
+      grepl( '.', all_files, fixed = T ) &
+      # Exclude placeholder file
+      all_files != 'Placeholder.txt'
+
+    matching_tags <-
+      substr( all_files, start = 1, stop = 1 ) == tag &
+      only_files_no_placeholder
+
+    matching_description <-
+      grepl( '-' %p% description %p% '-', all_files, fixed = T ) &
+      only_files_no_placeholder
+
+    matching_extension <-
+      grepl( extension %p% '$', all_files ) &
+      only_files_no_placeholder
+
+    # Check for existing file
+    found_match <-
+      matching_description &
+      matching_tags &
+      matching_extension
+
+    # If needed, increment file number
+    if ( is.null( number ) ) {
+
+      if ( any( found_match ) ) {
+        number <- substr(
+          all_files[ found_match ],
+          start = 2, stop = 3
+        )
+      } else {
+        number <- sum( matching_tags ) + 1
+      }
+
+      # Make sure number is at least a double-digit and
+      # convert to character string
+      nc <- nchar( number )
+      if ( nc == 1 ) {
+        number <- paste0( '0', number )
+      } else {
+        number <- as.character( number )
+      }
+
+    }
+
+    if ( remove ) {
+
+      if ( found_match ) {
+
+        old_file <- all_files[ found_match ]
+        file.remove( old_file )
+
+      }
+
+    }
+
+
+  } else {
+
+    if ( is.null( number ) ) {
+      number <- 1
+
+      # Make sure number is at least a double-digit and
+      # convert to character string
+      nc <- nchar( number )
+      if ( nc == 1 ) {
+        number <- paste0( '0', number )
+      } else {
+        number <- as.character( number )
+      }
+
+    }
+
+  }
+
+  if ( !is.null( additional ) ) {
+    additional <- paste0( '-', additional )
+  } else {
+    additional <- ''
+  }
+
+  # Generate file name
+  filename <- paste0(
+    tag,
+    number,
+    '-',
+    description,
+    file_date,
+    additional,
+    '.',
+    extension
+  )
+
+  return( filename )
 }
 

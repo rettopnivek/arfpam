@@ -23,11 +23,10 @@ for more details.
 }
 \examples{
 # Combine strings via operator
-'Hello' \%p\% ' ' \%p\% 'world'
+"Hello" \%p\% " " \%p\% "world"
 
 # Vectorized
-x <- 'I like '
-y <- c( 'cats', 'dogs', 'fish' )
+x <- "I like "
+y <- c("cats", "dogs", "fish")
 x \%p\% y
-
 }
