@@ -4,7 +4,7 @@
 \alias{palettes}
 \title{Various Color Palettes}
 \usage{
-palettes(type = NULL, index = NULL, plot = FALSE)
+palettes(type = "colorblind", index = NULL, plot = FALSE)
 }
 \arguments{
 \item{type}{The color palette to return. Options

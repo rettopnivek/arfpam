@@ -8,9 +8,11 @@
 # Table of contents
 # 1) blank_plot
 # 2) palettes
+# 3) hv_line
 
 # TO DO
 # - Add section for website
+# - Check
 
 ###
 ### 1)
@@ -27,6 +29,8 @@
 #' @param margins Logical; if \code{TRUE} displays
 #'   guidelines and details regarding the figure
 #'   margins to aid in axis and legend specifications.
+#' @param cex Text size to use when marking axis line
+#'   positions.
 #'
 #' @return An empty plot.
 #'
@@ -37,7 +41,7 @@
 #' @export
 
 blank_plot = function( xDim = c(0,1), yDim = c(0,1),
-                      margins = FALSE ) {
+                      margins = FALSE, cex = 1 ) {
 
   plot( xDim, yDim, type = 'n', ylab = ' ', xlab = ' ',
         xaxt = 'n', yaxt = 'n', bty = 'n' )
@@ -57,7 +61,7 @@ blank_plot = function( xDim = c(0,1), yDim = c(0,1),
     # Adjusted boundaries for
     # plotting window
 
-    bnd = par( "usr" )
+    bnd <- par( "usr" )
 
     segments( bnd[c(1,2,1,1)],
               bnd[c(3,3,3,4)],
@@ -66,10 +70,15 @@ blank_plot = function( xDim = c(0,1), yDim = c(0,1),
               col = 'grey90',
               lwd = 2 )
 
-    mrg = par( "mar" )
-    sapply( 1:4, function(s) {
-      mtext( -1:floor( mrg[s] ), line = -1:floor( mrg[s] ),
-             side = s, cex = .9 )
+    mrg <- par( "mar" )
+    out <- sapply( 1:4, function(s) {
+      for ( i in -1:floor( mrg[s] ) ) {
+        pst = xDim[1] + diff( xDim )/2
+        if ( s %in% c( 2, 4 ) ) {
+          pst = yDim[1] + diff( yDim )/2
+        }
+        axis( s, pst, i, line = i, tick = F, cex.axis = cex )
+      }
     } )
 
   }
@@ -114,11 +123,12 @@ blank_plot = function( xDim = c(0,1), yDim = c(0,1),
 #'
 #' @export
 
-palettes <- function( type = NULL, index = NULL, plot = FALSE ) {
+palettes <- function( type = 'colorblind', index = NULL, plot = FALSE ) {
 
   types <- list(
     colorblind = c(
       'Colorblind', 'colorblind',
+      'Colourblind', 'colourblind',
       'CB', 'cb',
       '1'
     ),
@@ -225,4 +235,76 @@ palettes <- function( type = NULL, index = NULL, plot = FALSE ) {
   }
 
 }
+
+###
+### 3)
+###
+
+#' Draw Horizontal/Vertical Lines
+#'
+#' ...
+#'
+#' @param y A vector with the y-axis positions
+#'   for horizontal lines.
+#' @param x A vector with the x-axis positions
+#'   for vertical lines.
+#' @param l ...
+#' @param ... Additional arguments to be
+#'   passed to the \code{\link[graphics]{segments}}
+#'   function.
+#'
+#' @examples
+#' # Create a blank plot
+#' blank_plot( xl, yl )
+#'
+#' # Draw horizontal line
+#' hv_line( y = .5, lty = 2 )
+#' # Draw vertical line
+#' hv_line( x = .5, lwd = 2 )
+#'
+#' # Control width of horizontal line
+#' hv_line( y = .25, l = c( .25, .75 ), col = 'blue' )
+#' # Control height of vertical line
+#' hv_line( x = .25, l = c( .25, .75 ), col = 'orange' )
+#'
+#' @export
+
+hv_line <- function( y = NULL, x = NULL, l = NULL, ... ) {
+
+  if ( !is.null( x ) ) {
+
+    n = length( x )
+
+    if ( is.null( l ) ) {
+
+      l = par( 'usr' )[3:4]
+
+    }
+
+    segments( x, rep( l[1], n ),
+              x, rep( l[2], n ), ... )
+
+  }
+
+  if ( !is.null( y ) ) {
+
+    n = length( y )
+
+    if ( is.null( l ) ) {
+
+      l = par( 'usr' )[1:2]
+
+    }
+
+    segments( rep( l[1], n ), y,
+              rep( l[2], n ), y, ... )
+
+  }
+
+}
+
+###
+### 4)
+###
+
 

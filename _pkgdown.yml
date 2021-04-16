@@ -22,13 +22,16 @@ reference:
   - templates
   - section
   - every
-  - find_NA
+  - has_NA
   - print_table
   - lin
   - empty_list
+  - find_file_name
+  - make_file_name
 - title: "Plotting"
   desc: >
 
 - contents:
   - blank_plot
   - palettes
+  - hv_line

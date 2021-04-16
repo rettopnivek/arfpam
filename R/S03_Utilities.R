@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-13
+# Last updated 2021-04-15
 
 # Table of contents
 # 1) over
@@ -16,12 +16,13 @@
 # 6) print_table
 # 7) lin
 # 8) empty_list
-# 9) Filename functions
-#   9.1) find_filename
-#   9.2) make_filename
+# 9) File name functions
+#   9.1) find_file_name
+#   9.2) make_file_name
 
 # TO DO
 # - Add unit tests
+# - Custom tests for 'find_file_name', 'make_file_name'
 # - Add section for website
 
 ###
@@ -576,7 +577,7 @@ empty_list <- function( size, labels = NULL ) {
 }
 
 ###
-### 9) Filename functions
+### 9) File name functions
 ###
 
 # 9.1)
@@ -615,19 +616,20 @@ empty_list <- function( size, labels = NULL ) {
 #'   }
 #'
 #' @examples
-#' # Forthcoming
+#' # Go to folder with html files for help pages
 #' setwd( find.package( 'arfpam' )[1] )
 #' setwd( 'html' )
 #'
-#' find_filename( 'every' )
-#' find_filename( 'every', output = 'vector' )
-#' find_filename( 'every', output = 'index' )
-#' find_filename( 'every', output = 'name' )
+#' # Find help page for function 'every'
+#' find_file_name( 'every' )
+#' find_file_name( 'every', output = 'vector' )
+#' find_file_name( 'every', output = 'index' )
+#' find_file_name( 'every', output = 'name' )
 #'
 #' @export
 
-find_filename <- function( string,
-                           output = 'logical' ) {
+find_file_name <- function( string,
+                            output = 'logical' ) {
 
   # All files and folders present
   # in working directory
@@ -659,7 +661,7 @@ find_filename <- function( string,
 
 # 9.2)
 
-#' ...
+#' Create Formatted File Name
 #'
 #' ...
 #'
@@ -676,9 +678,15 @@ find_filename <- function( string,
 #' @examples
 #' # Forthcoming
 #'
+#' make_file_name( 'Example', 'RData' )
+#' make_file_name( 'Example', 'pdf' )
+#' make_file_name( 'Example', 'docx' )
+#'
+#' make_file_name( 'Example', 'RData', tag = 'R', number = '02' )
+#'
 #' @export
 
-make_filename <- function( description,
+make_file_name <- function( description,
                            extension,
                            tag = NULL,
                            number = NULL,
