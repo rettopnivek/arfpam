@@ -3,10 +3,14 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-14
+# Last updated 2021-04-16
 
 # Table of contents
 # 1) The function 'over'
+# 2) The function 'every'
+# 3) The function 'has_NA'
+# 4) The function 'lin'
+# 5) The function 'empty_list'
 
 ###
 ### 1) The function 'over'

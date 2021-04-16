@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-15
+# Last updated 2021-04-16
 
 # Table of contents
 # 1) over
@@ -23,7 +23,7 @@
 # TO DO
 # - Add unit tests
 # - Custom tests for 'find_file_name', 'make_file_name'
-# - Add section for website
+# - Add documentation for 'make_file_name'
 
 ###
 ### 1)

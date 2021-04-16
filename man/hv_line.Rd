@@ -13,18 +13,23 @@ for horizontal lines.}
 \item{x}{A vector with the x-axis positions
 for vertical lines.}
 
-\item{l}{...}
+\item{l}{The lower and upper coordinates to determine
+the length of the line (if \code{y} is not \code{NULL},
+\code{l} is taken as the x-axis coordinates; if
+\code{x} is not \code{NULL}, \code{l} is taken as
+the y-axis coordinates).}
 
 \item{...}{Additional arguments to be
 passed to the \code{\link[graphics]{segments}}
 function.}
 }
 \description{
-...
+Draws horizontal or vertical lines on an
+existing figure.
 }
 \examples{
 # Create a blank plot
-blank_plot( xl, yl )
+blank_plot()
 
 # Draw horizontal line
 hv_line( y = .5, lty = 2 )

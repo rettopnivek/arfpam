@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-13
+# Last updated 2021-04-16
 
 # Table of contents
 # 1) blank_plot
@@ -11,8 +11,8 @@
 # 3) hv_line
 
 # TO DO
-# - Add section for website
-# - Check
+# - Add additional functions
+#   (axes, rotated axes, etc.)
 
 ###
 ### 1)
@@ -242,20 +242,25 @@ palettes <- function( type = 'colorblind', index = NULL, plot = FALSE ) {
 
 #' Draw Horizontal/Vertical Lines
 #'
-#' ...
+#' Draws horizontal or vertical lines on an
+#' existing figure.
 #'
 #' @param y A vector with the y-axis positions
 #'   for horizontal lines.
 #' @param x A vector with the x-axis positions
 #'   for vertical lines.
-#' @param l ...
+#' @param l The lower and upper coordinates to determine
+#'   the length of the line (if \code{y} is not \code{NULL},
+#'   \code{l} is taken as the x-axis coordinates; if
+#'   \code{x} is not \code{NULL}, \code{l} is taken as
+#'   the y-axis coordinates).
 #' @param ... Additional arguments to be
 #'   passed to the \code{\link[graphics]{segments}}
 #'   function.
 #'
 #' @examples
 #' # Create a blank plot
-#' blank_plot( xl, yl )
+#' blank_plot()
 #'
 #' # Draw horizontal line
 #' hv_line( y = .5, lty = 2 )
