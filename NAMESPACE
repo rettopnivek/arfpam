@@ -3,6 +3,7 @@
 export("%+=%")
 export("%-=%")
 export("%p%")
+export("%w%")
 export("every<-")
 export(blank_plot)
 export(empty_list)

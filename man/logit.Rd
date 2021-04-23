@@ -18,6 +18,6 @@ This function calculates the logit (log of the odds) of a set of
 probabilities.
 }
 \examples{
-logit( c(.5,.1,.9,0,1) )
+round(logit( c(.5, .1, .9, 0, 1) ), 6)
 
 }

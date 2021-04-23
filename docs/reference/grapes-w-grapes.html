@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Logit Function — logit • arfpam</title>
+<title>Operator to Check if String is Part of Another String — %w% • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,10 @@
 
 
 
-<meta property="og:title" content="Logit Function — logit" />
-<meta property="og:description" content="This function calculates the logit (log of the odds) of a set of
-probabilities." />
+<meta property="og:title" content="Operator to Check if String is Part of Another String — %w%" />
+<meta property="og:description" content="The operator %w% checks if the string
+on the left-hand side is contained within the
+string on the right-hand side." />
 
 
 
@@ -104,34 +105,51 @@ probabilities." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Logit Function</h1>
+    <h1>Operator to Check if String is Part of Another String</h1>
     
-    <div class="hidden name"><code>logit.Rd</code></div>
+    <div class="hidden name"><code>grapes-w-grapes.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function calculates the logit (log of the odds) of a set of
-probabilities.</p>
+    <p>The operator <code>%w%</code> checks if the string
+on the left-hand side is contained within the
+string on the right-hand side.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>logit</span><span class='op'>(</span><span class='va'>p</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='va'>x</span> <span class='op'>%w%</span> <span class='va'>y</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>p</th>
-      <td><p>A set of probabilities (0 ≤ p ≤ 1).</p></td>
+      <th>x</th>
+      <td><p>A character string.</p></td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td><p>A character vector.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Returns a set of values that now lie between -Inf and Inf.</p>
+    <p>A logical vector, <code>TRUE</code> if <code>x</code> is
+contained in a given element of <code>y</code>.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    
+
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='fu'>logit</span><span class='op'>(</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.5</span>, <span class='fl'>.1</span>, <span class='fl'>.9</span>, <span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span> <span class='op'>)</span>, <span class='fl'>6</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1]  0.000000 -2.197225  2.197225      -Inf       Inf</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='co'># Check if a string is part of</span>
+<span class='co'># another string</span>
+<span class='st'>"A"</span> <span class='op'>%w%</span> <span class='st'>"ABC"</span>
+</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'><span class='st'>"D"</span> <span class='op'>%w%</span> <span class='st'>"ABC"</span>
+</div><div class='output co'>#&gt; [1] FALSE</div><div class='input'>
+<span class='co'># Vectorized for y</span>
+<span class='st'>"A"</span> <span class='op'>%w%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='st'>"ABC"</span>, <span class='st'>"DEF"</span>, <span class='st'>"GHI"</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; [1]  TRUE FALSE FALSE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -3,13 +3,14 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-03-30
+# Last updated 2021-04-22
 
 # Table of contents
 # 1) `%p%`
 # 2) Assignment
 #   2.1) `%+=%`
 #   2.2) `%-=%`
+# 3) `%w%`
 
 ###
 ### 1)
@@ -120,3 +121,45 @@ NULL
 `%-=%` <- function(x, y) {
   eval.parent(substitute(x <- x - y))
 }
+
+###
+### 3)
+###
+
+#' Operator to Check if String is Part of Another String
+#'
+#' The operator \code{%w%} checks if the string
+#' on the left-hand side is contained within the
+#' string on the right-hand side.
+#'
+#' @param x A character string.
+#' @param y A character vector.
+#'
+#' @return A logical vector, \code{TRUE} if \code{x} is
+#' contained in a given element of \code{y}.
+#'
+#' @details
+#'
+#' @examples
+#' # Check if a string is part of
+#' # another string
+#' "A" %w% "ABC"
+#' "D" %w% "ABC"
+#'
+#' # Vectorized for y
+#' "A" %w% c( "ABC", "DEF", "GHI" )
+#'
+#' @export
+
+`%w%` <- function(x, y) {
+
+  if ( length(x) > 1 ) {
+    stop( 'x must be a single character string', call. = FALSE )
+  }
+
+  out <- sapply( y, function(s) grepl( x, s, fixed = T) )
+  names( out ) <- NULL
+
+  return( out )
+}
+

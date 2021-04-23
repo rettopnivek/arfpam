@@ -69,3 +69,21 @@ test_that("%+=% does not work as an addition operator", {
   expect_error( 1:3 %+=% 3 )
 })
 
+###
+### 3) The operator `%w%`
+###
+
+test_that("%w% checks if string x is in string y", {
+  expect_equal( "A" %w% "ABC", TRUE )
+  expect_equal( "D" %w% "ABC", FALSE )
+})
+
+test_that("%w% is vectorized for y", {
+  expect_equal( "A" %w% c( "ABC", "DEF", "GHI" ),
+                c( TRUE, FALSE, FALSE ) )
+})
+
+test_that("%w% returns an error if x is a vector", {
+  expect_error( c( "A", "B", "C", "D" ) %w% c( "ABC" ) )
+})
+

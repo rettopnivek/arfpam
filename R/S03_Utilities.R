@@ -21,7 +21,7 @@
 #   9.2) make_file_name
 
 # TO DO
-# - Add unit tests
+# - Add unit tests ('lin', 'has_NA')
 # - Custom tests for 'find_file_name', 'make_file_name'
 # - Add documentation for 'make_file_name'
 

@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-03-30
+# Last updated 2021-04-16
 
 # Table of contents
 # 1) Log-odds and the logistic function
@@ -31,7 +31,7 @@
 #' @encoding UTF-8
 #'
 #' @examples
-#' logit( c(.5,.1,.9,0,1) )
+#' round(logit( c(.5, .1, .9, 0, 1) ), 6)
 #'
 #' @export
 
@@ -53,11 +53,11 @@ logit = function(p) {
 #' @encoding UTF-8
 #'
 #' @examples
-#' logistic( c(0,-2.197225,2.1972255,-Inf,Inf) )
+#' round(logistic( c(0, -2.197225, 2.1972255, -Inf, Inf) ), 6)
 #'
 #' @export
 
-logistic = function(x) {
+logistic <- function(x) {
   return( 1/(1+exp(-x)) )
 }
 
@@ -91,15 +91,15 @@ logistic = function(x) {
 #'
 #' @export
 
-softmax = function(x) {
+softmax <- function(x) {
 
   # Vector case
   if ( is.vector( x ) ) {
-    out = exp(x)/sum( exp(x) )
+    out <- exp(x)/sum( exp(x) )
   }
   # Matrix case
   if ( is.matrix(x) ) {
-    out = t( apply( x, 1, function(x) exp(x)/sum( exp(x) ) ) )
+    out <- t( apply( x, 1, function(x) exp(x)/sum( exp(x) ) ) )
   }
 
   return( out )
@@ -157,9 +157,9 @@ erf = function(x) {
 #'
 #' @export
 
-pow = function( x, a ) {
+pow <- function( x, a ) {
 
-  out = x^a
+  out <- x^a
 
   return( out )
 }

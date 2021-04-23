@@ -5,6 +5,7 @@ reference:
 - contents:
   - Assignment
   - "`%p%`"
+  - "`%w%`"
 - title: "Math"
   desc: >
 
