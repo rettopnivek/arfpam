@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-16
+# Last updated 2021-04-24
 
 # Table of contents
 # 1) The function 'over'
@@ -67,9 +67,27 @@ test_that("every can start at custom point", {
 ### 3) The function 'has_NA'
 ###
 
+test_that("has_NA identifies rows with any NA values", {
+  x = matrix( rnorm(9), 3, 3 );
+  x[2,3] = NA;
+  expect_equal( has_NA(x), c( F, T, F ) );
+  x = data.frame( A = c( 1, 2, NA ), B = 0 );
+  expect_equal( has_NA(x), c( F, F, T ) )
+})
+
+test_that("has_NA identifies rows with all NA values", {
+  x = matrix( rnorm(9), 3, 3 );
+  x[2,] = NA; x[3,1] = NA;
+  expect_equal( has_NA(x, any = FALSE), c(F, T, F) )
+})
+
 ###
 ### 4) The function 'lin'
 ###
+
+test_that("lin creates evenply spaced intervals of given length", {
+  expect_equal( lin( 0, 1, 5 ), c( 0, .25, .5, .75, 1 ) )
+})
 
 ###
 ### 5) The function 'empty_list'

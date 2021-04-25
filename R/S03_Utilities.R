@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-16
+# Last updated 2021-04-24
 
 # Table of contents
 # 1) over
@@ -19,11 +19,11 @@
 # 9) File name functions
 #   9.1) find_file_name
 #   9.2) make_file_name
+# 10) env_path
 
 # TO DO
-# - Add unit tests ('lin', 'has_NA')
-# - Custom tests for 'find_file_name', 'make_file_name'
-# - Add documentation for 'make_file_name'
+# - Custom tests for 'find_file_name', 'make_file_name', 'env_path'
+# - Add documentation for 'make_file_name', 'env_path'
 
 ###
 ### 1)
@@ -50,43 +50,42 @@
 #' @examples
 #' # Pull 3 values per iteration
 #' y <- 1:9
-#' for ( i in 1:3 ) {
-#'   print( y[ over( 1:3, i ) ] )
+#' for (i in 1:3) {
+#'   print(y[over(1:3, i)])
 #' }
 #'
 #' # Pull first 2 of each 3 values per iteration
 #' # using the 'per' argument
-#' for ( i in 1:3 ) {
-#'   print( y[ over( 1:2, i, per = 3 ) ] )
+#' for (i in 1:3) {
+#'   print(y[over(1:2, i, per = 3)])
 #' }
 #'
 #' # Pull last of 3 values per iteration
 #' # using the 'per' argument
-#' for ( i in 1:3 ) {
-#'   print( y[ over( 3, i, per = 3 ) ] )
+#' for (i in 1:3) {
+#'   print(y[over(3, i, per = 3)])
 #' }
 #'
 #' # Pull 2 values for final 2 sets using the
 #' # 'adj' argument
 #' y <- 1:8
-#' for( i in 1:2 ) {
-#'   print( y[ over( 1:2, i, adj = 1 ) ] )
+#' for (i in 1:2) {
+#'   print(y[over(1:2, i, adj = 1)])
 #' }
-#'
 #' @export
 
-over <- function( x, iter,
-                  per = NULL,
-                  adj = -1 ) {
+over <- function(x, iter,
+                 per = NULL,
+                 adj = -1) {
 
   # Ensure inputs are integers
-  x <- as.integer( round( x ) )
+  x <- as.integer(round(x))
 
-  if ( is.null( per ) ) {
-    per <- max( x )
+  if (is.null(per)) {
+    per <- max(x)
   }
 
-  return( x + per * (iter + adj) )
+  return(x + per * (iter + adj))
 }
 
 ###
@@ -114,143 +113,130 @@ over <- function( x, iter,
 #' templates()
 #'
 #' # Function documentation
-#' templates( 'Function' )
+#' templates("Function")
 #'
 #' # Header for R script
-#' templates( 'Header' )
+#' templates("Header")
 #'
 #' # Progress bar for loop
-#' templates( 'Progress' )
+#' templates("Progress")
 #'
 #' # Code segment in a script
-#' templates( 'Segment' )
-#'
+#' templates("Segment")
 #' @export
 
-templates <- function( type ) {
-
+templates <- function(type) {
   types <- list(
     function_documentation = c(
-      'Function', 'function',
-      'Func', 'func', 'Fun', 'fun',
-      'FD', 'fd',
-      'Arguments', 'arguments',
-      'Arg', 'arg',
-      '1'
+      "Function", "function",
+      "Func", "func", "Fun", "fun",
+      "FD", "fd",
+      "Arguments", "arguments",
+      "Arg", "arg",
+      "1"
     ),
     script_header = c(
-      'Header', 'header',
-      'Head', 'head',
-      'Script', 'script',
-      'SD', 'sd',
-      '2'
+      "Header", "header",
+      "Head", "head",
+      "Script", "script",
+      "SD", "sd",
+      "2"
     ),
     progress_bar = c(
-      'Progress', 'progress',
-      'Prog', 'prog',
-      '3'
+      "Progress", "progress",
+      "Prog", "prog",
+      "3"
     ),
     code_segment = c(
-      'Segment', 'segment',
-      'Section', 'section',
-      'Code', 'code',
-      '4'
+      "Segment", "segment",
+      "Section", "section",
+      "Code", "code",
+      "4"
     ),
     plot_function = c()
   )
 
-  if ( is.null( type ) ) {
+  if (is.null(type)) {
+    for (i in 1:length(types)) {
+      message(paste0(names(types[i])))
+      message(paste0(
+        "\t", types[[i]], "\n"
+      ))
+    }
+  }
 
-    for ( i in 1:length( types ) ) {
+  if (type %in% types$function_documentation) {
+    string <- paste0(
+      "# Purpose: \n",
+      "# ... \n",
+      "# Arguments: \n",
+      "# ... \n",
+      "# Details: \n",
+      "# ... \n",
+      "# Returns: \n",
+      "# ... \n"
+    )
 
-      message( paste0( names( types[i] ) ) )
-      message( paste0(
-        '\t', types[[i]], '\n'
-      ) )
+    message(string)
+  }
 
+  if (type %in% types$script_header) {
+    author <- getOption("arfpam.author")
+    email <- getOption("arfpam.email")
+
+    if (is.null(author)) {
+      author <- "Kevin Potter"
+    }
+    if (is.null(email)) {
+      email <- "kevin.w.potter@gmail.com"
     }
 
-  }
-
-  if ( type %in% types$function_documentation ) {
-
     string <- paste0(
-      '# Purpose: \n',
-      '# ... \n',
-      '# Arguments: \n',
-      '# ... \n',
-      '# Details: \n',
-      '# ... \n',
-      '# Returns: \n',
-      '# ... \n'
+      "# Title\n",
+      "# Written by ", author, "\n",
+      "# email: ", email, "\n",
+      "# Please email me directly if you \n",
+      "# have any questions or comments\n",
+      "# Last updated ", Sys.Date(), "\n",
+      "\n",
+      "# Table of contents\n",
+      "# 1)"
     )
 
-    message( string )
-
+    message(string)
   }
 
-  if ( type %in% types$script_header  ) {
-
-    author <- getOption( 'arfpam.author' )
-    email <- getOption( 'arfpam.email' )
-
-    if ( is.null( author ) )
-      author <- 'Kevin Potter'
-    if ( is.null( email ) )
-      email <- 'kevin.w.potter@gmail.com'
-
+  if (type %in% types$progress_bar) {
     string <- paste0(
-      '# Title\n',
-      '# Written by ', author, '\n',
-      '# email: ', email, '\n',
-      '# Please email me directly if you \n',
-      '# have any questions or comments\n',
-      '# Last updated ', Sys.Date(), '\n',
-      '\n',
-      '# Table of contents\n',
-      '# 1)'
+      "n_cases <- 10\n",
+      "# Create a progress bar using a base R function\n",
+      "pb <- txtProgressBar( min = 1, max = n_cases, style = 3 )\n",
+      "\n",
+      "# Loop over cases\n",
+      "for (i in 1:n_cases) {\n",
+      "  # Update the progress bar\n",
+      "  setTxtProgressBar(pb,i)\n",
+      "}\n",
+      "close(pb); rm(pb)\n"
     )
 
-    message( string )
-
+    message(string)
   }
 
-  if ( type %in% types$progress_bar ) {
-
+  if (type %in% types$code_segment) {
     string <- paste0(
-      'n_cases <- 10\n',
-      '# Create a progress bar using a base R function\n',
-      'pb <- txtProgressBar( min = 1, max = n_cases, style = 3 )\n',
-      '\n',
-      '# Loop over cases\n',
-      'for (i in 1:n_cases) {\n',
-      '  # Update the progress bar\n',
-      '  setTxtProgressBar(pb,i)\n',
-      '}\n',
-      'close(pb); rm(pb)\n'
-    )
-
-    message( string )
-
-  }
-
-  if ( type %in% types$code_segment ) {
-
-    string <- paste0(
-      '###\n',
-      '### ?) Section label\n',
-      '###\n',
-      '\n',
-      'if (run_code[1]) {\n',
+      "###\n",
+      "### ?) Section label\n",
+      "###\n",
+      "\n",
+      "if (run_code[1]) {\n",
       "  section( '?' )\n",
-      '\n',
-      '}\n'
+      "\n",
+      "}\n"
     )
 
-    message( string )
-
+    message(string)
   }
-
 }
 
 ###
@@ -279,33 +265,31 @@ templates <- function( type ) {
 #'
 #' @examples
 #'
-#' section( '1' )
+#' section("1")
 #' # Periods indent output by 2 spaces
-#' section( '1.1' )
-#' section( '1.1.1' )
-#'
+#' section("1.1")
+#' section("1.1.1")
 #' @export
 
-section <- function( x, run = TRUE,
-                     spacing = '.',
-                     end = ')' ) {
-
+section <- function(x, run = TRUE,
+                    spacing = ".",
+                    end = ")") {
   n_spacers <- sum(
     grepl(
       spacing,
-      strsplit( x, split = '', fixed = TRUE )[[1]],
+      strsplit(x, split = "", fixed = TRUE)[[1]],
       fixed = TRUE
     )
   )
 
-  if ( grepl( ')', x, fixed = TRUE ) ) end <- ''
+  if (grepl(")", x, fixed = TRUE)) end <- ""
 
-  indent <- ''
-  if ( n_spacers > 0 ) {
-    indent <- paste( rep( '  ', n_spacers ), collapse = '' )
+  indent <- ""
+  if (n_spacers > 0) {
+    indent <- paste(rep("  ", n_spacers), collapse = "")
   }
 
-  message( paste0( indent, x, end ) )
+  message(paste0(indent, x, end))
 }
 
 ###
@@ -332,20 +316,20 @@ section <- function( x, run = TRUE,
 #' @examples
 #' # Extract every other value
 #' # at odd positions
-#' every( 1:10 )
+#' every(1:10)
 #' # Extract every other value
 #' # at even positions
-#' every( 1:10,,2) # Note double commas
+#' every(1:10, , 2) # Note double commas
 #'
 #' # Extract every 3rd value starting
 #' # from 6th position
-#' every( 1:12, 3, 6 )
+#' every(1:12, 3, 6)
 #'
 #' # Replace values at even
 #' # positions with 0
 #' x <- 1:10
-#' every( x,,2) <- 0; x
-#'
+#' every(x, , 2) <- 0
+#' x
 NULL
 
 # 4.1)
@@ -353,10 +337,8 @@ NULL
 #' @rdname every
 #' @export
 
-every <- function( x, step = 2, start = 1 ) {
-
-  return( x[ seq( start, length(x), step ) ] )
-
+every <- function(x, step = 2, start = 1) {
+  return(x[seq(start, length(x), step)])
 }
 
 # 4.2)
@@ -364,11 +346,10 @@ every <- function( x, step = 2, start = 1 ) {
 #' @rdname every
 #' @export
 
-`every<-` <- function( x, value, step = 2, start = 1 ) {
+`every<-` <- function(x, value, step = 2, start = 1) {
+  x[seq(start, length(x), step)] <- value
 
-  x[ seq( start, length(x), step ) ] <- value
-
-  return( x )
+  return(x)
 }
 
 ###
@@ -392,40 +373,40 @@ every <- function( x, step = 2, start = 1 ) {
 #' when \code{any = FALSE}).
 #'
 #' @examples
-#' x = matrix( rnorm(9), 3, 3 )
-#' x[2,3] = NA
-#' has_NA( x )
-#' x = data.frame( A = c( 1, 2, NA ), B = 0 )
-#' has_NA( x )
+#' x <- matrix(rnorm(9), 3, 3)
+#' x[2, 3] <- NA
+#' has_NA(x)
+#' x <- data.frame(A = c(1, 2, NA), B = 0)
+#' has_NA(x)
 #'
-#' #' x = matrix( rnorm(9), 3, 3 )
-#' x[2,] = NA; x[3,1] = NA
-#' has_NA( x, any = FALSE )
-#'
+#' x <- matrix(rnorm(9), 3, 3)
+#' x[2, ] <- NA
+#' x[3, 1] <- NA
+#' has_NA(x, any = FALSE)
 #' @export
 
-has_NA <- function( x, any = TRUE ) {
+has_NA <- function(x, any = TRUE) {
 
   # Initialize output
   out <- NULL
 
   # If input is matrix or data frame
-  if ( is.matrix( x ) |
-       is.data.frame( x ) ) {
+  if (is.matrix(x) |
+    is.data.frame(x)) {
     # Check whether NA values are present in
     # any of the rows
-    if ( any ) {
-      out <- apply( x, 1, function(r) any( is.na(r) ) )
+    if (any) {
+      out <- apply(x, 1, function(r) any(is.na(r)))
     } else {
-      out <- apply( x, 1, function(r) all( is.na(r) ) )
+      out <- apply(x, 1, function(r) all(is.na(r)))
     }
   } else {
     # Throw an error message
     string <- "Input should be a matrix or data frame"
-    stop( string, call. = FALSE )
+    stop(string, call. = FALSE)
   }
 
-  return( out )
+  return(out)
 }
 
 ###
@@ -447,70 +428,70 @@ has_NA <- function( x, any = TRUE ) {
 #' for each row of the table.
 #'
 #' @examples
-#' data( 'mtcars' )
-#' tbl = aggregate( mtcars$mpg, mtcars[,c('cyl','vs')], mean )
-#' tbl$x = round( tbl$x, 1 )
-#' colnames( tbl ) = c( "# of cylinders", "Engine type", "Miles per gallon" )
-#' print_table( tbl )
-#'
+#' data("mtcars")
+#' tbl <- aggregate(mtcars$mpg, mtcars[, c("cyl", "vs")], mean)
+#' tbl$x <- round(tbl$x, 1)
+#' colnames(tbl) <- c("# of cylinders", "Engine type", "Miles per gallon")
+#' print_table(tbl)
 #' @export
 
-print_table <- function( tbl, return = F ) {
+print_table <- function(tbl, return = F) {
 
   # Initialize output
-  out <- matrix( " ", nrow( tbl ) + 1, ncol( tbl ) )
+  out <- matrix(" ", nrow(tbl) + 1, ncol(tbl))
 
   # Loop over columns of table
-  for ( i in 1:ncol( tbl ) ) {
+  for (i in 1:ncol(tbl)) {
 
     # Determine maximum number of characters for elements
     # in the table's column (including the column name)
-    nc <- max( c( sapply( as.character( tbl[[i]] ), nchar ),
-                  nchar( colnames(tbl)[i] ) ) )
+    nc <- max(c(
+      sapply(as.character(tbl[[i]]), nchar),
+      nchar(colnames(tbl)[i])
+    ))
 
     # Loop over the table's rows
-    for ( j in 1:( nrow( tbl ) + 1 ) ) {
-
-      if ( j > 1 ) {
+    for (j in 1:(nrow(tbl) + 1)) {
+      if (j > 1) {
         # Elements in column
-        val <- as.character( tbl[[i]] )[j-1]
+        val <- as.character(tbl[[i]])[j - 1]
       } else {
         # Column name
-        val <- colnames( tbl )[i]
+        val <- colnames(tbl)[i]
       }
       # Current number of characters
-      cur_nc <- nchar( val )
+      cur_nc <- nchar(val)
       # If necessary pad out characters with empty spaces
-      if ( cur_nc < nc ) {
-        val <- paste( paste( rep( " ", nc - cur_nc ), collapse = "" ),
-                     val, sep = "" )
-        out[j,i] <- val
+      if (cur_nc < nc) {
+        val <- paste(paste(rep(" ", nc - cur_nc), collapse = ""),
+          val,
+          sep = ""
+        )
+        out[j, i] <- val
       } else {
-        out[j,i] <- val
+        out[j, i] <- val
       }
-
     }
   }
 
   # Convert to vector of strings
-  output <- apply( out, 1, paste, collapse = " | " )
-  output <- sapply( output, function(x) paste( x, "|" ) )
+  output <- apply(out, 1, paste, collapse = " | ")
+  output <- sapply(output, function(x) paste(x, "|"))
 
-  if ( !return ) {
-    for ( i in 1:length( output ) ) {
-      cat( c( output[i], '\n' ) )
+  if (!return) {
+    for (i in 1:length(output)) {
+      cat(c(output[i], "\n"))
     }
   } else {
-    return( output )
+    return(output)
   }
-
 }
 
 ###
 ### 7)
 ###
 
-#' Create Evenly Spaced Intervals
+#' Create Linear Sequence of Evenly Spaced Values
 #'
 #' Generates a sequence of evenly spaced
 #' intervals between a lower and upper limit.
@@ -523,14 +504,11 @@ print_table <- function( tbl, return = F ) {
 #'
 #' @examples
 #' # Five evenly spaced intervals from 0 to 1
-#' lin( 0, 1, 5 )
-#'
+#' lin(0, 1, 5)
 #' @export
 
-lin <- function( start, end, n_intervals ) {
-
-  return( seq( start, end, length.out = n_intervals ) )
-
+lin <- function(start, end, n_intervals) {
+  return(seq(start, end, length.out = n_intervals))
 }
 
 ###
@@ -552,28 +530,26 @@ lin <- function( start, end, n_intervals ) {
 #'
 #' @examples
 #' # An empty list with 3 slots
-#' empty_list( 3 )
+#' empty_list(3)
 #'
 #' # An empty list with labels
-#' empty_list( 3, c( 'S01', 'S02', 'S03' ) )
-#'
+#' empty_list(3, c("S01", "S02", "S03"))
 #' @export
 
-empty_list <- function( size, labels = NULL ) {
+empty_list <- function(size, labels = NULL) {
+  lst <- lapply(1:size, function(x) {
+    return(NULL)
+  })
 
-  lst <- lapply( 1:size, function(x) {
-    return( NULL )
-  } )
-
-  if ( !is.null( labels ) ) {
-    if ( length( labels ) == length( lst ) ) {
-      names( lst ) <- labels
+  if (!is.null(labels)) {
+    if (length(labels) == length(lst)) {
+      names(lst) <- labels
     } else {
-      warning( 'Vector of labels does not match length of list' )
+      warning("Vector of labels does not match length of list")
     }
   }
 
-  return( lst )
+  return(lst)
 }
 
 ###
@@ -617,19 +593,18 @@ empty_list <- function( size, labels = NULL ) {
 #'
 #' @examples
 #' # Go to folder with html files for help pages
-#' setwd( find.package( 'arfpam' )[1] )
-#' setwd( 'html' )
+#' setwd(find.package("arfpam")[1])
+#' setwd("html")
 #'
 #' # Find help page for function 'every'
-#' find_file_name( 'every' )
-#' find_file_name( 'every', output = 'vector' )
-#' find_file_name( 'every', output = 'index' )
-#' find_file_name( 'every', output = 'name' )
-#'
+#' find_file_name("every")
+#' find_file_name("every", output = "vector")
+#' find_file_name("every", output = "index")
+#' find_file_name("every", output = "name")
 #' @export
 
-find_file_name <- function( string,
-                            output = 'logical' ) {
+find_file_name <- function(string,
+                           output = "logical") {
 
   # All files and folders present
   # in working directory
@@ -637,26 +612,25 @@ find_file_name <- function( string,
 
   # Determine if (standard) file name is present
   # in list of files/folders
-  check <- grepl( string, all_files, fixed = T )
+  check <- grepl(string, all_files, fixed = T)
 
   # Output
-  if ( output %in% c( 'Logical', 'logical', 'L', 'l' ) ) {
-    return( any( check ) )
+  if (output %in% c("Logical", "logical", "L", "l")) {
+    return(any(check))
   }
-  if ( output %in% c( 'Vector', 'vector', 'vec', 'V', 'v' ) ) {
-    return( check )
+  if (output %in% c("Vector", "vector", "vec", "V", "v")) {
+    return(check)
   }
-  if ( output %in% c( 'Index', 'index', 'I', 'i' ) ) {
-    return( which( check ) )
+  if (output %in% c("Index", "index", "I", "i")) {
+    return(which(check))
   }
-  if ( output %in% c( 'Name', 'name', 'N', 'n' ) ) {
-    if ( any( check ) ) {
-      return( all_files[ check ] )
+  if (output %in% c("Name", "name", "N", "n")) {
+    if (any(check)) {
+      return(all_files[check])
     } else {
-      return( NULL )
+      return(NULL)
     }
   }
-
 }
 
 # 9.2)
@@ -678,164 +652,270 @@ find_file_name <- function( string,
 #' @examples
 #' # Forthcoming
 #'
-#' make_file_name( 'Example', 'RData' )
-#' make_file_name( 'Example', 'pdf' )
-#' make_file_name( 'Example', 'docx' )
+#' make_file_name("Example", "RData")
+#' make_file_name("Example", "pdf")
+#' make_file_name("Example", "docx")
 #'
-#' make_file_name( 'Example', 'RData', tag = 'R', number = '02' )
-#'
+#' make_file_name("Example", "RData", tag = "R", number = "02")
 #' @export
 
-make_file_name <- function( description,
+make_file_name <- function(description,
                            extension,
                            tag = NULL,
                            number = NULL,
                            file_date = NULL,
                            additional = NULL,
-                           remove = FALSE ) {
+                           remove = FALSE) {
 
   # Determine files in directory
   all_files <- dir()
 
   # If not specified, auto-generate file tag
   # based on extension
-  if ( is.null( tag ) ) {
+  if (is.null(tag)) {
 
     # Word document
-    if ( extension == 'docx' ) {
-      tag <- 'W'
+    if (extension == "docx") {
+      tag <- "W"
     }
     # Standard figure extentions
-    if ( extension %in% c( 'pdf', 'jpg', 'jpeg', 'png' ) ) {
-      tag <- 'F'
+    if (extension %in% c("pdf", "jpg", "jpeg", "png")) {
+      tag <- "F"
     }
     # Data files
-    if ( extension %in% c( 'RData', 'csv' ) ) {
-      tag <- 'D'
+    if (extension %in% c("RData", "csv")) {
+      tag <- "D"
     }
     # R script file
-    if ( extension %in% c( 'R' ) ) {
-      tag <- 'S'
+    if (extension %in% c("R")) {
+      tag <- "S"
     }
     # Text file
-    if ( extension %in% c( 'txt' ) ) {
-      tag <- 'T'
+    if (extension %in% c("txt")) {
+      tag <- "T"
     }
-
   }
 
   # If not specified, auto-generate file_date
-  if ( is.null( file_date ) ) {
-    file_date = format(
+  if (is.null(file_date)) {
+    file_date <- format(
       Sys.Date(),
-      '%m_%d_%Y'
+      "%m_%d_%Y"
     )
-    file_date <- '-' %p% file_date
+    file_date <- "-" %p% file_date
   } else {
-    if ( file_date != '' ) {
-      file_date <- '-' %p% file_date
+    if (file_date != "") {
+      file_date <- "-" %p% file_date
     }
   }
 
   # Check for matching tags and descriptions for
   # files present in folder
-  if ( length( all_files ) > 0 ) {
-
+  if (length(all_files) > 0) {
     only_files_no_placeholder <-
       # Exclude folders
-      grepl( '.', all_files, fixed = T ) &
-      # Exclude placeholder file
-      all_files != 'Placeholder.txt'
+      grepl(".", all_files, fixed = T) &
+        # Exclude placeholder file
+        all_files != "Placeholder.txt"
 
     matching_tags <-
-      substr( all_files, start = 1, stop = 1 ) == tag &
-      only_files_no_placeholder
+      substr(all_files, start = 1, stop = 1) == tag &
+        only_files_no_placeholder
 
     matching_description <-
-      grepl( '-' %p% description %p% '-', all_files, fixed = T ) &
-      only_files_no_placeholder
+      grepl("-" %p% description %p% "-", all_files, fixed = T) &
+        only_files_no_placeholder
 
     matching_extension <-
-      grepl( extension %p% '$', all_files ) &
-      only_files_no_placeholder
+      grepl(extension %p% "$", all_files) &
+        only_files_no_placeholder
 
     # Check for existing file
     found_match <-
       matching_description &
-      matching_tags &
-      matching_extension
+        matching_tags &
+        matching_extension
 
     # If needed, increment file number
-    if ( is.null( number ) ) {
-
-      if ( any( found_match ) ) {
+    if (is.null(number)) {
+      if (any(found_match)) {
         number <- substr(
-          all_files[ found_match ],
+          all_files[found_match],
           start = 2, stop = 3
         )
       } else {
-        number <- sum( matching_tags ) + 1
+        number <- sum(matching_tags) + 1
       }
 
       # Make sure number is at least a double-digit and
       # convert to character string
-      nc <- nchar( number )
-      if ( nc == 1 ) {
-        number <- paste0( '0', number )
+      nc <- nchar(number)
+      if (nc == 1) {
+        number <- paste0("0", number)
       } else {
-        number <- as.character( number )
+        number <- as.character(number)
       }
-
     }
 
-    if ( remove ) {
-
-      if ( found_match ) {
-
-        old_file <- all_files[ found_match ]
-        file.remove( old_file )
-
+    if (remove) {
+      if (found_match) {
+        old_file <- all_files[found_match]
+        file.remove(old_file)
       }
-
     }
-
-
   } else {
-
-    if ( is.null( number ) ) {
+    if (is.null(number)) {
       number <- 1
 
       # Make sure number is at least a double-digit and
       # convert to character string
-      nc <- nchar( number )
-      if ( nc == 1 ) {
-        number <- paste0( '0', number )
+      nc <- nchar(number)
+      if (nc == 1) {
+        number <- paste0("0", number)
       } else {
-        number <- as.character( number )
+        number <- as.character(number)
       }
-
     }
-
   }
 
-  if ( !is.null( additional ) ) {
-    additional <- paste0( '-', additional )
+  if (!is.null(additional)) {
+    additional <- paste0("-", additional)
   } else {
-    additional <- ''
+    additional <- ""
   }
 
   # Generate file name
   filename <- paste0(
     tag,
     number,
-    '-',
+    "-",
     description,
     file_date,
     additional,
-    '.',
+    ".",
     extension
   )
 
-  return( filename )
+  return(filename)
 }
 
+###
+### 10)
+###
+
+#' ...
+#'
+#' ...
+#'
+#' @param x ...
+#'
+#' @return ...
+#'
+#' @examples
+#' # Forthcoming
+#' @export
+
+env_path <- function(filename = NULL,
+                     label = NULL,
+                     subfolders = "",
+                     folder_names = c(
+                       "Data",
+                       "Documents",
+                       "Figures",
+                       "Output",
+                       "Source",
+                       "R"
+                     ),
+                     labels = list(
+                       c("Data", "data"),
+                       c("Documents", "doc"),
+                       c("Figures", "fig"),
+                       c("Output", "out"),
+                       c("Source", "src"),
+                       "R"
+                     )) {
+
+  #< ...
+  if (is.null(filename) & is.null(label)) {
+    all_files <- dir(all.files = TRUE)
+    check_for_env_file <- grepl(".env", all_files, fixed = TRUE)
+
+    #<| ...
+    if (any(check_for_env_file)) {
+      env_file <- all_files[check_for_env_file]
+
+      env_content <- scan(
+        file = env_file,
+        what = "character", sep = "\n"
+      )
+
+      paths_present <-
+        "# Absolute paths for project folders" %in% env_content
+
+      #<|< ...
+      if (!paths_present) {
+        env_var <- paste0("PROJECT_FOLDER_", toupper(folder_names))
+
+        write("# Absolute paths for project folders",
+          file = env_file, append = TRUE
+        )
+
+        #<|<| ...
+        for (i in 1:length(folder_names)) {
+
+          #<|<|<
+          if (folder_names[i] %in% all_files) {
+            write(paste0(
+              env_var[i], "=",
+              paste0(
+                getwd(), "/",
+                folder_names[i]
+              )
+            ),
+            file = env_file,
+            append = TRUE
+            )
+
+            # >|>|> Close conditional
+          }
+
+          #|>|> Close loop
+        }
+
+        # >|> Close conditional
+      }
+
+      #|> Close conditional
+    }
+
+    # > Close conditional
+  }
+
+  #< ...
+  if (!is.null(filename) & !is.null(label)) {
+    env_var <- paste0("PROJECT_FOLDER_", toupper(folder_names))
+
+    which_folder <- sapply(
+      1:length(labels),
+      function(i) any(label %in% labels[[i]])
+    )
+
+    #<| ...
+    if (any(which_folder)) {
+      abs_path <- as.character(Sys.getenv(env_var[which_folder]))
+
+      out <- paste0(
+        abs_path,
+        "/",
+        subfolders,
+        filename
+      )
+
+      return(out)
+
+      #|> Close conditional
+    }
+
+    # > Close conditional
+  }
+}

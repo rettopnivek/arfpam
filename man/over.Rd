@@ -31,27 +31,26 @@ a loop.
 \examples{
 # Pull 3 values per iteration
 y <- 1:9
-for ( i in 1:3 ) {
-  print( y[ over( 1:3, i ) ] )
+for (i in 1:3) {
+  print(y[over(1:3, i)])
 }
 
 # Pull first 2 of each 3 values per iteration
 # using the 'per' argument
-for ( i in 1:3 ) {
-  print( y[ over( 1:2, i, per = 3 ) ] )
+for (i in 1:3) {
+  print(y[over(1:2, i, per = 3)])
 }
 
 # Pull last of 3 values per iteration
 # using the 'per' argument
-for ( i in 1:3 ) {
-  print( y[ over( 3, i, per = 3 ) ] )
+for (i in 1:3) {
+  print(y[over(3, i, per = 3)])
 }
 
 # Pull 2 values for final 2 sets using the
 # 'adj' argument
 y <- 1:8
-for( i in 1:2 ) {
-  print( y[ over( 1:2, i, adj = 1 ) ] )
+for (i in 1:2) {
+  print(y[over(1:2, i, adj = 1)])
 }
-
 }

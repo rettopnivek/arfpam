@@ -3,11 +3,12 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-03-31
+# Last updated 2021-04-24
 
 # Table of contents
 # 1) The operator `%p%`
 # 2) The operators `%+=%` and %-=%`
+# 3) The operator `%w%`
 
 ###
 ### 1) The operator `%p%`

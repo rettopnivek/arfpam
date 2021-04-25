@@ -27,15 +27,14 @@ easy copying and pasting.
 templates()
 
 # Function documentation
-templates( 'Function' )
+templates("Function")
 
 # Header for R script
-templates( 'Header' )
+templates("Header")
 
 # Progress bar for loop
-templates( 'Progress' )
+templates("Progress")
 
 # Code segment in a script
-templates( 'Segment' )
-
+templates("Segment")
 }

@@ -31,18 +31,18 @@ vector in regular increments.
 \examples{
 # Extract every other value
 # at odd positions
-every( 1:10 )
+every(1:10)
 # Extract every other value
 # at even positions
-every( 1:10,,2) # Note double commas
+every(1:10, , 2) # Note double commas
 
 # Extract every 3rd value starting
 # from 6th position
-every( 1:12, 3, 6 )
+every(1:12, 3, 6)
 
 # Replace values at even
 # positions with 0
 x <- 1:10
-every( x,,2) <- 0; x
-
+every(x, , 2) <- 0
+x
 }

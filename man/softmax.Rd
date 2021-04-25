@@ -26,10 +26,9 @@ of the matrix.
 }
 \examples{
 set.seed(3902)
-ex <- softmax( rnorm(5) )
-sum( ex ) # Should equal 1
-mat <- matrix( rnorm(9), 3, 3 )
-ex <- softmax( mat )
-rowSums( ex ) # Each row should sum to 1
-
+ex <- softmax(rnorm(5))
+sum(ex) # Should equal 1
+mat <- matrix(rnorm(9), 3, 3)
+ex <- softmax(mat)
+rowSums(ex) # Each row should sum to 1
 }

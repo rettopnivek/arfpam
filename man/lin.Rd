@@ -2,7 +2,7 @@
 % Please edit documentation in R/S03_Utilities.R
 \name{lin}
 \alias{lin}
-\title{Create Evenly Spaced Intervals}
+\title{Create Linear Sequence of Evenly Spaced Values}
 \usage{
 lin(start, end, n_intervals)
 }
@@ -22,6 +22,5 @@ intervals between a lower and upper limit.
 }
 \examples{
 # Five evenly spaced intervals from 0 to 1
-lin( 0, 1, 5 )
-
+lin(0, 1, 5)
 }

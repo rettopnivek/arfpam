@@ -5,18 +5,22 @@
 \alias{logistic}
 \title{Logistic Function}
 \usage{
-logistic(x)
+logistic(x, na.rm = TRUE)
 }
 \arguments{
-\item{x}{A set of values (\code{-Inf} ≤ x ≤ \code{Inf}).}
+\item{x}{A set of values (\code{-Inf} ≤
+x ≤ \code{Inf}).}
+
+\item{na.rm}{Logical; if \code{TRUE}, removes \code{NA}
+values first.}
 }
 \value{
-Returns a set of probabilities.
+Returns a set of values between 0 and 1.
 }
 \description{
-This function applies the logistic function to a set of values.
+This function applies the logistic function to
+a set of values.
 }
 \examples{
-round(logistic( c(0, -2.197225, 2.1972255, -Inf, Inf) ), 6)
-
+round(logistic(c(0, -2.197225, 2.1972255, -Inf, Inf)), 6)
 }

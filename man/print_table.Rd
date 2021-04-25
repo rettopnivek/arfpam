@@ -23,10 +23,9 @@ Given a data frame, prints to console
 a formatted table of the results.
 }
 \examples{
-data( 'mtcars' )
-tbl = aggregate( mtcars$mpg, mtcars[,c('cyl','vs')], mean )
-tbl$x = round( tbl$x, 1 )
-colnames( tbl ) = c( "# of cylinders", "Engine type", "Miles per gallon" )
-print_table( tbl )
-
+data("mtcars")
+tbl <- aggregate(mtcars$mpg, mtcars[, c("cyl", "vs")], mean)
+tbl$x <- round(tbl$x, 1)
+colnames(tbl) <- c("# of cylinders", "Engine type", "Miles per gallon")
+print_table(tbl)
 }

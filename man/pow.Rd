@@ -12,23 +12,22 @@ pow(x, a)
 \item{a}{A numeric vector, the exponents.}
 }
 \value{
-Returns the result of raising x to
-the power a.
+Returns the result of raising \code{x} to
+the power \code{a}.
 }
 \description{
-This function raises a value x to a power a. It
-is useful for improving the readability of code,
-clearly separating the base and exponent from
-other aspects of an equation.
+This function raises a value \code{x} to a power
+\code{a}. It is useful for improving the readability
+of code, clearly separating the base and exponent
+from other aspects of an equation.
 }
 \examples{
 2^4
-pow( 2, 4 )
+pow(2, 4)
 
 # Sometimes it can be hard to determine
 # what is being raised to a power
-x <- 2 * 13 ^ 4 / 8
+x <- 2 * 13^4 / 8
 # This function makes it easier to tell
-x <- 2 * pow( 13, 4 ) / 8
-
+x <- 2 * pow(13, 4) / 8
 }

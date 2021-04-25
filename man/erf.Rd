@@ -16,8 +16,7 @@ A vector of transformed values based on the error function.
 Calculates the error function.
 }
 \examples{
-plot( c(-1,1), c(-3,3), type='n', xlab='x', ylab='erf(x)' )
-x <- seq(-3,3,length=100)
-lines(x,erf(x))
-
+plot(c(-2, 2), c(-1, 1), type = "n", xlab = "x", ylab = "erf(x)")
+x <- seq(-2, 2, length = 100)
+abline(h=c(-1,1), col = 'grey'); lines(x, erf(x))
 }

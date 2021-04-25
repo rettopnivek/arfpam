@@ -38,10 +38,9 @@ make_file_name(
 \examples{
 # Forthcoming
 
-make_file_name( 'Example', 'RData' )
-make_file_name( 'Example', 'pdf' )
-make_file_name( 'Example', 'docx' )
+make_file_name("Example", "RData")
+make_file_name("Example", "pdf")
+make_file_name("Example", "docx")
 
-make_file_name( 'Example', 'RData', tag = 'R', number = '02' )
-
+make_file_name("Example", "RData", tag = "R", number = "02")
 }

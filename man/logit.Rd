@@ -5,19 +5,22 @@
 \alias{logit}
 \title{Logit Function}
 \usage{
-logit(p)
+logit(p, na.rm = TRUE)
 }
 \arguments{
 \item{p}{A set of probabilities (0 ≤ p ≤ 1).}
+
+\item{na.rm}{Logical; if \code{TRUE}, removes \code{NA}
+values first.}
 }
 \value{
-Returns a set of values that now lie between -Inf and Inf.
+Returns a set of values that now lie
+between -∞ and ∞.
 }
 \description{
-This function calculates the logit (log of the odds) of a set of
-probabilities.
+This function calculates the logit (log of the
+odds) of a set of probabilities.
 }
 \examples{
-round(logit( c(.5, .1, .9, 0, 1) ), 6)
-
+round(logit(c(.5, .1, .9, 0, 1)), 6)
 }

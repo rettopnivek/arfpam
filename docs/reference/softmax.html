@@ -142,13 +142,12 @@ of the matrix.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>3902</span><span class='op'>)</span>
-<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span> <span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span> <span class='va'>ex</span> <span class='op'>)</span> <span class='co'># Should equal 1</span>
-</div><div class='output co'>#&gt; [1] 1</div><div class='input'><span class='va'>mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>9</span><span class='op'>)</span>, <span class='fl'>3</span>, <span class='fl'>3</span> <span class='op'>)</span>
-<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span> <span class='va'>mat</span> <span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span> <span class='va'>ex</span> <span class='op'>)</span> <span class='co'># Each row should sum to 1</span>
-</div><div class='output co'>#&gt; [1] 1 1 1</div><div class='input'>
-</div></pre>
+<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>)</span> <span class='co'># Should equal 1</span>
+</div><div class='output co'>#&gt; [1] 1</div><div class='input'><span class='va'>mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>9</span><span class='op'>)</span>, <span class='fl'>3</span>, <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>)</span> <span class='co'># Each row should sum to 1</span>
+</div><div class='output co'>#&gt; [1] 1 1 1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

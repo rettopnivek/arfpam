@@ -31,9 +31,8 @@ occur.
 }
 \examples{
 
-section( '1' )
+section("1")
 # Periods indent output by 2 spaces
-section( '1.1' )
-section( '1.1.1' )
-
+section("1.1")
+section("1.1.1")
 }

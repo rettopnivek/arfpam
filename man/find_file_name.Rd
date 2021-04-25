@@ -43,13 +43,12 @@ Multiple types of output are supported.
 }
 \examples{
 # Go to folder with html files for help pages
-setwd( find.package( 'arfpam' )[1] )
-setwd( 'html' )
+setwd(find.package("arfpam")[1])
+setwd("html")
 
 # Find help page for function 'every'
-find_file_name( 'every' )
-find_file_name( 'every', output = 'vector' )
-find_file_name( 'every', output = 'index' )
-find_file_name( 'every', output = 'name' )
-
+find_file_name("every")
+find_file_name("every", output = "vector")
+find_file_name("every", output = "index")
+find_file_name("every", output = "name")
 }

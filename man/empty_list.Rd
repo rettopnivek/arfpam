@@ -23,9 +23,8 @@ number of empty slots.
 }
 \examples{
 # An empty list with 3 slots
-empty_list( 3 )
+empty_list(3)
 
 # An empty list with labels
-empty_list( 3, c( 'S01', 'S02', 'S03' ) )
-
+empty_list(3, c("S01", "S02", "S03"))
 }

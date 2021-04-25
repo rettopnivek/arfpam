@@ -25,14 +25,14 @@ Identifies rows in a matrix or data frame
 that contain any (or all) NA values.
 }
 \examples{
-x = matrix( rnorm(9), 3, 3 )
-x[2,3] = NA
-has_NA( x )
-x = data.frame( A = c( 1, 2, NA ), B = 0 )
-has_NA( x )
+x <- matrix(rnorm(9), 3, 3)
+x[2, 3] <- NA
+has_NA(x)
+x <- data.frame(A = c(1, 2, NA), B = 0)
+has_NA(x)
 
-#' x = matrix( rnorm(9), 3, 3 )
-x[2,] = NA; x[3,1] = NA
-has_NA( x, any = FALSE )
-
+x <- matrix(rnorm(9), 3, 3)
+x[2, ] <- NA
+x[3, 1] <- NA
+has_NA(x, any = FALSE)
 }
