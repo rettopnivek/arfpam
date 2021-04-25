@@ -4,7 +4,7 @@
 \alias{find_file_name}
 \title{Check if a File Name can be Found}
 \usage{
-find_file_name(string, output = "logical")
+find_file_name(string, output = "logical", ...)
 }
 \arguments{
 \item{string}{A character string, used
@@ -18,6 +18,9 @@ Options include...
 \item \code{'index'};
 \item \code{'name'}.
 }}
+
+\item{...}{Additional arguments to the
+\code{\link[base:list.files]{dir}} function.}
 }
 \value{
 Either...

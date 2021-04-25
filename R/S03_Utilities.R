@@ -574,6 +574,8 @@ empty_list <- function(size, labels = NULL) {
 #'     \item \code{'index'};
 #'     \item \code{'name'}.
 #'   }
+#' @param ... Additional arguments to the
+#'   \code{\link[base:list.files]{dir}} function.
 #'
 #' @return Either...
 #'   \itemize{
@@ -604,11 +606,12 @@ empty_list <- function(size, labels = NULL) {
 #' @export
 
 find_file_name <- function(string,
-                           output = "logical") {
+                           output = "logical",
+                           ...) {
 
   # All files and folders present
   # in working directory
-  all_files <- dir()
+  all_files <- dir(...)
 
   # Determine if (standard) file name is present
   # in list of files/folders
