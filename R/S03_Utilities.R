@@ -289,7 +289,10 @@ section <- function(x, run = TRUE,
     indent <- paste(rep("  ", n_spacers), collapse = "")
   }
 
-  message(paste0(indent, x, end))
+  if ( run ) {
+    message(paste0(indent, x, end))
+  }
+
 }
 
 ###
