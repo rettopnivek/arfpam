@@ -11,36 +11,69 @@ make_file_name(
   number = NULL,
   file_date = NULL,
   additional = NULL,
+  date_format = "\%m_\%d_\%Y",
+  exclude = "",
   remove = FALSE
 )
 }
 \arguments{
-\item{description}{...}
+\item{description}{A human-readable label, with
+words preferably separated by underscores.}
 
-\item{extension}{...}
+\item{extension}{A file extension, such as
+'RData', 'R', 'txt', 'pdf'.}
 
-\item{tag}{...}
+\item{tag}{A leading tag; If no value is provided,
+automatically set based on the file extension.
+Automatic assignments are...
+\itemize{
+\item 'S' for extension \code{R};
+\item 'D' for extensions \code{RData} and \code{csv};
+\item 'T' for extension \code{txt};
+\item 'W' for extension \code{docx};
+\item 'P' for extension \code{pptx};
+\item 'F' for extensions \code{pdf}, \code{jpg},
+\code{jpeg}, and \code{png}.
+}}
 
-\item{number}{...}
+\item{number}{A file number. If no value is provided,
+automatically set based on number of files in current
+folder with matching tags.}
 
-\item{file_date}{...}
+\item{file_date}{The date to include. If no value is
+provided, the current date is used.}
 
-\item{additional}{...}
+\item{additional}{Additional text to include following
+the date. If provided, is preceded by a '-'.}
 
-\item{remove}{...}
+\item{date_format}{The format to use for the current
+date, defaults to 'MM_DD_YYYY'.}
+
+\item{exclude}{A vector of file names to exclude when}
+
+\item{remove}{Logical; if TRUE, attempts to locate
+previous versions of the outputted file name
+(i.e., same name but earlier dates) and remove
+them from the current folder.}
 }
 \value{
-...
+A character string.
 }
 \description{
-...
+Create a standardized file name of the
+form: TXX-Description-MM_DD_YYYY.ext where 'T'
+is a leading tag, 'XX' is a file number,
+'Description' is a human-readable
+label, and 'ext' is a file extension.
 }
 \examples{
-# Forthcoming
-
+# Different file types
 make_file_name("Example", "RData")
 make_file_name("Example", "pdf")
 make_file_name("Example", "docx")
 
+# User-specified tags and numbers
 make_file_name("Example", "RData", tag = "R", number = "02")
+# Additional text
+make_file_name("Example", "RData", additional = 'v.1.0.0' )
 }

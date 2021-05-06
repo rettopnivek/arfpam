@@ -13,6 +13,7 @@
 # TO DO
 # - Add additional functions
 #   (axes, rotated axes, etc.)
+# - Add additional color palettes
 
 ###
 ### 1)

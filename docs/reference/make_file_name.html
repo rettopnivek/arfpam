@@ -40,7 +40,11 @@
 
 
 <meta property="og:title" content="Create Formatted File Name — make_file_name" />
-<meta property="og:description" content="..." />
+<meta property="og:description" content="Create a standardized file name of the
+form: TXX-Description-MM_DD_YYYY.ext where 'T'
+is a leading tag, 'XX' is a file number,
+'Description' is a human-readable
+label, and 'ext' is a file extension." />
 
 
 
@@ -109,7 +113,11 @@
     </div>
 
     <div class="ref-description">
-    <p>...</p>
+    <p>Create a standardized file name of the
+form: TXX-Description-MM_DD_YYYY.ext where 'T'
+is a leading tag, 'XX' is a file number,
+'Description' is a human-readable
+label, and 'ext' is a file extension.</p>
     </div>
 
     <pre class="usage"><span class='fu'>make_file_name</span><span class='op'>(</span>
@@ -119,6 +127,8 @@
   number <span class='op'>=</span> <span class='cn'>NULL</span>,
   file_date <span class='op'>=</span> <span class='cn'>NULL</span>,
   additional <span class='op'>=</span> <span class='cn'>NULL</span>,
+  date_format <span class='op'>=</span> <span class='st'>"%m_%d_%Y"</span>,
+  exclude <span class='op'>=</span> <span class='st'>""</span>,
   remove <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
@@ -127,47 +137,77 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>description</th>
-      <td><p>...</p></td>
+      <td><p>A human-readable label, with
+words preferably separated by underscores.</p></td>
     </tr>
     <tr>
       <th>extension</th>
-      <td><p>...</p></td>
+      <td><p>A file extension, such as
+'RData', 'R', 'txt', 'pdf'.</p></td>
     </tr>
     <tr>
       <th>tag</th>
-      <td><p>...</p></td>
+      <td><p>A leading tag; If no value is provided,
+automatically set based on the file extension.
+Automatic assignments are...</p><ul>
+<li><p>'S' for extension <code>R</code>;</p></li>
+<li><p>'D' for extensions <code>RData</code> and <code>csv</code>;</p></li>
+<li><p>'T' for extension <code>txt</code>;</p></li>
+<li><p>'W' for extension <code>docx</code>;</p></li>
+<li><p>'P' for extension <code>pptx</code>;</p></li>
+<li><p>'F' for extensions <code>pdf</code>, <code>jpg</code>,
+<code>jpeg</code>, and <code>png</code>.</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>number</th>
-      <td><p>...</p></td>
+      <td><p>A file number. If no value is provided,
+automatically set based on number of files in current
+folder with matching tags.</p></td>
     </tr>
     <tr>
       <th>file_date</th>
-      <td><p>...</p></td>
+      <td><p>The date to include. If no value is
+provided, the current date is used.</p></td>
     </tr>
     <tr>
       <th>additional</th>
-      <td><p>...</p></td>
+      <td><p>Additional text to include following
+the date. If provided, is preceded by a '-'.</p></td>
+    </tr>
+    <tr>
+      <th>date_format</th>
+      <td><p>The format to use for the current
+date, defaults to 'MM_DD_YYYY'.</p></td>
+    </tr>
+    <tr>
+      <th>exclude</th>
+      <td><p>A vector of file names to exclude when</p></td>
     </tr>
     <tr>
       <th>remove</th>
-      <td><p>...</p></td>
+      <td><p>Logical; if TRUE, attempts to locate
+previous versions of the outputted file name
+(i.e., same name but earlier dates) and remove
+them from the current folder.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>...</p>
+    <p>A character string.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Forthcoming</span>
-
+    <pre class="examples"><div class='input'><span class='co'># Different file types</span>
 <span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"RData"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "D01-Example-04_24_2021.RData"</div><div class='input'><span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"pdf"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "F01-Example-04_24_2021.pdf"</div><div class='input'><span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"docx"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "W01-Example-04_24_2021.docx"</div><div class='input'>
+</div><div class='output co'>#&gt; [1] "D01-Example-05_06_2021.RData"</div><div class='input'><span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"pdf"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "F01-Example-05_06_2021.pdf"</div><div class='input'><span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"docx"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "W01-Example-05_06_2021.docx"</div><div class='input'>
+<span class='co'># User-specified tags and numbers</span>
 <span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"RData"</span>, tag <span class='op'>=</span> <span class='st'>"R"</span>, number <span class='op'>=</span> <span class='st'>"02"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "R02-Example-04_24_2021.RData"</div></pre>
+</div><div class='output co'>#&gt; [1] "R02-Example-05_06_2021.RData"</div><div class='input'><span class='co'># Additional text</span>
+<span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"RData"</span>, additional <span class='op'>=</span> <span class='st'>'v.1.0.0'</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "D01-Example-05_06_2021-v.1.0.0.RData"</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

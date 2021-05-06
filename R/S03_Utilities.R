@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-24
+# Last updated 2021-05-06
 
 # Table of contents
 # 1) over
@@ -23,7 +23,7 @@
 
 # TO DO
 # - Custom tests for 'find_file_name', 'make_file_name', 'env_path'
-# - Add documentation for 'make_file_name', 'env_path'
+# - Add documentation for 'env_path'
 
 ###
 ### 1)
@@ -643,26 +643,55 @@ find_file_name <- function(string,
 
 #' Create Formatted File Name
 #'
-#' ...
+#' Create a standardized file name of the
+#' form: TXX-Description-MM_DD_YYYY.ext where 'T'
+#' is a leading tag, 'XX' is a file number,
+#' 'Description' is a human-readable
+#' label, and 'ext' is a file extension.
 #'
-#' @param description ...
-#' @param extension ...
-#' @param tag ...
-#' @param number ...
-#' @param file_date ...
-#' @param additional ...
-#' @param remove ...
+#' @param description A human-readable label, with
+#'   words preferably separated by underscores.
+#' @param extension A file extension, such as
+#'   'RData', 'R', 'txt', 'pdf'.
+#' @param tag A leading tag; If no value is provided,
+#'   automatically set based on the file extension.
+#'   Automatic assignments are...
+#'   \itemize{
+#'     \item 'S' for extension \code{R};
+#'     \item 'D' for extensions \code{RData} and \code{csv};
+#'     \item 'T' for extension \code{txt};
+#'     \item 'W' for extension \code{docx};
+#'     \item 'P' for extension \code{pptx};
+#'     \item 'F' for extensions \code{pdf}, \code{jpg},
+#'     \code{jpeg}, and \code{png}.
+#'   }
+#' @param number A file number. If no value is provided,
+#'   automatically set based on number of files in current
+#'   folder with matching tags.
+#' @param file_date The date to include. If no value is
+#'   provided, the current date is used.
+#' @param additional Additional text to include following
+#'   the date. If provided, is preceded by a '-'.
+#' @param date_format The format to use for the current
+#'   date, defaults to 'MM_DD_YYYY'.
+#' @param exclude A vector of file names to exclude when
+#' @param remove Logical; if TRUE, attempts to locate
+#'   previous versions of the outputted file name
+#'   (i.e., same name but earlier dates) and remove
+#'   them from the current folder.
 #'
-#' @return ...
+#' @return A character string.
 #'
 #' @examples
-#' # Forthcoming
-#'
+#' # Different file types
 #' make_file_name("Example", "RData")
 #' make_file_name("Example", "pdf")
 #' make_file_name("Example", "docx")
 #'
+#' # User-specified tags and numbers
 #' make_file_name("Example", "RData", tag = "R", number = "02")
+#' # Additional text
+#' make_file_name("Example", "RData", additional = 'v.1.0.0' )
 #' @export
 
 make_file_name <- function(description,
@@ -671,6 +700,8 @@ make_file_name <- function(description,
                            number = NULL,
                            file_date = NULL,
                            additional = NULL,
+                           date_format = "%m_%d_%Y",
+                           exclude = "",
                            remove = FALSE) {
 
   # Determine files in directory
@@ -684,7 +715,11 @@ make_file_name <- function(description,
     if (extension == "docx") {
       tag <- "W"
     }
-    # Standard figure extentions
+    # PowerPoint
+    if (extension == "pptx") {
+      tag <- "P"
+    }
+    # Standard figure extensions
     if (extension %in% c("pdf", "jpg", "jpeg", "png")) {
       tag <- "F"
     }
@@ -706,7 +741,7 @@ make_file_name <- function(description,
   if (is.null(file_date)) {
     file_date <- format(
       Sys.Date(),
-      "%m_%d_%Y"
+      date_format
     )
     file_date <- "-" %p% file_date
   } else {
@@ -721,8 +756,8 @@ make_file_name <- function(description,
     only_files_no_placeholder <-
       # Exclude folders
       grepl(".", all_files, fixed = T) &
-        # Exclude placeholder file
-        all_files != "Placeholder.txt"
+        # Exclude user-specified files
+        !all_files %in% exclude
 
     matching_tags <-
       substr(all_files, start = 1, stop = 1) == tag &
