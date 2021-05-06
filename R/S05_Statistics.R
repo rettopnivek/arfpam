@@ -148,7 +148,7 @@ statistic <- function(x,
       #|> Close conditional
     }
 
-    # > Close conditional
+    #> Close conditional
   }
 
   return(out)
@@ -240,7 +240,7 @@ boxcox_transform <- function( x,
     # Extract maximum likelihood estimate
     param <- xy$x[which.max(xy$y)]
 
-    # > Close conditional
+    #> Close conditional
   } else {
 
     # Convert to data frame to avoid scoping issues
@@ -260,7 +260,7 @@ boxcox_transform <- function( x,
     # Extract maximum likelihood estimate
     param <- xy$x[which.max(xy$y)]
 
-    # > Close conditional
+    #> Close conditional
   }
 
 
@@ -288,13 +288,13 @@ boxcox_transform <- function( x,
 
     out <- transformed_x
 
-    # > Close conditional
+    #> Close conditional
   } else {
 
     # Return maximum likelihood estimate
     out <- param
 
-    # > Close conditional
+    #> Close conditional
   }
 
   return(out)

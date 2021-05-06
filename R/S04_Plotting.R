@@ -10,10 +10,11 @@
 # 2) palettes
 # 3) hv_line
 # 4) fill_plot
+# 5) add_axes
 
 # TO DO
 # - Add additional functions
-#   (axes, rotated axes, etc.)
+#   (error_bars, etc.)
 # - Add additional color palettes
 # - Fix issue where website does not draw figures
 
@@ -431,4 +432,191 @@ fill_plot <- function( x = NULL, y = NULL, l = NULL,
 ### 5)
 ###
 
+#' Add Axes to a Plot
+#'
+#' Wrapper for a call to either \code{\link[graphics]{axis}}
+#' or \code{\link[graphics]{text}}, used to add axis labels
+#' to an existing plot.
+#'
+#' @param at The positions (x or y-axis) at which to
+#'   add axis labels.
+#' @param labels Optional vector matching in length to
+#'   \code{at} with user-defined labels.
+#' @param side The side of the plot at which to add axis
+#'   labels, either...
+#'   \itemize{
+#'     \item 1 = bottom;
+#'     \item 2 = left;
+#'     \item 3 = top;
+#'     \item 4 = right.
+#'   }
+#' @param tick Logical; if \code{TRUE} draws tick marks
+#'   at the specified positions.
+#' @param line The number of lines into the margin at which
+#'   the axis line will be drawn. If \code{degrees} does not
+#'   equal \code{NULL}, must be specified relative
+#'   current plotting region (use \code{\link[MASS:text]{par()$usr}}
+#'   to get x and y-axis coordinates for plot region).
+#' @param cex Size of the text.
+#' @param degrees Number of degrees to rotate text
+#'   (note results in a call to \code{\link[MASS:text]{text()}}
+#'   rather than \code{\link[MASS:axis]{axis()}}).
+#' @param xpd A logical value or \code{NA}. If \code{FALSE},
+#'   all plotting is clipped to the plot region. If \code{TRUE},
+#'   all plotting is clipped to the figure region, and if
+#'   \code{NA}, all plotting is clipped to the device region.
+#' @param adj ...
+#' @param ... Additional parameters to be passed to
+#'   either \code{\link[graphics]{axis}} or
+#'   \code{\link[graphics]{text}} (if a value is
+#'   provided for \code{degrees}).
+#'
+#' @examples
+#' # Create blank plot
+#' blank_plot()
+#' # Draw boundaries
+#' hv_line( x = 0 ); hv_line( y = 0 )
+#'
+#' # Add axes
+#' add_axes(c(0, .5, 1), c('Start', 'Middle', 'End') )
+#' add_axes(c(0, .5, 1), c('Bottom', 'Middle', 'Top'), side = 2 )
+#' add_axes( .5, 'Title', side = 3, cex = 2 )
+#'
+#' # Create blank plot with custom margins
+#' par( mar = rep( 4, 4 ) )
+#' blank_plot()
+#' # Draw boundaries
+#' hv_line( x = 0:1 ); hv_line( y = 0:1 )
+#'
+#' # Add rotated axes
+#' add_axes(c(0, .5, 1), c('Start', 'Middle', 'End'),
+#'          degrees = 45 )
+#' add_axes(c(0, .5, 1), c('Start', 'Middle', 'End'),
+#'          degrees = 45, side = 3 )
+#' add_axes(c(0, .5, 1), c('Bottom', 'Middle', 'Top'),
+#'          degrees = 45, side = 2 )
+#' add_axes(c(0, .5, 1), c('Bottom', 'Middle', 'Top'),
+#'          degrees = 45, side = 4 )
+#' @export
+
+add_axes <- function( at, labels = NULL,
+                      side = 1, tick = F,
+                      line = NULL, cex = 1.25,
+                      degrees = NULL, xpd = NA,
+                      adj = NULL, ... ) {
+
+  #< Check if rotated axes should be drawn
+  if ( is.null( degrees ) ) {
+
+    # Default line position to draw axes at
+    if ( is.null( line ) ) line = -.5
+
+    axis( at, labels,
+          side = side, tick = tick,
+          line = line, cex.axis = cex, xpd = xpd,
+          ... )
+
+    #> Close conditional on no rotated axes
+  } else {
+
+    #<| By default labels are values to draw axes at
+    if ( is.null( labels ) ) {
+
+      labels <- as.character( at )
+
+      #|> Close conditional
+    }
+
+    #<| Whether rotated axes should be right or left-aligned
+    if ( is.null( adj ) ) {
+
+      if ( side %in% c(1,3) ) adj = 1 # Right-aligned
+      if ( side %in% c(2,4) ) adj = 0 # Left-aligned
+
+      #|> Close conditional
+    }
+
+    # Get plot dimensions
+    x_limits <- par()$usr[1:2]
+    y_limits <- par()$usr[3:4]
+
+    # Determine size of text
+    txt_height <- strheight( labels[1], cex = cex )
+
+    #<| Rotated axes at the bottom
+    if ( side == 1 ) {
+
+      #<|< Default line position to draw axes
+      if ( is.null( line ) ) {
+
+        line <- y_limits[1] - txt_height/2
+
+        #>|> Close conditional
+      }
+
+      text( x = at, y = rep( line, length( at ) ),
+            labels = labels, srt = degrees, xpd = xpd,
+            cex = cex, adj = adj, ... )
+
+      #|> Close conditional
+    }
+
+    #<| Rotated axes at the top
+    if ( side == 3 ) {
+
+      #<|< Default line position to draw axes
+      if ( is.null( line ) ) {
+
+        line <- y_limits[2] + txt_height/2
+
+        #>|> Close conditional
+      }
+
+      text( x = at, y = rep( line, length( at ) ),
+            labels = labels, srt = degrees, xpd = xpd,
+            cex = cex, adj = adj, ... )
+
+      #|> Close conditional
+    }
+
+    #<| Rotated axes at the left
+    if ( side == 2 ) {
+
+      #<|< Default line position to draw axes
+      if ( is.null( line ) ) {
+
+        line <- x_limits[1] - txt_height/2
+
+        #>|> Close conditional
+      }
+
+      text( x = rep( line, length( at ) ), y = at,
+            labels = labels, srt = degrees, xpd = xpd,
+            cex = cex, adj = adj, ... )
+
+      #|> Close conditional
+    }
+
+    #<| Rotated axes at the right
+    if ( side == 4 ) {
+
+      #<|< Default line position to draw axes
+      if ( is.null( line ) ) {
+
+        line <- x_limits[2] + txt_height/2
+
+        #>|> Close conditional
+      }
+
+      text( x = rep( line, length( at ) ), y = at,
+            labels = labels, srt = degrees, xpd = xpd,
+            cex = cex, adj = adj, ... )
+
+      #|> Close conditional
+    }
+
+    #> Close conditional on rotated axes
+  }
+
+}
 

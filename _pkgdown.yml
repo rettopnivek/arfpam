@@ -37,6 +37,7 @@ reference:
   - palettes
   - hv_line
   - fill_plot
+  - add_axes
 - title: "Statistics"
   desc: >
 
