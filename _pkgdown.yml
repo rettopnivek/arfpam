@@ -36,6 +36,7 @@ reference:
   - blank_plot
   - palettes
   - hv_line
+  - fill_plot
 - title: "Statistics"
   desc: >
 

@@ -3,17 +3,19 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-16
+# Last updated 2021-05-06
 
 # Table of contents
 # 1) blank_plot
 # 2) palettes
 # 3) hv_line
+# 4) fill_plot
 
 # TO DO
 # - Add additional functions
 #   (axes, rotated axes, etc.)
 # - Add additional color palettes
+# - Fix issue where website does not draw figures
 
 ###
 ### 1)
@@ -311,6 +313,122 @@ hv_line <- function( y = NULL, x = NULL, l = NULL, ... ) {
 
 ###
 ### 4)
+###
+
+#' Add Filled Vertical/Horizontal Bar
+#'
+#' Adds a vertical or horizontal filled bar
+#' at the specified x or y-axis coordinates.
+#'
+#' @param x A vector of two x-axis coordinates,
+#'   or a N x 2 matrix, giving the left and right
+#'   boundaries of the vertical bars to draw.
+#' @param y A vector of two y-axis coordinates,
+#'   or a N x 2 matrix, giving the bottom and
+#'   top boundaries of the horizontal bars to draw.
+#' @param l The limits for either 1) the height
+#'   of the bar(s) (if \code{x} is not \code{NULL}),
+#'   or 2) the width of the bar(s) (if \code{y} is
+#'   not \code{NULL}).
+#' @param border The color of the border for the
+#'   filled bar(s). If \code{NA}, no border is drawn.
+#' @param ... Additional parameters to the function
+#'   \code{\link[graphics]{polygon}}.
+#'
+#' @examples
+#' # Create blank plot
+#' xl = c(0, 4); yl = c(0,1);
+#' blank_plot(xl, yl)
+#' # Draw vertical grey bar
+#' fill_plot(x = c(1,2), l = yl, col = 'grey90')
+#' # Also set height and border of bar
+#' fill_plot(x = c(3,4), l = c(.25,.75), col = 'grey80', border = 'black' )
+#' # Draw horizontal bar
+#' fill_plot(y = c(.9, 1), col = 'black' )
+#'
+#' # Multiple bars can be draw at once
+#' xl = c(0, 4); yl = c(0,1);
+#' blank_plot(xl, yl)
+#' # Multiple vertical bars
+#' fill_plot( x = rbind( c(1,2), c(3,4) ), l = yl, col = 'grey90')
+#' # Multiple horizontal bars
+#' fill_plot( y = rbind( c(0,.05), c(.95,1) ), l = xl, col = 'black')
+#'
+#' @export
+
+fill_plot <- function( x = NULL, y = NULL, l = NULL,
+                       border = NA, ... ) {
+
+  if ( !is.null(x) ) {
+
+    if ( is.vector( x ) &
+         length( x ) == 2 ) {
+
+      xv = rbind( x[ c( 1, 1, 2, 2 ) ] )
+
+    }
+
+    if ( is.matrix( x ) ) {
+      if ( ncol(x) == 2 ) {
+
+      xv = cbind( x[,1], x[,1], x[,2], x[,2] )
+      }
+    }
+
+    if ( is.null( l ) ) {
+
+      l = par( 'usr' )[3:4]
+
+    }
+    yv = rbind( l[ c( 1, 2, 2, 1 ) ] )
+    if ( nrow( xv ) > nrow( yv ) ) {
+      yv = matrix( yv, nrow( xv ), 4, byrow = TRUE )
+    }
+
+  }
+
+  if ( !is.null(y) ) {
+
+    if ( is.vector( y ) &
+         length( y ) == 2 ) {
+
+      yv = rbind( y[ c( 1, 1, 2, 2 ) ] )
+
+    }
+
+    if ( is.matrix( y ) ) {
+
+      if ( ncol( y ) == 2 ) {
+
+      yv = cbind( y[,1], y[,2], y[,2], y[,1] )
+
+      }
+    }
+
+    if ( is.null( l ) ) {
+
+      l = par( 'usr' )[1:2]
+
+    }
+    xv = rbind( l[ c( 1, 1, 2, 2 ) ] )
+    if ( nrow( yv ) > nrow( xv ) ) {
+      xv = matrix( xv, nrow( yv ), 4, byrow = TRUE )
+    }
+
+  }
+
+  if ( !is.null(x) | !is.null(y) ) {
+
+    for ( i in 1:nrow( xv ) ) {
+      polygon( xv[i,], yv[i,], border = border, ... )
+    }
+
+  }
+
+}
+
+###
+### 5)
 ###
 
 

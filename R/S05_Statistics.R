@@ -12,6 +12,7 @@
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform'
+# - Add function for bootstrap sampling
 
 ###
 ### 1)

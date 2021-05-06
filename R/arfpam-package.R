@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-15
+# Last updated 2021-05-06
 
 # Package development
 # library(devtools)

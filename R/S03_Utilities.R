@@ -19,7 +19,8 @@
 # 9) File name functions
 #   9.1) find_file_name
 #   9.2) make_file_name
-# 10) env_path
+# 10)
+# 11) env_path
 
 # TO DO
 # - Custom tests for 'find_file_name', 'make_file_name', 'env_path'
@@ -842,6 +843,10 @@ make_file_name <- function(description,
 
 ###
 ### 10)
+###
+
+###
+### 11)
 ###
 
 #' ...
