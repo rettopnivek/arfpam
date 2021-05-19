@@ -845,6 +845,37 @@ make_file_name <- function(description,
 ### 10)
 ###
 
+#' ...
+#'
+#' ...
+#'
+#' @param x ...
+#' @param categories ...
+#' @param column
+#'
+#' @return ...
+#'
+#' @examples
+#' # Forthcoming
+#' @export
+
+list_of_matches <- function( x, categories, column = NULL ) {
+
+  #< ...
+  if ( is.null( column ) ) {
+
+    return( lapply( categories, function(y) x %in% y ) )
+
+    #> Close conditional
+  } else {
+
+    return( lapply( categories, function(y) x[[ column ]] %in% y ) )
+
+    #> Close conditional
+  }
+
+}
+
 ###
 ### 11)
 ###

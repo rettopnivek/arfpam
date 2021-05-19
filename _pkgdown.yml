@@ -45,3 +45,5 @@ reference:
   - sem
   - statistic
   - boxcox_transform
+  - pvalues
+  - bootstrap

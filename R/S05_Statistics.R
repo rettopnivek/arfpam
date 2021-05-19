@@ -9,13 +9,14 @@
 # 1) sem
 # 2) statistic
 # 3) boxcox_transform
+# 4) pvalues
+# 5) bootstrap
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform'
-# - Add function for bootstrap sampling
 
 ###
-### 1)
+### 1) sem
 ###
 
 #' Standard Error of the Mean
@@ -55,7 +56,7 @@ sem <- function(x, na.rm = TRUE) {
 }
 
 ###
-### 2)
+### 2) statistic
 ###
 
 #' Compute a Statistic
@@ -155,7 +156,7 @@ statistic <- function(x,
 }
 
 ###
-### 3)
+### 3) boxcox_transform
 ###
 
 #' Box-Cox Transformations for Linear Model
@@ -299,3 +300,311 @@ boxcox_transform <- function( x,
 
   return(out)
 }
+
+###
+### 4) pvalues
+###
+
+#' Compute and Format P-values
+#'
+#' Given a set of Monte Carlo
+#' samples, estimates a p-value from
+#' the proportion of values that fall
+#' above or below a comparison point.
+#' If \code{string} is \code{TRUE},
+#' takes a numeric p-value and converts
+#' it into a formatted character
+#' string, either 'p = ...' or
+#' 'p < ...'.
+#'
+#' @param x Either a) a vector of numeric
+#'   values (Monte Carlo samples) or b)
+#'   a single p-value.
+#' @param comparison The comparison value;
+#'   the p-value is computed from the
+#'   proportion of Monte Carlo samples
+#'   above or below this cut-off.
+#' @param alternative A character string
+#'   indicating the type of alternative
+#'   hypothesis to test, either a) \code{'two-sided'},
+#'   b) \code{'less'}, or c) \code{'greater'}.
+#'   If \code{'two-side'}, uses the alternative
+#'   hypothesis that produces the small p-value,
+#'   and then multiplies by two to adjust for
+#'   the two-sided comparison.
+#' @param digits Number of digits to round to
+#'   when formatting the p-value.
+#' @param string Logical; if \code{TRUE},
+#'   returns output as a nicely formatted
+#'   character string. Automatically set
+#'   to \code{TRUE} if length of \code{x}
+#'   equals 1.
+#' @param pad Logical; if \code{TRUE},
+#'   pads number of values to right
+#'   of decimal to always equal \code{digits}.
+#'
+#' @return Either a numeric p-value or a character
+#'   string, a nicely formatted version of the
+#'   p-value.
+#'
+#' @examples
+#' # Example based on two-sample t-test
+#' set.seed( 40 )
+#' x <- data.frame(
+#'   y = c( rnorm( 50 ), rnorm( 50, mean = .3 ) ),
+#'   group = rep( 1:2, each = 50 )
+#' )
+#'
+#' # Two-sample t-test
+#' tt <- t.test( y ~ group, data = x )
+#' print( pvalues( tt$p.value ) )
+#' print( pvalues( tt$p.value, digits = 2 ) )
+#'
+#' # For very small p-values, automatically
+#' # converts to 'p < cut-off' format
+#' print( pvalues( 1e-6 ) )
+#'
+#' # Computing p-values from
+#' # Monte Carlo samples
+#'
+#' # Simulate data from standard normal;
+#' # on average 50% of sample falls
+#' # below zero
+#' set.seed( 50 )
+#' x <- rnorm( 1000 )
+#'
+#' # Default is two-sided
+#' pvalues( x )
+#' # Can specify less than or greater than
+#' pvalues( x, alternative = 'less' )
+#' pvalues( x, alternative = 'greater' )
+#' # Against different comparison point
+#' pvalues( x, alternative = 'less', comparison = .68 )
+#'
+#' # Simulate data from normal distribution
+#' # with mean of 0.68, on average
+#' # approximately 75% of sample falls
+#' # below zero
+#' set.seed( 60 )
+#' x <- rnorm( 1000, mean = .68 )
+#' pvalues( x )
+#' pvalues( x, alternative = 'less' )
+#' pvalues( x, alternative = 'greater' )
+#'
+#' @export
+
+pvalues <- function( x,
+                     comparison = 0,
+                     alternative = 'two-sided',
+                     digits = 3,
+                     string = FALSE,
+                     pad = FALSE ) {
+
+  # Initialize output
+  out <- NULL
+
+  # Assume if size of x equals 1 that
+  # it is a numeric p-value
+
+  #< Check length
+  if ( length( x ) == 1 ) {
+
+    #<| Check if valid p-value
+    if ( x >= 0 &
+         x <= 1 ) {
+
+      # Force argument 'string' to be TRUE
+      string <- TRUE
+
+      #|> Close conditional 'Check if valid p-value'
+    } else {
+
+      stop( 'p-values must be between 0 and 1',
+            call. = FALSE )
+
+      #|> Close else for 'Check if valid p-value'
+    }
+
+    #> Close conditional 'Check length'
+  }
+
+  #< Estimate p-value from Monte Carlo samples
+  if ( !string ) {
+
+    check <- FALSE
+
+    # Two-sided test
+    if ( alternative == 'two-sided' ) {
+      check = TRUE
+
+      if ( median( x ) > comparison ) {
+        out <- mean( x < comparison )
+      } else {
+        out <- mean( x > comparison )
+      }
+      out = out*2
+
+    }
+
+    # Test if greater than comparison
+    if ( alternative == 'greater' ) {
+
+      check <- TRUE
+
+      out = mean( x < comparison )
+
+    }
+
+    # Test if less than comparison
+    if ( alternative == 'less' ) {
+
+      check <- TRUE
+
+      out <- mean( x > comparison )
+
+    }
+
+    # Informative error message if
+    # 'alternative' mis-specified
+    if ( !check ) {
+
+      err_msg = paste(
+        "Please specify 'alternative' as",
+        "either 'two-sided', 'greater', or",
+        "'less'." )
+      stop( err_msg )
+
+    }
+
+    #> Close conditional 'Estimate p-value from Monte Carlo samples'
+  }
+
+  #< Convert to formatted string
+  if ( string ) {
+
+    if ( pad ) {
+      p <- format( round( x, digits = digits ), nsmall = digits )
+    } else {
+      p <- format( round( x, digits = digits ) )
+    }
+
+    if ( round( x, digits ) == 0 ) {
+
+      nd <- digits - 1
+      nd <- paste(
+        "0.",
+        paste( rep( 0, nd ), collapse = '' ),
+        '1', sep = '' )
+      out <- paste( "p < ", nd, sep = "" )
+
+    } else {
+      out <- paste0( 'p = ', p )
+    }
+
+    #> Close conditional 'Convert to formatted string'
+  }
+
+  return( out )
+}
+
+###
+### 5)
+###
+
+#' Non-Parametric Bootstrap
+#'
+#' Computes a test statistic over multiple
+#' replicates from a set of data. Replicates
+#' are created drawing a sample of the same
+#' size and with replacement from the original
+#' set of data.
+#'
+#' @param x A vector of values.
+#' @param t_x A function to compute a test statistic;
+#'   the first argument must be for \code{x}.
+#' @param N The number of samples with replacement
+#'   to draw from \code{X}.
+#' @param summary An optional function to apply
+#'   to the test statistics after resampling.
+#' @param ... Additional parameters for the \code{t_x}
+#'   function.
+#'
+#' @return A list consisting of...
+#' \itemize{
+#'   \item observed = the value of the test statistic
+#'     for the original data set.
+#'   \item replicates = the values of the test statistic
+#'     for each of the replicates produced via resampling.
+#'   \item summary = the output of summary function
+#'     applied over the replicates; \code{NULL} if
+#'     no summary function was specified.
+#' }
+#'
+#' @examples
+#' # Simulate from normal distribution
+#' set.seed( 200 )
+#' x <- rnorm( 50, mean = 100, sd = 15 )
+#'
+#' # Use bootstrap method to estimate
+#' # sampling distribution for the mean
+#' btstrp <- bootstrap( x )
+#'
+#' hist( btstrp$replicates, main = '',
+#'       xlab = 'Sampling distribution - mean' )
+#' # True mean
+#' abline( v = 100, lwd = 1 )
+#'
+#' # Estimate of standard error
+#' print( round( sem( x ), 1 ) )
+#'
+#' # Estimate of standard error
+#' # computed from bootstrapped samples
+#' btstrp <- bootstrap( x, summary = sd )
+#' print( round( btstrp$summary, 1 ) )
+#'
+#' # 95% confidence interval around the mean
+#' # using bootstrapped samples
+#' f <- function(y) paste( round( quantile( y, c(.025,.975) ), 1 ),
+#'                         collapse = ' to ' )
+#' btstrp <- bootstrap( x, summary = f )
+#' print( btstrp$summary )
+#'
+#' # Use bootstrap method to estimate
+#' # sampling distribution for the median
+#' # (which has no close-formed solution)
+#' btstrp <- bootstrap( x, t_x = median )
+#' hist( btstrp$replicates, main = '',
+#'       xlab = 'Sampling distribution - median' )
+#'
+#' @export
+
+bootstrap <- function( x, t_x = mean, N = 1000,
+                       summary = NULL, ... ) {
+
+  n = length( x )
+
+  indices <- lapply( 1:N, function(i) {
+    sample( 1:n, size = n, replace = T )
+  } )
+
+  monte_carlo_samples <- sapply(
+    indices, function(index) {
+      t_x( x[index], ... )
+    }
+  )
+
+  out <- list(
+    observed = t_x( x, ... ),
+    replicates = monte_carlo_samples
+  )
+
+  if ( !is.null( summary ) ) {
+
+    out$summary <-
+      summary( out$replicates )
+
+  }
+
+  return( out )
+}
+

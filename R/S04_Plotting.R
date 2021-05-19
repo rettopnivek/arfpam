@@ -11,6 +11,7 @@
 # 3) hv_line
 # 4) fill_plot
 # 5) add_axes
+# 6) col_to_hex
 
 # TO DO
 # - Add additional functions
@@ -616,6 +617,242 @@ add_axes <- function( at, labels = NULL,
     }
 
     #> Close conditional on rotated axes
+  }
+
+}
+
+
+###
+### 6)
+###
+
+#' Convert Colors to Hex Codes
+#'
+#' Convert a color name to a hex color code.
+#'
+#' @param col A character string corresponding to
+#'   a supported color name (e.g., 'blue', 'darkred', etc.).
+#'   See \code{\link[graphics]{colors}}.
+#' @param alpha Degree of transparency from
+#'   0 (transparent) to 1 (opaque).
+#'
+#' @examples
+#' # Create scatter plot for bivariate normal
+#' blank_plot( c(-4,4), c(-4,4) )
+#' # Draw semi-opaque blue points
+#' points( rnorm(1000), rnorm(1000), pch = 19,
+#'         col = col_to_hex( 'blue', alpha = .3 ) )
+#'
+#' @export
+
+col_to_hex <- function( col, alpha = 1 ) {
+
+  mat <- col2rgb( col )
+
+  vec <- c( mat[1,1]/256,
+            mat[2,1]/256,
+            mat[3,1]/256 )
+
+  out <- rgb( red = vec[1],
+              green = vec[2],
+              blue = vec[3],
+              alpha = alpha )
+  return( out )
+}
+
+###
+### 7)
+###
+
+#' ...
+#'
+#' ...
+#'
+#' @param x ...
+#' @param categories ...
+#' @param column
+#'
+#' @return ...
+#'
+#' @examples
+#' # Forthcoming
+#' @export
+
+error_bars <- function( pos, limits = NULL,
+                        lb = NULL, ub = NULL,
+                        arrow = T, flip = F, ... ) {
+
+  # If a vector/matrix of lower and upper boundaries is
+  # not provided
+  if ( is.null( limits ) ) {
+
+    # Check if lower and upper boundaries were provided
+    # as separate vectors
+    if ( !is.null( lb ) & !is.null( ub ) ) {
+
+      # Convert to either matrix/vector
+      if ( length( lb ) > 1 ) {
+        limits = rbind( lb, ub )
+      } else {
+        limits = c( lb, ub )
+      }
+
+    } else {
+
+      # Return an error
+      stop( paste0(
+        "Must provide the argument 'limits' or the arguments ",
+        "'lb' and 'ub' giving lower and upper limits for error bars"
+      ), call. = FALSE )
+
+    }
+
+  }
+
+  if ( flip ) {
+    # If 'pos' is for y-axis positions
+
+    if ( is.matrix( limits ) ) {
+      # If a 2 x N matrix for the lower and upper boundaries
+      # is given
+
+      if ( arrow ) {
+        # If arrows should be drawn at each position
+
+        arrows( limits[1,], pos,
+                limits[2,], pos, code = 3, angle = 90, ... )
+
+      } else {
+
+        # If positions are points on a unified polygon
+        polygon(
+          c( limits[1,], rev( limits[2,] ) ),
+          c( pos, rev( pos ) ),
+          ...
+        )
+
+      }
+
+    } else {
+      # If a single set of limits was provided
+
+      arrows( limits[1], pos,
+              limits[2], pos, code = 3, angle = 90, ... )
+
+    }
+  } else {
+    # If 'pos' if for x-axis positions
+
+    if ( is.matrix( limits ) ) {
+      # If a 2 x K matrix for the lower and upper boundaries
+      # is given
+
+      if ( arrow ) {
+        # If arrows should be drawn at each position
+
+        arrows( pos, limits[1,],
+                pos, limits[2,], code = 3, angle = 90, ... )
+      } else {
+        # If positions are points on a unified polygon
+
+        polygon(
+          c( pos, rev( pos ) ),
+          c( limits[1,], rev( limits[2,] ) ),
+          ...
+        )
+
+      }
+
+    } else {
+      # If a single set of limits was provided
+
+      arrows( pos, limits[1],
+              pos, limits[2], code = 3, angle = 90, ... )
+
+    }
+  }
+
+}
+
+###
+### 8)
+###
+
+#' ...
+#'
+#' ...
+#'
+#' @param dtf ...
+#' @param entries ...
+#' @param f ...
+#' @param ... ...
+#'
+#' @examples
+#' # Forthcoming
+#' @export
+
+apply_f_to_plot <- function( dtf,
+                             entries = NULL,
+                             f = NULL,
+                             ... ) {
+
+  if ( is.null(f) ) {
+
+    f <- function( dtf,
+                   col.l = 'black',
+                   lwd = 1,
+                   lty = 1,
+                   bg = 'white',
+                   col.p = 'black',
+                   pch = 19,
+                   cex = 1.2,
+                   which_type = 'both' ) {
+
+      if ( 'col.l' %in% colnames( dtf ) ) {
+        col.l = dtf[['col.l']]
+      }
+      if ( 'lwd' %in% colnames( dtf ) ) {
+        lwd = dtf[['lwd']]
+      }
+      if ( 'lty' %in% colnames( dtf ) ) {
+        lty = dtf[['lty']]
+      }
+      if ( 'bg' %in% colnames( dtf ) ) {
+        bg = dtf[['bg']]
+      }
+      if ( 'col.p' %in% colnames( dtf ) ) {
+        col.p = dtf[['col.p']]
+      }
+      if ( 'pch' %in% colnames( dtf ) ) {
+        pch = dtf[['pch']]
+      }
+      if ( 'cex' %in% colnames( dtf ) ) {
+        cex = dtf[['cex']]
+      }
+
+      if ( which_type %in% c( 'lines', 'l', 'both', 'b', '0', '1' ) ) {
+        lines( dtf[['x']], dtf[['y']],
+               col = col.l, lwd = lwd, lty = lty )
+      }
+      if ( which_type %in% c( 'points', 'p', 'both', 'b', '0', '2' ) ) {
+        points( dtf[['x']], dtf[['y']],
+                col = col.p, bg = bg, pch = pch, cex = cex )
+      }
+
+    }
+
+  }
+
+  if ( is.null( entries ) ) {
+    f( dtf, ... )
+  } else {
+
+    n = length( entries )
+
+    for ( i in 1:n ) {
+      f( dtf[entries[[i]],], ... )
+    }
+
   }
 
 }
