@@ -35,10 +35,9 @@ for a specified color palette.
 palettes()
 
 # Plot of colors in each palette
-palettes( 'Colorblind', plot = TRUE )
-palettes( 'Grayscale', plot = TRUE )
+palettes("Colorblind", plot = TRUE)
+palettes("Grayscale", plot = TRUE)
 
 # Example of taking subset of colors
-palettes( 'Colorblind', 1:2 )
-
+palettes("Colorblind", 1:2)
 }

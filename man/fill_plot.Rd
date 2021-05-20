@@ -32,21 +32,22 @@ at the specified x or y-axis coordinates.
 }
 \examples{
 # Create blank plot
-xl = c(0, 4); yl = c(0,1);
+xl <- c(0, 4)
+yl <- c(0, 1)
 blank_plot(xl, yl)
 # Draw vertical grey bar
-fill_plot(x = c(1,2), l = yl, col = 'grey90')
+fill_plot(x = c(1, 2), l = yl, col = "grey90")
 # Also set height and border of bar
-fill_plot(x = c(3,4), l = c(.25,.75), col = 'grey80', border = 'black' )
+fill_plot(x = c(3, 4), l = c(.25, .75), col = "grey80", border = "black")
 # Draw horizontal bar
-fill_plot(y = c(.9, 1), col = 'black' )
+fill_plot(y = c(.9, 1), col = "black")
 
 # Multiple bars can be draw at once
-xl = c(0, 4); yl = c(0,1);
+xl <- c(0, 4)
+yl <- c(0, 1)
 blank_plot(xl, yl)
 # Multiple vertical bars
-fill_plot( x = rbind( c(1,2), c(3,4) ), l = yl, col = 'grey90')
+fill_plot(x = rbind(c(1, 2), c(3, 4)), l = yl, col = "grey90")
 # Multiple horizontal bars
-fill_plot( y = rbind( c(0,.05), c(.95,1) ), l = xl, col = 'black')
-
+fill_plot(y = rbind(c(0, .05), c(.95, 1)), l = xl, col = "black")
 }

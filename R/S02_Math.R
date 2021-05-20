@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-24
+# Last updated 2021-05-20
 
 # Table of contents
 # 1) Log-odds and the logistic function
@@ -17,7 +17,7 @@
 ### 1) Log-odds and the logistic function
 ###
 
-# 1.1)
+# 1.1) logit
 
 #' Logit Function
 #'
@@ -52,20 +52,20 @@ logit <- function(p, na.rm = TRUE) {
     # Set values to NA
     p[values_outside_support] <- NA
 
-    # > Close conditional
+    #> Close conditional 'Warn user if any values found'
   }
 
   #< Remove missing values
   if (na.rm) {
     p <- p[!is.na(p)]
 
-    # > Close conditional
+    #> Close conditional 'Remove missing values'
   }
 
   return(log(p / (1 - p)))
 }
 
-# 1.2)
+# 1.2) logistic
 
 #' Logistic Function
 #'
@@ -91,14 +91,14 @@ logistic <- function(x, na.rm = TRUE) {
   if (na.rm) {
     x <- x[!is.na(x)]
 
-    # > Close conditional
+    #> Close conditional 'Remove missing values'
   }
 
   return(1 / (1 + exp(-x)))
 }
 
 ###
-### 2)
+### 2) softmax
 ###
 
 #' Softmax Function
@@ -141,7 +141,7 @@ softmax <- function(x) {
 }
 
 ###
-### 3)
+### 3) erf
 ###
 
 #' Error Function
@@ -155,7 +155,8 @@ softmax <- function(x) {
 #' @examples
 #' plot(c(-2, 2), c(-1, 1), type = "n", xlab = "x", ylab = "erf(x)")
 #' x <- seq(-2, 2, length = 100)
-#' abline(h=c(-1,1), col = 'grey'); lines(x, erf(x))
+#' abline(h = c(-1, 1), col = "grey")
+#' lines(x, erf(x))
 #' @export
 
 erf <- function(x) {
@@ -163,7 +164,7 @@ erf <- function(x) {
 }
 
 ###
-### 4)
+### 4) pow
 ###
 
 #' Raise a Value to a Power

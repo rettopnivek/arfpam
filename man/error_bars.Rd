@@ -2,23 +2,112 @@
 % Please edit documentation in R/S04_Plotting.R
 \name{error_bars}
 \alias{error_bars}
-\title{...}
+\title{Add Error Bars to a Plot}
 \usage{
-error_bars(pos, limits = NULL, lb = NULL, ub = NULL, arrow = T, flip = F, ...)
+error_bars(
+  pos,
+  limits = NULL,
+  lb = NULL,
+  ub = NULL,
+  arrow = TRUE,
+  flip = FALSE,
+  length = 0.05,
+  code = 3,
+  angle = 90,
+  ...
+)
 }
 \arguments{
-\item{x}{...}
+\item{pos}{Either a single value or a numeric
+vector of N values indicating the position(s)
+at which an error bar should be drawn.}
 
-\item{categories}{...}
+\item{limits}{Either a vector of 2 values or a
+2 x N matrix giving the lower and upper limits,
+respectively, of the error bars.}
 
-\item{column}{}
-}
-\value{
-...
+\item{lb}{A vector of N values with the lower limits
+for the error bars.}
+
+\item{ub}{A vector of N values with the upper limits
+for the error bars.}
+
+\item{arrow}{Logical; if \code{TRUE},
+\code{\link[graphics]{arrows}} are drawn at
+each position, otherwise a call is made to
+\code{\link[graphics]{polygon}} to create a
+filled-in segment to represent connected
+error bars.}
+
+\item{flip}{Logical; if \code{TRUE}, bars are
+drawn horizontally instead of vertically.
+In this case \code{pos} denotes the
+position(s) on the y-axis. Otherwise,
+\code{pos} denotes the position(s) on the
+x-axis.}
+
+\item{length}{The length of the arrowhead for the
+call to \code{\link[graphics]{arrows}}.}
+
+\item{code}{Integer controlling whether to draw an
+arrowhead at the start (1), end (2), or at both ends (3)
+of the line for the call to \code{\link[graphics]{arrows}}.}
+
+\item{angle}{The angle of the lines creating the arrowhead
+for the call to \code{\link[graphics]{arrows}}. Using
+90 degrees results in a flat bar per standard error bars,}
+
+\item{...}{Additional plotting parameters for
+the \code{\link[graphics]{arrows}} function,
+or if \code{arrow} is \code{FALSE},
+\code{\link[graphics]{polygon}}.}
 }
 \description{
-...
+Adds error bars to an existing plot.
 }
 \examples{
-# Forthcoming
+# Simulate 5 variables with increasing means
+dtf <- lapply(lin(-.5, .5, 5), function(x) rnorm(100, mean = x))
+names(dtf) <- paste0("V", 1:5)
+dtf <- data.frame(dtf)
+# Extract sample means and standard errors
+sm <- data.frame(
+  M = colMeans(dtf),
+  SE = apply(dtf, 2, sem)
+)
+# Compute 95\% confidence intervals around
+# sample means
+sm$LB <- sm$M + qnorm(.025) * sm$SE
+sm$UB <- sm$M + qnorm(.975) * sm$SE
+
+# Plot mean for each variable
+plot(1:5, sm$M,
+  pch = 19,
+  xlab = "Variable", ylab = "Mean", ylim = c(-1, 1)
+)
+# Add error bars (as arrows) for 95\% confidence intervals
+error_bars(1:5, rbind(sm$LB, sm$UB))
+# Add error bars (as connected filled segment)
+error_bars(1:5, rbind(sm$LB, sm$UB),
+  arrow = FALSE, col = rgb(.5, .5, .5, .2), border = NA
+)
+
+# Histogram for draws from standard normal
+set.seed(300)
+x <- rnorm(1000)
+hist(x,
+  col = "grey", border = "white", main = "",
+  xlab = "z-scores", freq = FALSE, xlim = c(-4, 4)
+)
+# Add horizontal bars showing difference between
+# 95\% and 68\% coverage interval
+error_bars(c(.1, .3),
+  lb = qnorm(c(.025, .16)), ub = qnorm(c(.975, .84)),
+  lwd = 2, flip = TRUE
+)
+# Label bars
+text(c(-2.1, -1.1), c(.1, .3),
+  c("95\%", "68\%"),
+  pos = 2
+)
 }

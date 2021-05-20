@@ -18,5 +18,6 @@ Calculates the error function.
 \examples{
 plot(c(-2, 2), c(-1, 1), type = "n", xlab = "x", ylab = "erf(x)")
 x <- seq(-2, 2, length = 100)
-abline(h=c(-1,1), col = 'grey'); lines(x, erf(x))
+abline(h = c(-1, 1), col = "grey")
+lines(x, erf(x))
 }

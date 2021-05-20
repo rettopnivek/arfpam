@@ -63,20 +63,20 @@ string, either 'p = ...' or
 }
 \examples{
 # Example based on two-sample t-test
-set.seed( 40 )
+set.seed(40)
 x <- data.frame(
-  y = c( rnorm( 50 ), rnorm( 50, mean = .3 ) ),
-  group = rep( 1:2, each = 50 )
+  y = c(rnorm(50), rnorm(50, mean = .3)),
+  group = rep(1:2, each = 50)
 )
 
 # Two-sample t-test
-tt <- t.test( y ~ group, data = x )
-print( pvalues( tt$p.value ) )
-print( pvalues( tt$p.value, digits = 2 ) )
+tt <- t.test(y ~ group, data = x)
+print(pvalues(tt$p.value))
+print(pvalues(tt$p.value, digits = 2))
 
 # For very small p-values, automatically
 # converts to 'p < cut-off' format
-print( pvalues( 1e-6 ) )
+print(pvalues(1e-6))
 
 # Computing p-values from
 # Monte Carlo samples
@@ -84,25 +84,24 @@ print( pvalues( 1e-6 ) )
 # Simulate data from standard normal;
 # on average 50\% of sample falls
 # below zero
-set.seed( 50 )
-x <- rnorm( 1000 )
+set.seed(50)
+x <- rnorm(1000)
 
 # Default is two-sided
-pvalues( x )
+pvalues(x)
 # Can specify less than or greater than
-pvalues( x, alternative = 'less' )
-pvalues( x, alternative = 'greater' )
+pvalues(x, alternative = "less")
+pvalues(x, alternative = "greater")
 # Against different comparison point
-pvalues( x, alternative = 'less', comparison = .68 )
+pvalues(x, alternative = "less", comparison = .68)
 
 # Simulate data from normal distribution
 # with mean of 0.68, on average
 # approximately 75\% of sample falls
 # below zero
-set.seed( 60 )
-x <- rnorm( 1000, mean = .68 )
-pvalues( x )
-pvalues( x, alternative = 'less' )
-pvalues( x, alternative = 'greater' )
-
+set.seed(60)
+x <- rnorm(1000, mean = .68)
+pvalues(x)
+pvalues(x, alternative = "less")
+pvalues(x, alternative = "greater")
 }

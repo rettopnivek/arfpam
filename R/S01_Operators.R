@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-22
+# Last updated 2021-05-20
 
 # Table of contents
 # 1) `%p%`
@@ -13,7 +13,7 @@
 # 3) `%w%`
 
 ###
-### 1)
+### 1) `%p%`
 ###
 
 #' Operator to Concatenate Two Strings
@@ -44,7 +44,7 @@
 }
 
 ###
-### 2)
+### 2) `%+=%`
 ###
 
 #' Addition/Subtraction Assignment Operators
@@ -104,7 +104,7 @@
 #' x
 NULL
 
-# 2.1)
+# 2.1) `%+=%`
 
 #' @rdname Assignment
 #' @export
@@ -113,7 +113,7 @@ NULL
   eval.parent(substitute(x <- x + y))
 }
 
-# 2.2)
+# 2.2) `%-=%`
 
 #' @rdname Assignment
 #' @export
@@ -123,7 +123,7 @@ NULL
 }
 
 ###
-### 3)
+### 3) `%w%`
 ###
 
 #' Operator to Check if String is Part of Another String
@@ -147,19 +147,16 @@ NULL
 #' "D" %w% "ABC"
 #'
 #' # Vectorized for y
-#' "A" %w% c( "ABC", "DEF", "GHI" )
-#'
+#' "A" %w% c("ABC", "DEF", "GHI")
 #' @export
 
 `%w%` <- function(x, y) {
-
-  if ( length(x) > 1 ) {
-    stop( 'x must be a single character string', call. = FALSE )
+  if (length(x) > 1) {
+    stop("x must be a single character string", call. = FALSE)
   }
 
-  out <- sapply( y, function(s) grepl( x, s, fixed = T) )
-  names( out ) <- NULL
+  out <- sapply(y, function(s) grepl(x, s, fixed = T))
+  names(out) <- NULL
 
-  return( out )
+  return(out)
 }
-

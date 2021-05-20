@@ -4,13 +4,13 @@
 \alias{hv_line}
 \title{Draw Horizontal/Vertical Lines}
 \usage{
-hv_line(y = NULL, x = NULL, l = NULL, ...)
+hv_line(h = NULL, v = NULL, l = NULL, ...)
 }
 \arguments{
-\item{y}{A vector with the y-axis positions
+\item{h}{A vector with the y-axis positions
 for horizontal lines.}
 
-\item{x}{A vector with the x-axis positions
+\item{v}{A vector with the x-axis positions
 for vertical lines.}
 
 \item{l}{The lower and upper coordinates to determine
@@ -32,13 +32,12 @@ existing figure.
 blank_plot()
 
 # Draw horizontal line
-hv_line( y = .5, lty = 2 )
+hv_line(h = .5, lty = 2)
 # Draw vertical line
-hv_line( x = .5, lwd = 2 )
+hv_line(v = .5, lwd = 2)
 
 # Control width of horizontal line
-hv_line( y = .25, l = c( .25, .75 ), col = 'blue' )
+hv_line(h = .25, l = c(.25, .75), col = "blue")
 # Control height of vertical line
-hv_line( x = .25, l = c( .25, .75 ), col = 'orange' )
-
+hv_line(v = .25, l = c(.25, .75), col = "orange")
 }

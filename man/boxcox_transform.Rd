@@ -52,18 +52,18 @@ For \eqn{\lambda = 0}, one simply uses the log transform.
 }
 \examples{
 # Simulate 100 values from the normal distribution
-set.seed( 3 ); z <- rnorm( 100 )
+set.seed(3)
+z <- rnorm(100)
 # Transform the simulated values
-x <- (z*.5 + 1)^(1/.5)
+x <- (z * .5 + 1)^(1 / .5)
 # Maximum likelihood estimate for
 # transformation parameter
-boxcox_transform( x, output = FALSE )
+boxcox_transform(x, output = FALSE)
 
 # Histogram of x, transform of x, and
 # original simulated values
-layout( rbind( 1, 2, 3) )
-hist( x )
-hist( boxcox_transform( x ) )
-hist( z )
-
+layout(rbind(1, 2, 3))
+hist(x)
+hist(boxcox_transform(x))
+hist(z)
 }

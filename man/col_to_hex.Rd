@@ -19,9 +19,10 @@ Convert a color name to a hex color code.
 }
 \examples{
 # Create scatter plot for bivariate normal
-blank_plot( c(-4,4), c(-4,4) )
+blank_plot(c(-4, 4), c(-4, 4))
 # Draw semi-opaque blue points
-points( rnorm(1000), rnorm(1000), pch = 19,
-        col = col_to_hex( 'blue', alpha = .3 ) )
-
+points(rnorm(1000), rnorm(1000),
+  pch = 19,
+  col = col_to_hex("blue", alpha = .3)
+)
 }

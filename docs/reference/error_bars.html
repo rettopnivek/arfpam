@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>... — error_bars • arfpam</title>
+<title>Add Error Bars to a Plot — error_bars • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="... — error_bars" />
-<meta property="og:description" content="..." />
+<meta property="og:title" content="Add Error Bars to a Plot — error_bars" />
+<meta property="og:description" content="Adds error bars to an existing plot." />
 
 
 
@@ -103,41 +103,144 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>...</h1>
+    <h1>Add Error Bars to a Plot</h1>
     
     <div class="hidden name"><code>error_bars.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>...</p>
+    <p>Adds error bars to an existing plot.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>error_bars</span><span class='op'>(</span><span class='va'>pos</span>, limits <span class='op'>=</span> <span class='cn'>NULL</span>, lb <span class='op'>=</span> <span class='cn'>NULL</span>, ub <span class='op'>=</span> <span class='cn'>NULL</span>, arrow <span class='op'>=</span> <span class='cn'>T</span>, flip <span class='op'>=</span> <span class='cn'>F</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>error_bars</span><span class='op'>(</span>
+  <span class='va'>pos</span>,
+  limits <span class='op'>=</span> <span class='cn'>NULL</span>,
+  lb <span class='op'>=</span> <span class='cn'>NULL</span>,
+  ub <span class='op'>=</span> <span class='cn'>NULL</span>,
+  arrow <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  flip <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  length <span class='op'>=</span> <span class='fl'>0.05</span>,
+  code <span class='op'>=</span> <span class='fl'>3</span>,
+  angle <span class='op'>=</span> <span class='fl'>90</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>...</p></td>
+      <th>pos</th>
+      <td><p>Either a single value or a numeric
+vector of N values indicating the position(s)
+at which an error bar should be drawn.</p></td>
     </tr>
     <tr>
-      <th>categories</th>
-      <td><p>...</p></td>
+      <th>limits</th>
+      <td><p>Either a vector of 2 values or a
+2 x N matrix giving the lower and upper limits,
+respectively, of the error bars.</p></td>
     </tr>
     <tr>
-      <th>column</th>
-      <td></td>
+      <th>lb</th>
+      <td><p>A vector of N values with the lower limits
+for the error bars.</p></td>
+    </tr>
+    <tr>
+      <th>ub</th>
+      <td><p>A vector of N values with the upper limits
+for the error bars.</p></td>
+    </tr>
+    <tr>
+      <th>arrow</th>
+      <td><p>Logical; if <code>TRUE</code>,
+<code><a href='https://rdrr.io/r/graphics/arrows.html'>arrows</a></code> are drawn at
+each position, otherwise a call is made to
+<code><a href='https://rdrr.io/r/graphics/polygon.html'>polygon</a></code> to create a
+filled-in segment to represent connected
+error bars.</p></td>
+    </tr>
+    <tr>
+      <th>flip</th>
+      <td><p>Logical; if <code>TRUE</code>, bars are
+drawn horizontally instead of vertically.
+In this case <code>pos</code> denotes the
+position(s) on the y-axis. Otherwise,
+<code>pos</code> denotes the position(s) on the
+x-axis.</p></td>
+    </tr>
+    <tr>
+      <th>length</th>
+      <td><p>The length of the arrowhead for the
+call to <code><a href='https://rdrr.io/r/graphics/arrows.html'>arrows</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>code</th>
+      <td><p>Integer controlling whether to draw an
+arrowhead at the start (1), end (2), or at both ends (3)
+of the line for the call to <code><a href='https://rdrr.io/r/graphics/arrows.html'>arrows</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>angle</th>
+      <td><p>The angle of the lines creating the arrowhead
+for the call to <code><a href='https://rdrr.io/r/graphics/arrows.html'>arrows</a></code>. Using
+90 degrees results in a flat bar per standard error bars,</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional plotting parameters for
+the <code><a href='https://rdrr.io/r/graphics/arrows.html'>arrows</a></code> function,
+or if <code>arrow</code> is <code>FALSE</code>,
+<code><a href='https://rdrr.io/r/graphics/polygon.html'>polygon</a></code>.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>...</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Forthcoming</span>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='co'># Simulate 5 variables with increasing means</span>
+<span class='va'>dtf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fu'><a href='lin.html'>lin</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>.5</span>, <span class='fl'>.5</span>, <span class='fl'>5</span><span class='op'>)</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span>, mean <span class='op'>=</span> <span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>dtf</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"V"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>)</span>
+<span class='va'>dtf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='va'>dtf</span><span class='op'>)</span>
+<span class='co'># Extract sample means and standard errors</span>
+<span class='va'>sm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+  M <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>colMeans</a></span><span class='op'>(</span><span class='va'>dtf</span><span class='op'>)</span>,
+  SE <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>dtf</span>, <span class='fl'>2</span>, <span class='va'>sem</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='co'># Compute 95% confidence intervals around</span>
+<span class='co'># sample means</span>
+<span class='va'>sm</span><span class='op'>$</span><span class='va'>LB</span> <span class='op'>&lt;-</span> <span class='va'>sm</span><span class='op'>$</span><span class='va'>M</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>qnorm</a></span><span class='op'>(</span><span class='fl'>.025</span><span class='op'>)</span> <span class='op'>*</span> <span class='va'>sm</span><span class='op'>$</span><span class='va'>SE</span>
+<span class='va'>sm</span><span class='op'>$</span><span class='va'>UB</span> <span class='op'>&lt;-</span> <span class='va'>sm</span><span class='op'>$</span><span class='va'>M</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>qnorm</a></span><span class='op'>(</span><span class='fl'>.975</span><span class='op'>)</span> <span class='op'>*</span> <span class='va'>sm</span><span class='op'>$</span><span class='va'>SE</span>
+
+<span class='co'># Plot mean for each variable</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>, <span class='va'>sm</span><span class='op'>$</span><span class='va'>M</span>,
+  pch <span class='op'>=</span> <span class='fl'>19</span>,
+  xlab <span class='op'>=</span> <span class='st'>"Variable"</span>, ylab <span class='op'>=</span> <span class='st'>"Mean"</span>, ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span>
+</div><div class='input'><span class='co'># Add error bars (as arrows) for 95% confidence intervals</span>
+<span class='fu'>error_bars</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>, <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>sm</span><span class='op'>$</span><span class='va'>LB</span>, <span class='va'>sm</span><span class='op'>$</span><span class='va'>UB</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='input'><span class='co'># Add error bars (as connected filled segment)</span>
+<span class='fu'>error_bars</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>, <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>sm</span><span class='op'>$</span><span class='va'>LB</span>, <span class='va'>sm</span><span class='op'>$</span><span class='va'>UB</span><span class='op'>)</span>,
+  arrow <span class='op'>=</span> <span class='cn'>FALSE</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/grDevices/rgb.html'>rgb</a></span><span class='op'>(</span><span class='fl'>.5</span>, <span class='fl'>.5</span>, <span class='fl'>.5</span>, <span class='fl'>.2</span><span class='op'>)</span>, border <span class='op'>=</span> <span class='cn'>NA</span>
+<span class='op'>)</span>
+</div><div class='img'><img src='error_bars-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># Histogram for draws from standard normal</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>300</span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>1000</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>x</span>,
+  col <span class='op'>=</span> <span class='st'>"grey"</span>, border <span class='op'>=</span> <span class='st'>"white"</span>, main <span class='op'>=</span> <span class='st'>""</span>,
+  xlab <span class='op'>=</span> <span class='st'>"z-scores"</span>, freq <span class='op'>=</span> <span class='cn'>FALSE</span>, xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>4</span>, <span class='fl'>4</span><span class='op'>)</span>
+<span class='op'>)</span>
+</div><div class='input'><span class='co'># Add horizontal bars showing difference between</span>
+<span class='co'># 95% and 68% coverage interval</span>
+<span class='fu'>error_bars</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.3</span><span class='op'>)</span>,
+  lb <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>qnorm</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.025</span>, <span class='fl'>.16</span><span class='op'>)</span><span class='op'>)</span>, ub <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>qnorm</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.975</span>, <span class='fl'>.84</span><span class='op'>)</span><span class='op'>)</span>,
+  lwd <span class='op'>=</span> <span class='fl'>2</span>, flip <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
+</div><div class='input'><span class='co'># Label bars</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/text.html'>text</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>2.1</span>, <span class='op'>-</span><span class='fl'>1.1</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.3</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"95%"</span>, <span class='st'>"68%"</span><span class='op'>)</span>,
+  pos <span class='op'>=</span> <span class='fl'>2</span>
+<span class='op'>)</span>
+</div><div class='img'><img src='error_bars-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

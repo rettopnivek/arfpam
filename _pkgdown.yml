@@ -38,6 +38,8 @@ reference:
   - hv_line
   - fill_plot
   - add_axes
+  - col_to_hex
+  - error_bars
 - title: "Statistics"
   desc: >
 
@@ -47,3 +49,4 @@ reference:
   - boxcox_transform
   - pvalues
   - bootstrap
+  - summa

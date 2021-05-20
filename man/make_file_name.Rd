@@ -75,5 +75,5 @@ make_file_name("Example", "docx")
 # User-specified tags and numbers
 make_file_name("Example", "RData", tag = "R", number = "02")
 # Additional text
-make_file_name("Example", "RData", additional = 'v.1.0.0' )
+make_file_name("Example", "RData", additional = "v.1.0.0")
 }

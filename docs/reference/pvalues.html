@@ -193,20 +193,20 @@ p-value.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Example based on two-sample t-test</span>
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span> <span class='fl'>40</span> <span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>40</span><span class='op'>)</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
-  y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span> <span class='fl'>50</span> <span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span> <span class='fl'>50</span>, mean <span class='op'>=</span> <span class='fl'>.3</span> <span class='op'>)</span> <span class='op'>)</span>,
-  group <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>, each <span class='op'>=</span> <span class='fl'>50</span> <span class='op'>)</span>
+  y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>50</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>50</span>, mean <span class='op'>=</span> <span class='fl'>.3</span><span class='op'>)</span><span class='op'>)</span>,
+  group <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>, each <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
 <span class='op'>)</span>
 
 <span class='co'># Two-sample t-test</span>
-<span class='va'>tt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/t.test.html'>t.test</a></span><span class='op'>(</span> <span class='va'>y</span> <span class='op'>~</span> <span class='va'>group</span>, data <span class='op'>=</span> <span class='va'>x</span> <span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span> <span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>tt</span><span class='op'>$</span><span class='va'>p.value</span> <span class='op'>)</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "p = 0.059"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span> <span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>tt</span><span class='op'>$</span><span class='va'>p.value</span>, digits <span class='op'>=</span> <span class='fl'>2</span> <span class='op'>)</span> <span class='op'>)</span>
+<span class='va'>tt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/t.test.html'>t.test</a></span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='va'>group</span>, data <span class='op'>=</span> <span class='va'>x</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>tt</span><span class='op'>$</span><span class='va'>p.value</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "p = 0.059"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>tt</span><span class='op'>$</span><span class='va'>p.value</span>, digits <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] "p = 0.06"</div><div class='input'>
 <span class='co'># For very small p-values, automatically</span>
 <span class='co'># converts to 'p &lt; cut-off' format</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span> <span class='fu'>pvalues</span><span class='op'>(</span> <span class='fl'>1e-6</span> <span class='op'>)</span> <span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'>pvalues</span><span class='op'>(</span><span class='fl'>1e-6</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] "p &lt; 0.001"</div><div class='input'>
 <span class='co'># Computing p-values from</span>
 <span class='co'># Monte Carlo samples</span>
@@ -214,28 +214,27 @@ p-value.</p>
 <span class='co'># Simulate data from standard normal;</span>
 <span class='co'># on average 50% of sample falls</span>
 <span class='co'># below zero</span>
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span> <span class='fl'>50</span> <span class='op'>)</span>
-<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span> <span class='fl'>1000</span> <span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>50</span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>1000</span><span class='op'>)</span>
 
 <span class='co'># Default is two-sided</span>
-<span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>x</span> <span class='op'>)</span>
+<span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] 0.984</div><div class='input'><span class='co'># Can specify less than or greater than</span>
-<span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>'less'</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 0.508</div><div class='input'><span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>'greater'</span> <span class='op'>)</span>
+<span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>"less"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.508</div><div class='input'><span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>"greater"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] 0.492</div><div class='input'><span class='co'># Against different comparison point</span>
-<span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>'less'</span>, comparison <span class='op'>=</span> <span class='fl'>.68</span> <span class='op'>)</span>
+<span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>"less"</span>, comparison <span class='op'>=</span> <span class='fl'>.68</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] 0.247</div><div class='input'>
 <span class='co'># Simulate data from normal distribution</span>
 <span class='co'># with mean of 0.68, on average</span>
 <span class='co'># approximately 75% of sample falls</span>
 <span class='co'># below zero</span>
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span> <span class='fl'>60</span> <span class='op'>)</span>
-<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span> <span class='fl'>1000</span>, mean <span class='op'>=</span> <span class='fl'>.68</span> <span class='op'>)</span>
-<span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>x</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 0.448</div><div class='input'><span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>'less'</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 0.776</div><div class='input'><span class='fu'>pvalues</span><span class='op'>(</span> <span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>'greater'</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 0.224</div><div class='input'>
-</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>60</span><span class='op'>)</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>1000</span>, mean <span class='op'>=</span> <span class='fl'>.68</span><span class='op'>)</span>
+<span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.448</div><div class='input'><span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>"less"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.776</div><div class='input'><span class='fu'>pvalues</span><span class='op'>(</span><span class='va'>x</span>, alternative <span class='op'>=</span> <span class='st'>"greater"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.224</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -30,6 +30,5 @@ string on the right-hand side.
 "D" \%w\% "ABC"
 
 # Vectorized for y
-"A" \%w\% c( "ABC", "DEF", "GHI" )
-
+"A" \%w\% c("ABC", "DEF", "GHI")
 }

@@ -51,21 +51,24 @@ combination of functions like
 }
 \examples{
 # Examples using the 'iris' data set
-data( "iris" )
+data("iris")
 
 # Default
-statistic( iris$Sepal.Length )
+statistic(iris$Sepal.Length)
 # User-specified statistic
-statistic( iris$Sepal.Length, f = mean )
+statistic(iris$Sepal.Length, f = mean)
 # Include subset of cases
-statistic( iris$Sepal.Length, f = mean,
-           include = iris$Species == 'setosa' )
+statistic(iris$Sepal.Length,
+  f = mean,
+  include = iris$Species == "setosa"
+)
 # Custom function
-statistic( iris$Species, f = function(x) mean( x \%in\% 'setosa' ) )
+statistic(iris$Species, f = function(x) mean(x \%in\% "setosa"))
 # Exclude unique cases
-statistic( iris$Species, f = function(x) mean( x \%in\% 'setosa' ),
-           exclude = 'virginica' )
+statistic(iris$Species,
+  f = function(x) mean(x \%in\% "setosa"),
+  exclude = "virginica"
+)
 # If empty vector supplied, user-specified default value returned
-statistic( iris$wrong_name, default = 0 )
-
+statistic(iris$wrong_name, default = 0)
 }

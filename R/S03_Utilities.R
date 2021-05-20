@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-06
+# Last updated 2021-05-20
 
 # Table of contents
 # 1) over
@@ -19,7 +19,7 @@
 # 9) File name functions
 #   9.1) find_file_name
 #   9.2) make_file_name
-# 10)
+# 10) list_of_matches
 # 11) env_path
 
 # TO DO
@@ -27,7 +27,7 @@
 # - Add documentation for 'env_path'
 
 ###
-### 1)
+### 1) over
 ###
 
 #' A Sequence Adjusted by an Iterator
@@ -90,7 +90,7 @@ over <- function(x, iter,
 }
 
 ###
-### 2)
+### 2) templates
 ###
 
 #' Create Templates for Annotations and Code
@@ -241,7 +241,7 @@ templates <- function(type) {
 }
 
 ###
-### 3)
+### 3) section
 ###
 
 #' Section Numbers for Tracking Progress
@@ -290,14 +290,13 @@ section <- function(x, run = TRUE,
     indent <- paste(rep("  ", n_spacers), collapse = "")
   }
 
-  if ( run ) {
+  if (run) {
     message(paste0(indent, x, end))
   }
-
 }
 
 ###
-### 4)
+### 4) every
 ###
 
 #' Sequence of Values in Regular Increments
@@ -357,7 +356,7 @@ every <- function(x, step = 2, start = 1) {
 }
 
 ###
-### 5)
+### 5) has_NA
 ###
 
 #' Identify NA Values by Row
@@ -414,7 +413,7 @@ has_NA <- function(x, any = TRUE) {
 }
 
 ###
-### 6)
+### 6) print_table
 ###
 
 #' Print a Nicely Formatted Table
@@ -444,7 +443,7 @@ print_table <- function(tbl, return = F) {
   # Initialize output
   out <- matrix(" ", nrow(tbl) + 1, ncol(tbl))
 
-  # Loop over columns of table
+  #< Loop over columns
   for (i in 1:ncol(tbl)) {
 
     # Determine maximum number of characters for elements
@@ -454,8 +453,9 @@ print_table <- function(tbl, return = F) {
       nchar(colnames(tbl)[i])
     ))
 
-    # Loop over the table's rows
+    #<| Loop over rows
     for (j in 1:(nrow(tbl) + 1)) {
+
       if (j > 1) {
         # Elements in column
         val <- as.character(tbl[[i]])[j - 1]
@@ -463,19 +463,27 @@ print_table <- function(tbl, return = F) {
         # Column name
         val <- colnames(tbl)[i]
       }
+
       # Current number of characters
       cur_nc <- nchar(val)
-      # If necessary pad out characters with empty spaces
+
+      #<|< Pad with empty spaces
       if (cur_nc < nc) {
         val <- paste(paste(rep(" ", nc - cur_nc), collapse = ""),
           val,
           sep = ""
         )
         out[j, i] <- val
+        #>|> Close conditional 'Pad with empty spaces'
       } else {
         out[j, i] <- val
+        #>|> Close conditional 'Pad with empty spaces'
       }
+
+      #|> Close loop 'Loop over rows'
     }
+
+    #> Close loop 'Loop over columns'
   }
 
   # Convert to vector of strings
@@ -492,7 +500,7 @@ print_table <- function(tbl, return = F) {
 }
 
 ###
-### 7)
+### 7) lin
 ###
 
 #' Create Linear Sequence of Evenly Spaced Values
@@ -516,7 +524,7 @@ lin <- function(start, end, n_intervals) {
 }
 
 ###
-### 8)
+### 8) empty_list
 ###
 
 #' Create an Empty List
@@ -560,7 +568,7 @@ empty_list <- function(size, labels = NULL) {
 ### 9) File name functions
 ###
 
-# 9.1)
+# 9.1) find_file_name
 
 #' Check if a File Name can be Found
 #'
@@ -640,7 +648,7 @@ find_file_name <- function(string,
   }
 }
 
-# 9.2)
+# 9.2) make_file_name
 
 #' Create Formatted File Name
 #'
@@ -692,7 +700,7 @@ find_file_name <- function(string,
 #' # User-specified tags and numbers
 #' make_file_name("Example", "RData", tag = "R", number = "02")
 #' # Additional text
-#' make_file_name("Example", "RData", additional = 'v.1.0.0' )
+#' make_file_name("Example", "RData", additional = "v.1.0.0")
 #' @export
 
 make_file_name <- function(description,
@@ -859,21 +867,18 @@ make_file_name <- function(description,
 #' # Forthcoming
 #' @export
 
-list_of_matches <- function( x, categories, column = NULL ) {
+list_of_matches <- function(x, categories, column = NULL) {
 
   #< ...
-  if ( is.null( column ) ) {
+  if (is.null(column)) {
+    return(lapply(categories, function(y) x %in% y))
 
-    return( lapply( categories, function(y) x %in% y ) )
-
-    #> Close conditional
+    # > Close conditional
   } else {
+    return(lapply(categories, function(y) x[[column]] %in% y))
 
-    return( lapply( categories, function(y) x[[ column ]] %in% y ) )
-
-    #> Close conditional
+    # > Close conditional
   }
-
 }
 
 ###

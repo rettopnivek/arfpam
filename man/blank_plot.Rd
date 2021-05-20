@@ -28,6 +28,5 @@ This function generates a completely blank plot.
 }
 \examples{
 # With margin info
-blank_plot( margins = TRUE )
-
+blank_plot(margins = TRUE)
 }

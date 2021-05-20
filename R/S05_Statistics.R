@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-04-24
+# Last updated 2021-05-19
 
 # Table of contents
 # 1) sem
@@ -11,9 +11,11 @@
 # 3) boxcox_transform
 # 4) pvalues
 # 5) bootstrap
+# 6) summa
 
 # TO DO
-# - Add unit tests for 'sem', 'statistic', 'boxcox_transform'
+# - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
+#   'pvalues', 'bootstrap', and 'summa'
 
 ###
 ### 1) sem
@@ -89,23 +91,26 @@ sem <- function(x, na.rm = TRUE) {
 #'
 #' @examples
 #' # Examples using the 'iris' data set
-#' data( "iris" )
+#' data("iris")
 #'
 #' # Default
-#' statistic( iris$Sepal.Length )
+#' statistic(iris$Sepal.Length)
 #' # User-specified statistic
-#' statistic( iris$Sepal.Length, f = mean )
+#' statistic(iris$Sepal.Length, f = mean)
 #' # Include subset of cases
-#' statistic( iris$Sepal.Length, f = mean,
-#'            include = iris$Species == 'setosa' )
+#' statistic(iris$Sepal.Length,
+#'   f = mean,
+#'   include = iris$Species == "setosa"
+#' )
 #' # Custom function
-#' statistic( iris$Species, f = function(x) mean( x %in% 'setosa' ) )
+#' statistic(iris$Species, f = function(x) mean(x %in% "setosa"))
 #' # Exclude unique cases
-#' statistic( iris$Species, f = function(x) mean( x %in% 'setosa' ),
-#'            exclude = 'virginica' )
+#' statistic(iris$Species,
+#'   f = function(x) mean(x %in% "setosa"),
+#'   exclude = "virginica"
+#' )
 #' # If empty vector supplied, user-specified default value returned
-#' statistic( iris$wrong_name, default = 0 )
-#'
+#' statistic(iris$wrong_name, default = 0)
 #' @export
 
 statistic <- function(x,
@@ -149,7 +154,7 @@ statistic <- function(x,
       #|> Close conditional
     }
 
-    #> Close conditional
+    # > Close conditional
   }
 
   return(out)
@@ -195,26 +200,26 @@ statistic <- function(x,
 #'
 #' @examples
 #' # Simulate 100 values from the normal distribution
-#' set.seed( 3 ); z <- rnorm( 100 )
+#' set.seed(3)
+#' z <- rnorm(100)
 #' # Transform the simulated values
-#' x <- (z*.5 + 1)^(1/.5)
+#' x <- (z * .5 + 1)^(1 / .5)
 #' # Maximum likelihood estimate for
 #' # transformation parameter
-#' boxcox_transform( x, output = FALSE )
+#' boxcox_transform(x, output = FALSE)
 #'
 #' # Histogram of x, transform of x, and
 #' # original simulated values
-#' layout( rbind( 1, 2, 3) )
-#' hist( x )
-#' hist( boxcox_transform( x ) )
-#' hist( z )
-#'
+#' layout(rbind(1, 2, 3))
+#' hist(x)
+#' hist(boxcox_transform(x))
+#' hist(z)
 #' @export
 
-boxcox_transform <- function( x,
-                              outcome = NULL,
-                              parameter_grid = seq(-3, 3, .01),
-                              output = TRUE ) {
+boxcox_transform <- function(x,
+                             outcome = NULL,
+                             parameter_grid = seq(-3, 3, .01),
+                             output = TRUE) {
 
   #< If data frame with predictors is provided
   if (is.data.frame(x)) {
@@ -241,7 +246,7 @@ boxcox_transform <- function( x,
     # Extract maximum likelihood estimate
     param <- xy$x[which.max(xy$y)]
 
-    #> Close conditional
+    # > Close conditional
   } else {
 
     # Convert to data frame to avoid scoping issues
@@ -261,7 +266,7 @@ boxcox_transform <- function( x,
     # Extract maximum likelihood estimate
     param <- xy$x[which.max(xy$y)]
 
-    #> Close conditional
+    # > Close conditional
   }
 
 
@@ -289,13 +294,13 @@ boxcox_transform <- function( x,
 
     out <- transformed_x
 
-    #> Close conditional
+    # > Close conditional
   } else {
 
     # Return maximum likelihood estimate
     out <- param
 
-    #> Close conditional
+    # > Close conditional
   }
 
   return(out)
@@ -349,20 +354,20 @@ boxcox_transform <- function( x,
 #'
 #' @examples
 #' # Example based on two-sample t-test
-#' set.seed( 40 )
+#' set.seed(40)
 #' x <- data.frame(
-#'   y = c( rnorm( 50 ), rnorm( 50, mean = .3 ) ),
-#'   group = rep( 1:2, each = 50 )
+#'   y = c(rnorm(50), rnorm(50, mean = .3)),
+#'   group = rep(1:2, each = 50)
 #' )
 #'
 #' # Two-sample t-test
-#' tt <- t.test( y ~ group, data = x )
-#' print( pvalues( tt$p.value ) )
-#' print( pvalues( tt$p.value, digits = 2 ) )
+#' tt <- t.test(y ~ group, data = x)
+#' print(pvalues(tt$p.value))
+#' print(pvalues(tt$p.value, digits = 2))
 #'
 #' # For very small p-values, automatically
 #' # converts to 'p < cut-off' format
-#' print( pvalues( 1e-6 ) )
+#' print(pvalues(1e-6))
 #'
 #' # Computing p-values from
 #' # Monte Carlo samples
@@ -370,35 +375,34 @@ boxcox_transform <- function( x,
 #' # Simulate data from standard normal;
 #' # on average 50% of sample falls
 #' # below zero
-#' set.seed( 50 )
-#' x <- rnorm( 1000 )
+#' set.seed(50)
+#' x <- rnorm(1000)
 #'
 #' # Default is two-sided
-#' pvalues( x )
+#' pvalues(x)
 #' # Can specify less than or greater than
-#' pvalues( x, alternative = 'less' )
-#' pvalues( x, alternative = 'greater' )
+#' pvalues(x, alternative = "less")
+#' pvalues(x, alternative = "greater")
 #' # Against different comparison point
-#' pvalues( x, alternative = 'less', comparison = .68 )
+#' pvalues(x, alternative = "less", comparison = .68)
 #'
 #' # Simulate data from normal distribution
 #' # with mean of 0.68, on average
 #' # approximately 75% of sample falls
 #' # below zero
-#' set.seed( 60 )
-#' x <- rnorm( 1000, mean = .68 )
-#' pvalues( x )
-#' pvalues( x, alternative = 'less' )
-#' pvalues( x, alternative = 'greater' )
-#'
+#' set.seed(60)
+#' x <- rnorm(1000, mean = .68)
+#' pvalues(x)
+#' pvalues(x, alternative = "less")
+#' pvalues(x, alternative = "greater")
 #' @export
 
-pvalues <- function( x,
-                     comparison = 0,
-                     alternative = 'two-sided',
-                     digits = 3,
-                     string = FALSE,
-                     pad = FALSE ) {
+pvalues <- function(x,
+                    comparison = 0,
+                    alternative = "two-sided",
+                    digits = 3,
+                    string = FALSE,
+                    pad = FALSE) {
 
   # Initialize output
   out <- NULL
@@ -407,108 +411,100 @@ pvalues <- function( x,
   # it is a numeric p-value
 
   #< Check length
-  if ( length( x ) == 1 ) {
+  if (length(x) == 1) {
 
     #<| Check if valid p-value
-    if ( x >= 0 &
-         x <= 1 ) {
+    if (x >= 0 &
+      x <= 1) {
 
       # Force argument 'string' to be TRUE
       string <- TRUE
 
       #|> Close conditional 'Check if valid p-value'
     } else {
-
-      stop( 'p-values must be between 0 and 1',
-            call. = FALSE )
+      stop("p-values must be between 0 and 1",
+        call. = FALSE
+      )
 
       #|> Close else for 'Check if valid p-value'
     }
 
-    #> Close conditional 'Check length'
+    # > Close conditional 'Check length'
   }
 
   #< Estimate p-value from Monte Carlo samples
-  if ( !string ) {
-
+  if (!string) {
     check <- FALSE
 
     # Two-sided test
-    if ( alternative == 'two-sided' ) {
-      check = TRUE
+    if (alternative == "two-sided") {
+      check <- TRUE
 
-      if ( median( x ) > comparison ) {
-        out <- mean( x < comparison )
+      if (median(x) > comparison) {
+        out <- mean(x < comparison)
       } else {
-        out <- mean( x > comparison )
+        out <- mean(x > comparison)
       }
-      out = out*2
-
+      out <- out * 2
     }
 
     # Test if greater than comparison
-    if ( alternative == 'greater' ) {
-
+    if (alternative == "greater") {
       check <- TRUE
 
-      out = mean( x < comparison )
-
+      out <- mean(x < comparison)
     }
 
     # Test if less than comparison
-    if ( alternative == 'less' ) {
-
+    if (alternative == "less") {
       check <- TRUE
 
-      out <- mean( x > comparison )
-
+      out <- mean(x > comparison)
     }
 
     # Informative error message if
     # 'alternative' mis-specified
-    if ( !check ) {
-
-      err_msg = paste(
+    if (!check) {
+      err_msg <- paste(
         "Please specify 'alternative' as",
         "either 'two-sided', 'greater', or",
-        "'less'." )
-      stop( err_msg )
-
+        "'less'."
+      )
+      stop(err_msg)
     }
 
-    #> Close conditional 'Estimate p-value from Monte Carlo samples'
+    # > Close conditional 'Estimate p-value from Monte Carlo samples'
   }
 
   #< Convert to formatted string
-  if ( string ) {
-
-    if ( pad ) {
-      p <- format( round( x, digits = digits ), nsmall = digits )
+  if (string) {
+    if (pad) {
+      p <- format(round(x, digits = digits), nsmall = digits)
     } else {
-      p <- format( round( x, digits = digits ) )
+      p <- format(round(x, digits = digits))
     }
 
-    if ( round( x, digits ) == 0 ) {
-
+    if (round(x, digits) == 0) {
       nd <- digits - 1
       nd <- paste(
         "0.",
-        paste( rep( 0, nd ), collapse = '' ),
-        '1', sep = '' )
-      out <- paste( "p < ", nd, sep = "" )
-
+        paste(rep(0, nd), collapse = ""),
+        "1",
+        sep = ""
+      )
+      out <- paste("p < ", nd, sep = "")
     } else {
-      out <- paste0( 'p = ', p )
+      out <- paste0("p = ", p)
     }
 
-    #> Close conditional 'Convert to formatted string'
+    # > Close conditional 'Convert to formatted string'
   }
 
-  return( out )
+  return(out)
 }
 
 ###
-### 5)
+### 5) bootstrap
 ###
 
 #' Non-Parametric Bootstrap
@@ -542,69 +538,447 @@ pvalues <- function( x,
 #'
 #' @examples
 #' # Simulate from normal distribution
-#' set.seed( 200 )
-#' x <- rnorm( 50, mean = 100, sd = 15 )
+#' set.seed(200)
+#' x <- rnorm(50, mean = 100, sd = 15)
 #'
 #' # Use bootstrap method to estimate
 #' # sampling distribution for the mean
-#' btstrp <- bootstrap( x )
+#' btstrp <- bootstrap(x)
 #'
-#' hist( btstrp$replicates, main = '',
-#'       xlab = 'Sampling distribution - mean' )
+#' hist(btstrp$replicates,
+#'   main = "",
+#'   xlab = "Sampling distribution - mean"
+#' )
 #' # True mean
-#' abline( v = 100, lwd = 1 )
+#' abline(v = 100, lwd = 1)
 #'
 #' # Estimate of standard error
-#' print( round( sem( x ), 1 ) )
+#' print(round(sem(x), 1))
 #'
 #' # Estimate of standard error
 #' # computed from bootstrapped samples
-#' btstrp <- bootstrap( x, summary = sd )
-#' print( round( btstrp$summary, 1 ) )
+#' btstrp <- bootstrap(x, summary = sd)
+#' print(round(btstrp$summary, 1))
 #'
 #' # 95% confidence interval around the mean
 #' # using bootstrapped samples
-#' f <- function(y) paste( round( quantile( y, c(.025,.975) ), 1 ),
-#'                         collapse = ' to ' )
-#' btstrp <- bootstrap( x, summary = f )
-#' print( btstrp$summary )
+#' f <- function(y) {
+#'   paste(round(quantile(y, c(.025, .975)), 1),
+#'     collapse = " to "
+#'   )
+#' }
+#' btstrp <- bootstrap(x, summary = f)
+#' print(btstrp$summary)
 #'
 #' # Use bootstrap method to estimate
 #' # sampling distribution for the median
 #' # (which has no close-formed solution)
-#' btstrp <- bootstrap( x, t_x = median )
-#' hist( btstrp$replicates, main = '',
-#'       xlab = 'Sampling distribution - median' )
-#'
+#' btstrp <- bootstrap(x, t_x = median)
+#' hist(btstrp$replicates,
+#'   main = "",
+#'   xlab = "Sampling distribution - median"
+#' )
 #' @export
 
-bootstrap <- function( x, t_x = mean, N = 1000,
-                       summary = NULL, ... ) {
+bootstrap <- function(x, t_x = mean, N = 1000,
+                      summary = NULL, ...) {
+  n <- length(x)
 
-  n = length( x )
-
-  indices <- lapply( 1:N, function(i) {
-    sample( 1:n, size = n, replace = T )
-  } )
+  indices <- lapply(1:N, function(i) {
+    sample(1:n, size = n, replace = T)
+  })
 
   monte_carlo_samples <- sapply(
     indices, function(index) {
-      t_x( x[index], ... )
+      t_x(x[index], ...)
     }
   )
 
   out <- list(
-    observed = t_x( x, ... ),
+    observed = t_x(x, ...),
     replicates = monte_carlo_samples
   )
 
-  if ( !is.null( summary ) ) {
-
+  if (!is.null(summary)) {
     out$summary <-
-      summary( out$replicates )
-
+      summary(out$replicates)
   }
 
-  return( out )
+  return(out)
 }
 
+###
+### 6) summa
+###
+
+#' ...
+#'
+#' ...
+#'
+#' @param x ...
+#' @param syntax ...
+#' @param categories ...
+#' @param digits ...
+#' @param na.rm ...
+#' @param pad ...
+#' @param f ...
+#' @param ... ...
+#'
+#' @details ...
+#'
+#' @return ...
+#'
+#' @examples
+#' # Example using 'iris' data set
+#' data("iris")
+#' # Continuous variable - sepal length
+#' x <- iris$Sepal.Length
+#'
+#' # Mean and standard deviation
+#' summa(x)
+#' # Median and IQR
+#' summa(x, "[[M]] ([[IQR]])")
+#' # Pad to 2 decimal places
+#' summa(x, "[[M]] ([[IQR]])", pad = TRUE)
+#' # Mean (SD); N [min and max]
+#' summa(x, "[[N]]; [[M]] ([[SD]]); " %p%
+#'   "[[[Mn]], [[Q1]], [[Md]], [[Q3]], [[Mx]]]",
+#' digits = 1
+#' )
+#'
+#' # Custom measures via user-defined function
+#' # (e.g., bootstrapped confidence interval)
+#' fnc <- function(x) {
+#'   btstrp <- bootstrap(
+#'     x,
+#'     summary = function(y) quantile(y, c(.025, .975))
+#'   )
+#'   return(btstrp$summary)
+#' }
+#' summa(x, "[[M]] ([[SE]]) [[[1]] to [[2]]]",
+#'   f = fnc
+#' )
+#'
+#' # Example using 'mtcars' data set
+#' # Categorical variable - # of forward gears
+#' data("mtcars")
+#' x <- mtcars$gear
+#'
+#' # Percent and counts for 3 forward gears
+#' summa(x == 3, "[[P]]% ([[C]] out of [[N]])")
+#' # Percent and counts for 4 or 5 forward gears
+#' summa(x, "[[P]]% ([[C]] out of [[N]])",
+#'   categories = c(4, 5)
+#' )
+#' @export
+
+summa <- function(x, syntax = "[[M]] ([[SD]])",
+                  categories = NULL,
+                  digits = NULL, na.rm = TRUE,
+                  pad = FALSE,
+                  f = NULL,
+                  ... ) {
+
+  # Syntax
+  # [[N]] = Sample size
+  # [[M]] = Mean
+  # [[SD]] = Standard deviation
+  # [[SE]] = Standard error
+  # [[Mn]] = Minimum
+  # [[Q1]] = 1st quartile
+  # [[Md]] = Median
+  # [[Q3]] = 3rd quartile
+  # [[Mx]] = Maximum
+  # [[IQR]] = Inter-quartile range
+  # [[C]] = Counts/Frequencies
+  # [[P]] = Percent
+  # [[Pr]] = Proportion
+
+  # Initialize output
+  out <- syntax
+
+  #< Sample size
+  if (grepl("[[N]]", syntax, fixed = TRUE)) {
+    n <- length(x)
+    if (na.rm) length(x[!is.na(x)])
+
+    out <- gsub("[[N]]", n, out, fixed = TRUE)
+
+    #> Close conditional 'Sample size'
+  }
+
+  #< Mean
+  if (grepl("[[M]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    m <- round(mean(x, na.rm = na.rm), dgt)
+    if (pad) {
+      m <- format(m, nsmall = dgt)
+    }
+
+    out <- gsub("[[M]]", m, out, fixed = TRUE)
+
+    #> Close conditional 'Mean'
+  }
+
+  #< Standard deviation
+  if (grepl("[[SD]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    s <- round(sd(x, na.rm = na.rm), dgt)
+    if (pad) {
+      s <- format(s, nsmall = dgt)
+    }
+
+    out <- gsub("[[SD]]", s, out, fixed = TRUE)
+
+    #> Close conditional 'Standard deviation'
+  }
+
+
+  #< Standard error
+  if (grepl("[[SE]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    n <- length(x)
+    if (na.rm) n <- length(x[!is.na(x)])
+    se <- round(sd(x, na.rm = na.rm) / sqrt(n), dgt)
+    if (pad) {
+      se <- format(se, nsmall = dgt)
+    }
+
+    out <- gsub("[[SE]]", se, out, fixed = TRUE)
+
+    #> Close conditional 'Standard error'
+  }
+
+  #< Minimum
+  if (grepl("[[Mn]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    mn <- round(min(x, na.rm = na.rm), dgt)
+    if (pad) {
+      mn <- format(mn, nsmall = dgt)
+    }
+
+    out <- gsub("[[Mn]]", mn, out, fixed = TRUE)
+
+    #> Close conditional 'Minimum'
+  }
+
+  #< 1st quartile
+  if (grepl("[[Q1]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    q1 <- round(quantile(x, prob = .25, na.rm = na.rm), dgt)
+    if (pad) {
+      q1 <- format(q1, nsmall = dgt)
+    }
+
+    out <- gsub("[[Q1]]", q1, out, fixed = TRUE)
+
+    #> Close conditional '1st quartile'
+  }
+
+  #< Median
+  if (grepl("[[Md]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    md <- round(median(x, na.rm = na.rm), dgt)
+    if (pad) {
+      md <- format(md, nsmall = dgt)
+    }
+
+    out <- gsub("[[Md]]", md, out, fixed = TRUE)
+
+    #> Close conditional 'Median'
+  }
+
+  #< 3rd quartile
+  if (grepl("[[Q3]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    q3 <- round(quantile(x, prob = .75, na.rm = na.rm), dgt)
+    if (pad) {
+      q3 <- format(q3, nsmall = dgt)
+    }
+
+    out <- gsub("[[Q3]]", q3, out, fixed = TRUE)
+
+    #> Close conditional '3rd quartile'
+  }
+
+  #< Maximum
+  if (grepl("[[Mx]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    mx <- round(max(x, na.rm = na.rm), dgt)
+    if (pad) {
+      mx <- format(mx, nsmall = dgt)
+    }
+
+    out <- gsub("[[Mx]]", mx, out, fixed = TRUE)
+
+    #> Close conditional 'Maximum'
+  }
+
+
+  #< Inter-quartile range
+  if (grepl("[[IQR]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    q <- quantile(x, prob = c(.25, .75), na.rm = na.rm)
+    iqr <- round(diff(q), dgt)
+
+    if (pad) {
+      iqr <- format(iqr, nsmall = dgt)
+    }
+
+    out <- gsub("[[IQR]]", iqr, out, fixed = TRUE)
+
+    #> Close conditional 'Inter-quartile range'
+  }
+
+  #< Counts/frequencies
+  if (grepl("[[C]]", syntax, fixed = TRUE)) {
+    if (is.null(categories)) {
+      categories <- TRUE
+    }
+
+    cnt <- sum(x %in% categories, na.rm = na.rm)
+
+    out <- gsub("[[C]]", cnt, out, fixed = TRUE)
+
+    #> Close conditional 'Counts/frequencies'
+  }
+
+  #< Percent
+  if (grepl("[[P]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 1
+    } else {
+      dgt <- digits
+    }
+
+    if (is.null(categories)) {
+      categories <- TRUE
+    }
+
+    per <- 100 * mean(x %in% categories, na.rm = na.rm)
+    per <- round(per, dgt)
+    if (pad) {
+      per <- format(per, nsmall = dgt)
+    }
+
+    out <- gsub("[[P]]", per, out, fixed = TRUE)
+
+    #> Close conditional 'Percent'
+  }
+
+  #< Proportion
+  if (grepl("[[Pr]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    if (is.null(categories)) {
+      categories <- TRUE
+    }
+
+    prp <- round(mean(x %in% categories, na.rm = na.rm), dgt)
+    if (pad) {
+      prp <- format(prp, nsmall = dgt)
+    }
+
+    out <- gsub("[[Pr]]", prp, out, fixed = TRUE)
+
+    #> Close conditional 'Proportion'
+  }
+
+  #< Custom function
+  if (!is.null(f)) {
+    val <- f(x, ...)
+
+    for (i in 1:length(val)) {
+      if (is.null(digits)) {
+        dgt <- 2
+      } else {
+        dgt <- digits
+      }
+
+      val[i] <- round(val[i], dgt)
+      if (pad) {
+        val[i] <- format(val[i], nsmall = dgt)
+      }
+
+      out <- gsub(paste0("[[", i, "]]"),
+        val[i], out,
+        fixed = TRUE
+      )
+    }
+
+    #> Close conditional 'Custom function'
+  }
+
+  return(out)
+}

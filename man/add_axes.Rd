@@ -69,26 +69,32 @@ to an existing plot.
 # Create blank plot
 blank_plot()
 # Draw boundaries
-hv_line( x = 0 ); hv_line( y = 0 )
+hv_line(x = 0)
+hv_line(y = 0)
 
 # Add axes
-add_axes(c(0, .5, 1), c('Start', 'Middle', 'End') )
-add_axes(c(0, .5, 1), c('Bottom', 'Middle', 'Top'), side = 2 )
-add_axes( .5, 'Title', side = 3, cex = 2 )
+add_axes(c(0, .5, 1), c("Start", "Middle", "End"))
+add_axes(c(0, .5, 1), c("Bottom", "Middle", "Top"), side = 2)
+add_axes(.5, "Title", side = 3, cex = 2)
 
 # Create blank plot with custom margins
-par( mar = rep( 4, 4 ) )
+par(mar = rep(4, 4))
 blank_plot()
 # Draw boundaries
-hv_line( x = 0:1 ); hv_line( y = 0:1 )
+hv_line(x = 0:1)
+hv_line(y = 0:1)
 
 # Add rotated axes
-add_axes(c(0, .5, 1), c('Start', 'Middle', 'End'),
-         degrees = 45 )
-add_axes(c(0, .5, 1), c('Start', 'Middle', 'End'),
-         degrees = 45, side = 3 )
-add_axes(c(0, .5, 1), c('Bottom', 'Middle', 'Top'),
-         degrees = 45, side = 2 )
-add_axes(c(0, .5, 1), c('Bottom', 'Middle', 'Top'),
-         degrees = 45, side = 4 )
+add_axes(c(0, .5, 1), c("Start", "Middle", "End"),
+  degrees = 45
+)
+add_axes(c(0, .5, 1), c("Start", "Middle", "End"),
+  degrees = 45, side = 3
+)
+add_axes(c(0, .5, 1), c("Bottom", "Middle", "Top"),
+  degrees = 45, side = 2
+)
+add_axes(c(0, .5, 1), c("Bottom", "Middle", "Top"),
+  degrees = 45, side = 4
+)
 }
