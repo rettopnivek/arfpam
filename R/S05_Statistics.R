@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-19
+# Last updated 2021-05-20
 
 # Table of contents
 # 1) sem
@@ -611,22 +611,83 @@ bootstrap <- function(x, t_x = mean, N = 1000,
 ### 6) summa
 ###
 
-#' ...
+#' Flexible Formatted Summary Statistics
 #'
-#' ...
+#' A function that allows users to create
+#' a nicely formatted character string
+#' with summary statistics based on
+#' user-supplied identifiers via a
+#' simple, intuitive syntax.
 #'
-#' @param x ...
-#' @param syntax ...
-#' @param categories ...
-#' @param digits ...
-#' @param na.rm ...
-#' @param pad ...
-#' @param f ...
-#' @param ... ...
+#' @param x A vector of values.
+#' @param syntax A character string with
+#'   identifiers in the form \code{[[.]]}
+#'   (where \code{.} can be a variety of
+#'   letter sets for different summary statistics) -
+#'   the function then substitutes the appropriate
+#'   computed value for the corresponding
+#'   identifier (see details for more information).
+#' @param categories An optional vector of
+#'   elements to match in \code{x} when
+#'   computing frequencies, proportions,
+#'   or percentages.
+#' @param digits Number of digits to round
+#'   summary statistics.
+#' @param na.rm Logical; if \code{TRUE}
+#'   removes \code{NA} values from \code{x}.
+#' @param pad Logical; if \code{TRUE} pads
+#'   values with 0 to all have a matching
+#'   number of decimal places.
+#' @param f An optional user-defined function
+#'   that takes \code{x} as a first argument
+#'   and returns a vector of values.
+#'   The i-th outputted value will then
+#'   be substituted for the corresponding
+#'   identifier \code{[[i]]} (see examples).
+#' @param ... Additional arguments for the
+#'   user-defined function \code{f}.
 #'
-#' @details ...
+#' @details This function provides some simple syntax
+#' to allow users to write out a custom phrase for
+#' reporting summary statistics.
+#' The function then searches the input for
+#' identifiers - once found, the function computes
+#' the appropriate summary statistic and
+#' substitutes the numeric result in place of
+#' the given identifier.
 #'
-#' @return ...
+#' For example, a user can provide the phrase:
+#'
+#' \code{'Mean = [[M]]'},
+#'
+#' and the function will then substitute the sample
+#' mean of the vector \code{x} for the identifier
+#' \code{[[M]]}.
+#'
+#' Pre-defined identifiers are:
+#' \itemize{
+#'   \item \code{[[N]]} = Sample size;
+#'   \item \code{[[M]]} = Mean;
+#'   \item \code{[[SD]]} = Standard deviation;
+#'   \item \code{[[SE]]} = Standard error of the mean;
+#'   \item \code{[[Mn]]} = Minimum;
+#'   \item \code{[[Q1]]} = 1st quartile;
+#'   \item \code{[[Md]]} = Median;
+#'   \item \code{[[Q3]]} = 2nd quartile;
+#'   \item \code{[[Mx]]} = Maximum;
+#'   \item \code{[[IQR]]} = Inter-quartile range;
+#'   \item \code{[[C]]} = Counts/frequencies;
+#'   \item \code{[[P]]} = Percent;
+#'   \item \code{[[Pr]]} = Proportion.
+#' }
+#'
+#' Users can also pass in a custom function \code{f}
+#' that takes \code{x} as a first argument and
+#' returns a vector of values. Then element \code{i}
+#' from the outputted vector is substituted for
+#' the identifier \code{[[i]]}.
+#'
+#' @return A character string.
 #'
 #' @examples
 #' # Example using 'iris' data set
@@ -678,21 +739,6 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
                   pad = FALSE,
                   f = NULL,
                   ... ) {
-
-  # Syntax
-  # [[N]] = Sample size
-  # [[M]] = Mean
-  # [[SD]] = Standard deviation
-  # [[SE]] = Standard error
-  # [[Mn]] = Minimum
-  # [[Q1]] = 1st quartile
-  # [[Md]] = Median
-  # [[Q3]] = 3rd quartile
-  # [[Mx]] = Maximum
-  # [[IQR]] = Inter-quartile range
-  # [[C]] = Counts/Frequencies
-  # [[P]] = Percent
-  # [[Pr]] = Proportion
 
   # Initialize output
   out <- syntax

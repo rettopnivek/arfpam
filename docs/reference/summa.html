@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>... — summa • arfpam</title>
+<title>Flexible Formatted Summary Statistics — summa • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,12 @@
 
 
 
-<meta property="og:title" content="... — summa" />
-<meta property="og:description" content="..." />
+<meta property="og:title" content="Flexible Formatted Summary Statistics — summa" />
+<meta property="og:description" content="A function that allows users to create
+a nicely formatted character string
+with summary statistics based on
+user-supplied identifiers via a
+simple, intuitive syntax." />
 
 
 
@@ -103,13 +107,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>...</h1>
+    <h1>Flexible Formatted Summary Statistics</h1>
     
     <div class="hidden name"><code>summa.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>...</p>
+    <p>A function that allows users to create
+a nicely formatted character string
+with summary statistics based on
+user-supplied identifiers via a
+simple, intuitive syntax.</p>
     </div>
 
     <pre class="usage"><span class='fu'>summa</span><span class='op'>(</span>
@@ -128,48 +136,99 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>...</p></td>
+      <td><p>A vector of values.</p></td>
     </tr>
     <tr>
       <th>syntax</th>
-      <td><p>...</p></td>
+      <td><p>A character string with
+identifiers in the form <code>[[.]]</code>
+(where <code>.</code> can be a variety of
+letter sets for different summary statistics) -
+the function then substitutes the appropriate
+computed value for the corresponding
+identifier (see details for more information).</p></td>
     </tr>
     <tr>
       <th>categories</th>
-      <td><p>...</p></td>
+      <td><p>An optional vector of
+elements to match in <code>x</code> when
+computing frequencies, proportions,
+or percentages.</p></td>
     </tr>
     <tr>
       <th>digits</th>
-      <td><p>...</p></td>
+      <td><p>Number of digits to round
+summary statistics.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>...</p></td>
+      <td><p>Logical; if <code>TRUE</code>
+removes <code>NA</code> values from <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>pad</th>
-      <td><p>...</p></td>
+      <td><p>Logical; if <code>TRUE</code> pads
+values with 0 to all have a matching
+number of decimal places.</p></td>
     </tr>
     <tr>
       <th>f</th>
-      <td><p>...</p></td>
+      <td><p>An optional user-defined function
+that takes <code>x</code> as a first argument
+and returns a vector of values.
+The i-th outputted value will then
+be substituted for the corresponding
+identifier <code>[[i]]</code> (see examples).</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>...</p></td>
+      <td><p>Additional arguments for the
+user-defined function <code>f</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>...</p>
+    <p>A character string.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>...</p>
+    <p>This function provides some simple syntax
+to allow users to write out a custom phrase for
+reporting summary statistics.
+The function then searches the input for
+identifiers - once found, the function computes
+the appropriate summary statistic and
+substitutes the numeric result in place of
+the given identifier.</p>
+<p>For example, a user can provide the phrase:</p>
+<p><code>'Mean = [[M]]'</code>,</p>
+<p>and the function will then substitute the sample
+mean of the vector <code>x</code> for the identifier
+<code>[[M]]</code>.</p>
+<p>Pre-defined identifiers are:</p><ul>
+<li><p><code>[[N]]</code> = Sample size;</p></li>
+<li><p><code>[[M]]</code> = Mean;</p></li>
+<li><p><code>[[SD]]</code> = Standard deviation;</p></li>
+<li><p><code>[[SE]]</code> = Standard error of the mean;</p></li>
+<li><p><code>[[Mn]]</code> = Minimum;</p></li>
+<li><p><code>[[Q1]]</code> = 1st quartile;</p></li>
+<li><p><code>[[Md]]</code> = Median;</p></li>
+<li><p><code>[[Q3]]</code> = 2nd quartile;</p></li>
+<li><p><code>[[Mx]]</code> = Maximum;</p></li>
+<li><p><code>[[IQR]]</code> = Inter-quartile range;</p></li>
+<li><p><code>[[C]]</code> = Counts/frequencies;</p></li>
+<li><p><code>[[P]]</code> = Percent;</p></li>
+<li><p><code>[[Pr]]</code> = Proportion.</p></li>
+</ul>
+
+<p>Users can also pass in a custom function <code>f</code>
+that takes <code>x</code> as a first argument and
+returns a vector of values. Then element <code>i</code>
+from the outputted vector is substituted for
+the identifier <code>[[i]]</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Forthcoming</span>
-<span class='co'># Example using 'iris' data set</span>
+    <pre class="examples"><div class='input'><span class='co'># Example using 'iris' data set</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"iris"</span><span class='op'>)</span>
 <span class='co'># Continuous variable - sepal length</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='va'>iris</span><span class='op'>$</span><span class='va'>Sepal.Length</span>

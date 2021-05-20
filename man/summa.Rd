@@ -2,7 +2,7 @@
 % Please edit documentation in R/S05_Statistics.R
 \name{summa}
 \alias{summa}
-\title{...}
+\title{Flexible Formatted Summary Statistics}
 \usage{
 summa(
   x,
@@ -16,33 +16,93 @@ summa(
 )
 }
 \arguments{
-\item{x}{...}
+\item{x}{A vector of values.}
 
-\item{syntax}{...}
+\item{syntax}{A character string with
+identifiers in the form \code{[[.]]}
+(where \code{.} can be a variety of
+letter sets for different summary statistics) -
+the function then substitutes the appropriate
+computed value for the corresponding
+identifier (see details for more information).}
 
-\item{categories}{...}
+\item{categories}{An optional vector of
+elements to match in \code{x} when
+computing frequencies, proportions,
+or percentages.}
 
-\item{digits}{...}
+\item{digits}{Number of digits to round
+summary statistics.}
 
-\item{na.rm}{...}
+\item{na.rm}{Logical; if \code{TRUE}
+removes \code{NA} values from \code{x}.}
 
-\item{pad}{...}
+\item{pad}{Logical; if \code{TRUE} pads
+values with 0 to all have a matching
+number of decimal places.}
 
-\item{f}{...}
+\item{f}{An optional user-defined function
+that takes \code{x} as a first argument
+and returns a vector of values.
+The i-th outputted value will then
+be substituted for the corresponding
+identifier \code{[[i]]} (see examples).}
 
-\item{...}{...}
+\item{...}{Additional arguments for the
+user-defined function \code{f}.}
 }
 \value{
-...
+A character string.
 }
 \description{
-...
+A function that allows users to create
+a nicely formatted character string
+with summary statistics based on
+user-supplied identifiers via a
+simple, intuitive syntax.
 }
 \details{
-...
+This function provides some simple syntax
+to allow users to write out a custom phrase for
+reporting summary statistics.
+The function then searches the input for
+identifiers - once found, the function computes
+the appropriate summary statistic and
+substitutes the numeric result in place of
+the given identifier.
+
+For example, a user can provide the phrase:
+
+\code{'Mean = [[M]]'},
+
+and the function will then substitute the sample
+mean of the vector \code{x} for the identifier
+\code{[[M]]}.
+
+Pre-defined identifiers are:
+\itemize{
+\item \code{[[N]]} = Sample size;
+\item \code{[[M]]} = Mean;
+\item \code{[[SD]]} = Standard deviation;
+\item \code{[[SE]]} = Standard error of the mean;
+\item \code{[[Mn]]} = Minimum;
+\item \code{[[Q1]]} = 1st quartile;
+\item \code{[[Md]]} = Median;
+\item \code{[[Q3]]} = 2nd quartile;
+\item \code{[[Mx]]} = Maximum;
+\item \code{[[IQR]]} = Inter-quartile range;
+\item \code{[[C]]} = Counts/frequencies;
+\item \code{[[P]]} = Percent;
+\item \code{[[Pr]]} = Proportion.
+}
+
+Users can also pass in a custom function \code{f}
+that takes \code{x} as a first argument and
+returns a vector of values. Then element \code{i}
+from the outputted vector is substituted for
+the identifier \code{[[i]]}.
 }
 \examples{
-# Forthcoming
 # Example using 'iris' data set
 data("iris")
 # Continuous variable - sepal length
