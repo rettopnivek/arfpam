@@ -116,7 +116,7 @@ and code segments to the console for
 easy copying and pasting.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>templates</span><span class='op'>(</span><span class='va'>type</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>templates</span><span class='op'>(</span>type <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -140,7 +140,7 @@ with options for...</p><ul>
     <pre class="examples"><div class='input'><span class='co'># List of possible inputs to argument</span>
 <span class='co'># 'type' for each template</span>
 <span class='fu'>templates</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in templates(): argument "type" is missing, with no default</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Available template options:</span></div><div class='output co'>#&gt; <span class='message'>  - Function</span></div><div class='output co'>#&gt; <span class='message'>  - Header</span></div><div class='output co'>#&gt; <span class='message'>  - Progress</span></div><div class='output co'>#&gt; <span class='message'>  - Segment</span></div><div class='output co'>#&gt; <span class='message'>  - Loop</span></div><div class='output co'>#&gt; <span class='message'>  - Conditional</span></div><div class='input'>
 <span class='co'># Function documentation</span>
 <span class='fu'>templates</span><span class='op'>(</span><span class='st'>"Function"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'># Purpose: </span>
@@ -168,10 +168,11 @@ with options for...</p><ul>
 #&gt; <span class='message'># Create a progress bar using a base R function</span>
 #&gt; <span class='message'>pb &lt;- txtProgressBar( min = 1, max = n_cases, style = 3 )</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'># Loop over cases</span>
+#&gt; <span class='message'>#&lt; Loop over cases</span>
 #&gt; <span class='message'>for (i in 1:n_cases) {</span>
 #&gt; <span class='message'>  # Update the progress bar</span>
 #&gt; <span class='message'>  setTxtProgressBar(pb,i)</span>
+#&gt; <span class='message'>  #&gt; Close loop 'Loop over cases'</span>
 #&gt; <span class='message'>}</span>
 #&gt; <span class='message'>close(pb); rm(pb)</span></div><div class='input'>
 <span class='co'># Code segment in a script</span>
@@ -183,7 +184,25 @@ with options for...</p><ul>
 #&gt; <span class='message'>if (run_code[1]) {</span>
 #&gt; <span class='message'>  section( '?' )</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>}</span></div></pre>
+#&gt; <span class='message'>}</span></div><div class='input'>
+<span class='co'># Loop</span>
+<span class='fu'>templates</span><span class='op'>(</span><span class='st'>"Loop"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>#&lt; Descriptor</span>
+#&gt; <span class='message'>for (i in 1:n) {</span>
+#&gt; <span class='message'>  # Do something</span>
+#&gt; <span class='message'>  #&gt; Close loop 'Descriptor'</span>
+#&gt; <span class='message'>}</span></div><div class='input'>
+<span class='co'># If ... else statement</span>
+<span class='fu'>templates</span><span class='op'>(</span><span class='st'>"Conditional"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>#&lt; Descriptor</span>
+#&gt; <span class='message'>if (value %in% values) {</span>
+#&gt; <span class='message'>  # Do something</span>
+#&gt; <span class='message'>  #&gt; Close conditional 'Descriptor'</span>
+#&gt; <span class='message'>} else {</span>
+#&gt; <span class='message'>  # Do something else</span>
+#&gt; <span class='message'>  #&gt; Close else for 'Descriptor'</span>
+#&gt; <span class='message'>}</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

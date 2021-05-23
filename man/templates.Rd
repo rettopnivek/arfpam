@@ -4,7 +4,7 @@
 \alias{templates}
 \title{Create Templates for Annotations and Code}
 \usage{
-templates(type)
+templates(type = NULL)
 }
 \arguments{
 \item{type}{The type of template to return,
@@ -39,4 +39,11 @@ templates("Progress")
 
 # Code segment in a script
 templates("Segment")
+
+# Loop
+templates("Loop")
+
+# If ... else statement
+templates("Conditional")
+
 }

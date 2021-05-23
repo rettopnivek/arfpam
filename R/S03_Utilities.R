@@ -129,9 +129,17 @@ over <- function(x, iter,
 #'
 #' # Code segment in a script
 #' templates("Segment")
+#'
+#' # Loop
+#' templates("Loop")
+#'
+#' # If ... else statement
+#' templates("Conditional")
+#'
 #' @export
 
-templates <- function(type) {
+templates <- function(type = NULL) {
+
   types <- list(
     function_documentation = c(
       "Function", "function",
@@ -166,17 +174,21 @@ templates <- function(type) {
     conditional = c(
       "Conditional", "conditional",
       "if", "6"
-    ),
-    plot_function = c()
+    )#,
+    # plot_function = c()
   )
 
   if (is.null(type)) {
+
+    message( 'Available template options:' )
+
     for (i in 1:length(types)) {
-      message(paste0(names(types[i])))
-      message(paste0(
-        "\t", types[[i]], "\n"
-      ))
+      message( paste0( '  - ', types[[i]][1] ) )
+      #message(paste0(
+      #  "\t", types[[i]], "\n"
+      #))
     }
+    type <- ''
   }
 
   if (type %in% types$function_documentation) {
@@ -226,10 +238,11 @@ templates <- function(type) {
       "# Create a progress bar using a base R function\n",
       "pb <- txtProgressBar( min = 1, max = n_cases, style = 3 )\n",
       "\n",
-      "# Loop over cases\n",
+      "#< Loop over cases\n",
       "for (i in 1:n_cases) {\n",
       "  # Update the progress bar\n",
       "  setTxtProgressBar(pb,i)\n",
+      "  #> Close loop 'Loop over cases'\n",
       "}\n",
       "close(pb); rm(pb)\n"
     )
@@ -267,9 +280,12 @@ templates <- function(type) {
   if (type %in% types$conditional) {
     string <- paste0(
       "#< Descriptor\n",
-      "if (value == check) {\n",
+      "if (value %in% values) {\n",
       "  # Do something\n",
       "  #> Close conditional 'Descriptor'\n",
+      "} else {\n",
+      "  # Do something else\n",
+      "  #> Close else for 'Descriptor'\n",
       "}"
     )
 
