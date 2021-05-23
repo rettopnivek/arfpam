@@ -42,6 +42,7 @@ reference:
   - add_axes
   - col_to_hex
   - error_bars
+  - apply_f_to_plot
 - title: "Statistics"
   desc: >
 

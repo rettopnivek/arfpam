@@ -704,7 +704,7 @@ col_to_hex <- function(col, alpha = 1) {
 #' error_bars(1:5, rbind(sm$LB, sm$UB))
 #' # Add error bars (as connected filled segment)
 #' error_bars(1:5, rbind(sm$LB, sm$UB),
-#'   arrow = FALSE, col = rgb(.5, .5, .5, .2), border = NA
+#'  arrow = FALSE, col = rgb(.5, .5, .5, .2), border = NA
 #' )
 #'
 #' # Histogram for draws from standard normal
@@ -840,7 +840,47 @@ error_bars <- function(pos, limits = NULL,
 #' @param ... ...
 #'
 #' @examples
-#' # Forthcoming
+#' # Use longitudinal data set on chick weights
+#' data( "ChickWeight" )
+#' # Average over different chicks by
+#' # time point and diet
+#' dtf <- aggregate(
+#'   ChickWeight$weight,
+#'   list( Time = ChickWeight$Time, Diet = ChickWeight$Diet ),
+#'   mean
+#' )
+#'
+#' # Specify grouping factor
+#' diet <- list_of_matches( dtf, 1:4, 'Diet' )
+#'
+#' # Specify aesthetics for points and lines
+#' dtf$col.p <- assign_by_match( palettes('colorblind')[1:4], diet )
+#' dtf$col.l <- dtf$col.p
+#'
+#' # Create base figure
+#' xl = c(-1, 23); yl = c(20, 300)
+#' par(mar = c(3, 3, .5, 4 )); blank_plot(xl, yl)
+#'
+#' # Axis lines
+#' xl[2] <- 21; hv_line(h = yl[1], l = xl, lwd = 2)
+#' hv_line(v = xl[1], l = yl, lwd = 2)
+#' # Grid lines
+#' hv_line(h = seq( 40, 280, 40), l = xl, lwd = 1, col = 'grey80' )
+#'
+#' # Axis labels and ticks
+#' add_axes( c( 0, 7, 14, 21 ), side = 1, line = -1 )
+#' mtext( 'Average weight', side = 2, line = 1.5, cex = 1.2 )
+#' add_axes( seq( 40, 280, 40 ), side = 2, line = -1 )
+#' mtext( 'Time', side = 1, line = 1.5, cex = 1.2 )
+#'
+#' # Legend
+#' day_21 <- dtf$Time == 21
+#' text( rep( 21.5, 4 ), dtf$x[day_21], 'Protein diet ' %p% 1:4,
+#'       pos = 4, col = dtf$col.p[day_21], xpd = NA )
+#'
+#' # Plot separate lines per diet
+#' apply_f_to_plot( dtf, entries = diet, vrb = c( 'Time', 'x' ) )
+#'
 #' @export
 
 apply_f_to_plot <- function(dtf,
@@ -849,6 +889,7 @@ apply_f_to_plot <- function(dtf,
                             ...) {
   if (is.null(f)) {
     f <- function(dtf,
+                  vrb = NULL,
                   col.l = "black",
                   lwd = 1,
                   lty = 1,
@@ -857,6 +898,11 @@ apply_f_to_plot <- function(dtf,
                   pch = 19,
                   cex = 1.2,
                   which_type = "both") {
+
+      if ( is.null( vrb ) ) {
+        vrb <- c( 'x', 'y' )
+      }
+
       if ("col.l" %in% colnames(dtf)) {
         col.l <- dtf[["col.l"]]
       }
@@ -880,12 +926,12 @@ apply_f_to_plot <- function(dtf,
       }
 
       if (which_type %in% c("lines", "l", "both", "b", "0", "1")) {
-        lines(dtf[["x"]], dtf[["y"]],
+        lines(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
           col = col.l, lwd = lwd, lty = lty
         )
       }
       if (which_type %in% c("points", "p", "both", "b", "0", "2")) {
-        points(dtf[["x"]], dtf[["y"]],
+        points(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
           col = col.p, bg = bg, pch = pch, cex = cex
         )
       }

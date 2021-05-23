@@ -89,7 +89,7 @@ plot(1:5, sm$M,
 error_bars(1:5, rbind(sm$LB, sm$UB))
 # Add error bars (as connected filled segment)
 error_bars(1:5, rbind(sm$LB, sm$UB),
-  arrow = FALSE, col = rgb(.5, .5, .5, .2), border = NA
+ arrow = FALSE, col = rgb(.5, .5, .5, .2), border = NA
 )
 
 # Histogram for draws from standard normal
