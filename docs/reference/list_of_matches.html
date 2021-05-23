@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>... — list_of_matches • arfpam</title>
+<title>Create List of Logical Vectors per Match — list_of_matches • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="... — list_of_matches" />
-<meta property="og:description" content="..." />
+<meta property="og:title" content="Create List of Logical Vectors per Match — list_of_matches" />
+<meta property="og:description" content="Creates a list of logical vectors, one
+for each match to an element in a list
+of categories." />
 
 
 
@@ -103,13 +105,15 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>...</h1>
+    <h1>Create List of Logical Vectors per Match</h1>
     
     <div class="hidden name"><code>list_of_matches.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>...</p>
+    <p>Creates a list of logical vectors, one
+for each match to an element in a list
+of categories.</p>
     </div>
 
     <pre class="usage"><span class='fu'>list_of_matches</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>categories</span>, column <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -119,24 +123,63 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>...</p></td>
+      <td><p>A vector or data frame.</p></td>
     </tr>
     <tr>
       <th>categories</th>
-      <td><p>...</p></td>
+      <td><p>A vector or list of values to match
+against <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>column</th>
-      <td></td>
+      <td><p>If <code>x</code> is a data frame, the column
+name for the values to match against.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>...</p>
+    <p>A list of logical vectors.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='apply_f_to_plot.html'>apply_f_to_plot</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Forthcoming</span>
+    <pre class="examples"><div class='input'><span class='co'># Use 'iris' species for example</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span> <span class='st'>"iris"</span> <span class='op'>)</span>; <span class='va'>dtf</span> <span class='op'>&lt;-</span> <span class='va'>iris</span>
+<span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span><span class='op'>)</span>
+
+<span class='co'># Regroup 3 iris species into 2 categories</span>
+<span class='va'>categories</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span> <span class='st'>'setosa'</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='st'>'versicolor'</span>, <span class='st'>'virginica'</span> <span class='op'>)</span> <span class='op'>)</span>
+<span class='va'>lst</span> <span class='op'>&lt;-</span> <span class='fu'>list_of_matches</span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span>, <span class='va'>categories</span> <span class='op'>)</span>
+<span class='co'># New categories versus original species</span>
+<span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>; <span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span><span class='op'>[</span> <span class='va'>lst</span><span class='op'>[[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span> <span class='op'>)</span>, <span class='va'>unique</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt;      Group.1 x
+#&gt; 1     setosa 1
+#&gt; 2 versicolor 2
+#&gt; 3  virginica 2</div><div class='input'>
+<span class='co'># Alternate specification using 'column' argument</span>
+<span class='va'>lst</span> <span class='op'>&lt;-</span> <span class='fu'>list_of_matches</span><span class='op'>(</span> <span class='va'>dtf</span>, <span class='va'>categories</span>, <span class='st'>'Species'</span> <span class='op'>)</span>
+<span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>; <span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span><span class='op'>[</span> <span class='va'>lst</span><span class='op'>[[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span> <span class='op'>)</span>, <span class='va'>unique</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt;      Group.1 x
+#&gt; 1     setosa 1
+#&gt; 2 versicolor 2
+#&gt; 3  virginica 2</div><div class='input'>
+<span class='co'># Can match NA values</span>
+<span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span><span class='op'>[</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='fl'>1</span>, <span class='fl'>51</span>, <span class='fl'>101</span> <span class='op'>)</span> <span class='op'>]</span> <span class='op'>&lt;-</span> <span class='cn'>NA</span>
+<span class='co'># Add NA to category list</span>
+<span class='va'>categories</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='va'>categories</span>, <span class='cn'>NA</span> <span class='op'>)</span>
+<span class='va'>lst</span> <span class='op'>&lt;-</span> <span class='fu'>list_of_matches</span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span>, <span class='va'>categories</span> <span class='op'>)</span>
+<span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>; <span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span><span class='op'>[</span> <span class='va'>lst</span><span class='op'>[[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>; <span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span><span class='op'>[</span> <span class='va'>lst</span><span class='op'>[[</span><span class='fl'>3</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fl'>3</span>
+<span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span><span class='op'>[</span> <span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span> <span class='op'>)</span> <span class='op'>]</span> <span class='op'>&lt;-</span> <span class='st'>'Was NA'</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>New</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span> <span class='va'>dtf</span><span class='op'>$</span><span class='va'>Species</span> <span class='op'>)</span>, <span class='va'>unique</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt;      Group.1 x
+#&gt; 1     setosa 1
+#&gt; 2 versicolor 2
+#&gt; 3  virginica 2
+#&gt; 4     Was NA 3</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

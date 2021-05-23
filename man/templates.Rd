@@ -13,7 +13,9 @@ with options for...
 \item 'Function (function documentation);
 \item 'Header' (header for a R script);
 \item 'Progress' (progress bar for a loop);
-\item 'Segment' (code segment to conditionally run).
+\item 'Segment' (code segment to conditionally run);
+\item 'Loop' (a \code{for} loop statement);
+\item 'Conditional' (a \code{if} statement).
 }}
 }
 \description{

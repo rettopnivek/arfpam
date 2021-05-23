@@ -830,7 +830,7 @@ error_bars <- function(pos, limits = NULL,
 ### 8)
 ###
 
-#' ...
+#' Applies a Function to Add Elements to a Plot
 #'
 #' ...
 #'

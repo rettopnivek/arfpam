@@ -29,6 +29,8 @@ reference:
   - empty_list
   - find_file_name
   - make_file_name
+  - list_of_matches
+  - assign_by_match
 - title: "Plotting"
   desc: >
 

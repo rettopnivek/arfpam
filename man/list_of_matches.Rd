@@ -2,23 +2,54 @@
 % Please edit documentation in R/S03_Utilities.R
 \name{list_of_matches}
 \alias{list_of_matches}
-\title{...}
+\title{Create List of Logical Vectors per Match}
 \usage{
 list_of_matches(x, categories, column = NULL)
 }
 \arguments{
-\item{x}{...}
+\item{x}{A vector or data frame.}
 
-\item{categories}{...}
+\item{categories}{A vector or list of values to match
+against \code{x}.}
 
-\item{column}{}
+\item{column}{If \code{x} is a data frame, the column
+name for the values to match against.}
 }
 \value{
-...
+A list of logical vectors.
 }
 \description{
-...
+Creates a list of logical vectors, one
+for each match to an element in a list
+of categories.
 }
 \examples{
-# Forthcoming
+# Use 'iris' species for example
+data( "iris" ); dtf <- iris
+dtf$Species <- as.character(dtf$Species)
+
+# Regroup 3 iris species into 2 categories
+categories <- list( 'setosa', c( 'versicolor', 'virginica' ) )
+lst <- list_of_matches( dtf$Species, categories )
+# New categories versus original species
+dtf$New <- 1; dtf$New[ lst[[2]] ] <- 2
+aggregate( dtf$New, list( dtf$Species ), unique )
+
+# Alternate specification using 'column' argument
+lst <- list_of_matches( dtf, categories, 'Species' )
+dtf$New <- 1; dtf$New[ lst[[2]] ] <- 2
+aggregate( dtf$New, list( dtf$Species ), unique )
+
+# Can match NA values
+dtf$Species[ c( 1, 51, 101 ) ] <- NA
+# Add NA to category list
+categories <- c( categories, NA )
+lst <- list_of_matches( dtf$Species, categories )
+dtf$New <- 1; dtf$New[ lst[[2]] ] <- 2; dtf$New[ lst[[3]] ] <- 3
+dtf$Species[ is.na( dtf$Species ) ] <- 'Was NA'
+aggregate( dtf$New, list( dtf$Species ), unique )
+
+}
+\seealso{
+\code{\link{apply_f_to_plot}}
 }

@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-20
+# Last updated 2021-05-22
 
 # Table of contents
 # 1) over
@@ -19,12 +19,15 @@
 # 9) File name functions
 #   9.1) find_file_name
 #   9.2) make_file_name
-# 10) list_of_matches
+# 10) Matching and assignment
+#   10.1) list_of_matches
+#   10.2) assign_to_match
 # 11) env_path
 
 # TO DO
 # - Custom tests for 'find_file_name', 'make_file_name', 'env_path'
 # - Add documentation for 'env_path'
+# - Add unit tests for 'list_of_matches' and 'assign_to_match'
 
 ###
 ### 1) over
@@ -105,7 +108,9 @@ over <- function(x, iter,
 #'     \item 'Function (function documentation);
 #'     \item 'Header' (header for a R script);
 #'     \item 'Progress' (progress bar for a loop);
-#'     \item 'Segment' (code segment to conditionally run).
+#'     \item 'Segment' (code segment to conditionally run);
+#'     \item 'Loop' (a \code{for} loop statement);
+#'     \item 'Conditional' (a \code{if} statement).
 #'   }
 #'
 #' @examples
@@ -153,6 +158,14 @@ templates <- function(type) {
       "Section", "section",
       "Code", "code",
       "4"
+    ),
+    loop = c(
+      "Loop", "loop",
+      "for", "5"
+    ),
+    conditional = c(
+      "Conditional", "conditional",
+      "if", "6"
     ),
     plot_function = c()
   )
@@ -238,6 +251,31 @@ templates <- function(type) {
 
     message(string)
   }
+
+  if (type %in% types$loop) {
+    string <- paste0(
+      "#< Descriptor\n",
+      "for (i in 1:n) {\n",
+      "  # Do something\n",
+      "  #> Close loop 'Descriptor'\n",
+      "}"
+    )
+
+    message(string)
+  }
+
+  if (type %in% types$conditional) {
+    string <- paste0(
+      "#< Descriptor\n",
+      "if (value == check) {\n",
+      "  # Do something\n",
+      "  #> Close conditional 'Descriptor'\n",
+      "}"
+    )
+
+    message(string)
+  }
+
 }
 
 ###
@@ -850,35 +888,141 @@ make_file_name <- function(description,
 }
 
 ###
-### 10)
+### 10) Matching and assignment
 ###
 
-#' ...
+# 10.1) func_for_list_of_matches
+# Internal Function for 'list_of_matches'
+#
+# Internal function to be used in 'list_of_matches
+# that mirrors `%in%` but can also test for NA
+# values.
+#
+# @param categories
+# @param vec
+#
+# @return A logical vector
+
+func_for_list_of_matches <- function(categories,
+                                     vec) {
+  #< If any NA values
+  if ( any( is.na( categories ) ) ) {
+
+    # Detect NA values in 'vec'
+    return( is.na( vec ) )
+
+    #> Close conditional 'If any NA values'
+  } else {
+
+    # Determines matches with 'categories' in 'vec'
+    return( vec %in% categories )
+
+    #> Close else for 'If any NA values'
+  }
+}
+
+# 10.2) list_of_matches
+#' Create List of Logical Vectors per Match
 #'
-#' ...
+#' Creates a list of logical vectors, one
+#' for each match to an element in a list
+#' of categories.
 #'
-#' @param x ...
-#' @param categories ...
-#' @param column
+#' @param x A vector or data frame.
+#' @param categories A vector or list of values to match
+#'   against \code{x}.
+#' @param column If \code{x} is a data frame, the column
+#'   name for the values to match against.
 #'
-#' @return ...
+#' @seealso \code{\link{apply_f_to_plot}}
+#'
+#' @return A list of logical vectors.
 #'
 #' @examples
-#' # Forthcoming
+#' # Use 'iris' species for example
+#' data( "iris" ); dtf <- iris
+#' dtf$Species <- as.character(dtf$Species)
+#'
+#' # Regroup 3 iris species into 2 categories
+#' categories <- list( 'setosa', c( 'versicolor', 'virginica' ) )
+#' lst <- list_of_matches( dtf$Species, categories )
+#' # New categories versus original species
+#' dtf$New <- 1; dtf$New[ lst[[2]] ] <- 2
+#' aggregate( dtf$New, list( dtf$Species ), unique )
+#'
+#' # Alternate specification using 'column' argument
+#' lst <- list_of_matches( dtf, categories, 'Species' )
+#' dtf$New <- 1; dtf$New[ lst[[2]] ] <- 2
+#' aggregate( dtf$New, list( dtf$Species ), unique )
+#'
+#' # Can match NA values
+#' dtf$Species[ c( 1, 51, 101 ) ] <- NA
+#' # Add NA to category list
+#' categories <- c( categories, NA )
+#' lst <- list_of_matches( dtf$Species, categories )
+#' dtf$New <- 1; dtf$New[ lst[[2]] ] <- 2; dtf$New[ lst[[3]] ] <- 3
+#' dtf$Species[ is.na( dtf$Species ) ] <- 'Was NA'
+#' aggregate( dtf$New, list( dtf$Species ), unique )
+#'
 #' @export
 
 list_of_matches <- function(x, categories, column = NULL) {
 
-  #< ...
+  #< If "x" is a vector
   if (is.null(column)) {
-    return(lapply(categories, function(y) x %in% y))
+    return(lapply(categories, func_for_list_of_matches, vec = x))
 
-    # > Close conditional
+    # > Close conditional 'If "x" is a vector'
   } else {
-    return(lapply(categories, function(y) x[[column]] %in% y))
+    return(lapply(categories, func_for_list_of_matches, vec = x[[column]]))
 
-    # > Close conditional
+    # > Close else for 'If "x" is a vector'
   }
+}
+
+# 10.3)
+#' Create Vector with Values Assigned Based on a List of Matches
+#'
+#' This function takes a list of logical vectors equal to
+#' \code{TRUE} for different subsets of a vector, and
+#' generates a new vector with user-specified values based
+#' on each subset from the list.
+#'
+#' @param values A vector of values equal in length to
+#'   \code{matches}.
+#' @param matches A list of logical vectors each of size N
+#'   (see \code{\link{list_of_matches}}).
+#' @param default The default value used to initialize the
+#'   output vector.
+#'
+#' @seealso \code{\link{apply_f_to_plot}}
+#'
+#' @return A vector of size N.
+#'
+#' @examples
+#' # Use 'iris' species for example
+#' data( "iris" ); dtf <- iris
+#'
+#' # Regroup 3 iris species into 2 categories
+#' categories <- list( 'setosa', c( 'versicolor', 'virginica' ) )
+#' lst <- list_of_matches( dtf$Species, categories )
+#' dtf$Category <- assign_by_match(1:2, lst)
+#' aggregate( dtf$Category, list( dtf$Species ), unique )
+#'
+#' @export
+
+assign_by_match <- function( values, matches, default = NA ) {
+
+  out <- rep( default, length( matches[[1]] ) )
+
+  #< Loop over matches
+  for ( i in 1:length( matches ) ) {
+    # Assign new value
+    out[ matches[[i]] ] <- values[i]
+    #> Close loop 'Loop over matches'
+  }
+
+  return( out )
 }
 
 ###

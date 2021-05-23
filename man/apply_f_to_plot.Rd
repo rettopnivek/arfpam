@@ -2,7 +2,7 @@
 % Please edit documentation in R/S04_Plotting.R
 \name{apply_f_to_plot}
 \alias{apply_f_to_plot}
-\title{...}
+\title{Applies a Function to Add Elements to a Plot}
 \usage{
 apply_f_to_plot(dtf, entries = NULL, f = NULL, ...)
 }
