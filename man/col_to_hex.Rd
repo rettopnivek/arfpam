@@ -9,7 +9,7 @@ col_to_hex(col, alpha = 1)
 \arguments{
 \item{col}{A character string corresponding to
 a supported color name (e.g., 'blue', 'darkred', etc.).
-See \code{\link[graphics]{colors}}.}
+See \code{\link[grDevices]{colors}}.}
 
 \item{alpha}{Degree of transparency from
 0 (transparent) to 1 (opaque).}

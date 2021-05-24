@@ -39,14 +39,14 @@ at the specified positions.}
 \item{line}{The number of lines into the margin at which
 the axis line will be drawn. If \code{degrees} does not
 equal \code{NULL}, must be specified relative
-current plotting region (use \code{\link[MASS:text]{par()$usr}}
+current plotting region (use \code{\link[graphics:text]{par()$usr}}
 to get x and y-axis coordinates for plot region).}
 
 \item{cex}{Size of the text.}
 
 \item{degrees}{Number of degrees to rotate text
-(note results in a call to \code{\link[MASS:text]{text()}}
-rather than \code{\link[MASS:axis]{axis()}}).}
+(note results in a call to \code{\link[graphics:text]{text()}}
+rather than \code{\link[graphics:axis]{axis()}}).}
 
 \item{xpd}{A logical value or \code{NA}. If \code{FALSE},
 all plotting is clipped to the plot region. If \code{TRUE},

@@ -22,7 +22,8 @@
 # 10) Matching and assignment
 #   10.1) list_of_matches
 #   10.2) assign_to_match
-# 11) env_path
+# 11) dnr
+# 12) env_path
 
 # TO DO
 # - Custom tests for 'find_file_name', 'make_file_name', 'env_path'
@@ -1043,6 +1044,39 @@ assign_by_match <- function( values, matches, default = NA ) {
 
 ###
 ### 11)
+###
+
+#' Do Not Run Multi-Line Code Segments
+#'
+#' Allows a user to write out multiple
+#' lines of R code that will not be run.
+#'
+#' @param x Any syntactically valid \code{R} expression.
+#'
+#' @examples
+#' # Will not run
+#' dnr({
+#'   print('Hello')
+#'   print('world')
+#' })
+#'
+#' # Can be used to also create
+#' # multi-line commments
+#' dnr("
+#' Here are multiple
+#' lines of text
+#' ")
+#'
+#' @export
+
+dnr <- function(x) {
+  if ( FALSE ) {
+    substitute(x)
+  }
+}
+
+###
+### 12)
 ###
 
 #' ...

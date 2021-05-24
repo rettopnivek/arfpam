@@ -31,6 +31,7 @@ reference:
   - make_file_name
   - list_of_matches
   - assign_by_match
+  - dnr
 - title: "Plotting"
   desc: >
 
