@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-20
+# Last updated 2021-06-15
 
 # Table of contents
 # 1) sem
@@ -12,6 +12,7 @@
 # 4) pvalues
 # 5) bootstrap
 # 6) summa
+# 7) bounds
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
@@ -1027,4 +1028,42 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
   }
 
   return(out)
+}
+
+###
+### 7) bounds
+###
+
+#' Lower and Upper Limits for Confidence or Credible Intervals
+#'
+#' Given a desired width, computes the lower and upper limit
+#' for a confidence or credible interval. Can be combined
+#' with functions like \code{\link[stat]{quantile}} or
+#' the quantile functions for assorted probability
+#' distributions( e.g., \code{\link[stats:Normal]{qnorm}},
+#' \code{\link[stats:Beta]{qbeta}}, etc.).
+#'
+#' @param width The width of the interval, a numeric value
+#'   between 0 and 1.
+#'
+#' @return A vector with the lower and upper limits.
+#'
+#' @examples
+#' # Lower and upper limits of 95% interval
+#' bounds( .95 )
+#' # Example data
+#' x <- rnorm( 100, mean = 100, sd = 15 )
+#' # 95% confidence interval around mean
+#' mean(x) + qnorm( bounds( .95 ) ) * sem( x )
+#' # Predicted
+#' qnorm( bounds( .95 ), mean = 100, sd = 15/sqrt(100) )
+#' # The 1st and 3rd quartiles
+#' quantile( x, bounds( .5 ) )
+#'
+#' @export
+
+bounds <- function( width ) {
+
+  return( .5 + c( -.5, .5 )*width )
+
 }

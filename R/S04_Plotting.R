@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-20
+# Last updated 2021-06-15
 
 # Table of contents
 # 1) blank_plot
@@ -17,10 +17,6 @@
 
 # TO DO
 # - Add additional color palettes
-# - Fix issue where website does not draw figures
-# - Add option for 'add_f_to_plot' to return template
-#   for plotting function
-# - Add documentation for 'apply_f_to_plot' function
 
 ###
 ### 1) blank_plot
@@ -831,12 +827,21 @@ error_bars <- function(pos, limits = NULL,
 
 #' Applies a Function to Add Elements to a Plot
 #'
-#' ...
+#' Given a data frame of values to plot,
+#' applies a plotting function (optionally
+#' based on a grouping factor) to add
+#' elements to an existing plot.
 #'
-#' @param dtf ...
-#' @param entries ...
-#' @param f ...
-#' @param ... ...
+#' @param dtf A data frame with the data to plot.
+#' @param entries List of logical vectors, each
+#'   matching in length to the number of rows in
+#'   \code{dtf}.
+#' @param f A plotting function. If \code{NULL}
+#'   defaults to a function that draws
+#'   connected lines with points based on
+#'   the groupings defined by \code{entries}.
+#' @param ... Additional arguments to be passed
+#'   to the plotting function \code{f}.
 #'
 #' @examples
 #' # Use longitudinal data set on chick weights
@@ -880,12 +885,92 @@ error_bars <- function(pos, limits = NULL,
 #' # Plot separate lines per diet
 #' apply_f_to_plot( dtf, entries = diet, vrb = c( 'Time', 'x' ) )
 #'
+#' # Demonstration of how to set options for default function
+#' obs <- data.frame(
+#'   x = c( 1:3, 1:3, 1:3 ),
+#'   y = rep( 1:3, each = 3 ),
+#'   group = rep( 1:3, each = 3 ),
+#'   # Set line colors
+#'   col.l = rep( palettes( index = 1:3 ), each = 3 ),
+#'   # Set line widths
+#'   lwd = rep( 1:3, each = 3 ),
+#'   # Set line type
+#'   lty = rep( 1:3, each = 3 ),
+#'   # Set point type
+#'   pch = rep( c(21,22,24), 3 ),
+#'   # Set point color
+#'   col.p = 'black',
+#'   # Set background point color
+#'   bg = 'grey',
+#'   # Point size
+#'   cex = rep( c( 1, 2, 3 ), 3 )
+#' )
+#'
+#' blank_plot( c(.5,3.5), c(.5,3.5) )
+#' apply_f_to_plot( obs, list_of_matches( obs$group, 1:3 ) )
+#'
 #' @export
 
 apply_f_to_plot <- function(dtf,
                             entries = NULL,
                             f = NULL,
                             ...) {
+
+  if ( is.null( dtf ) ) {
+
+    func_template <- '
+    f <- function(dtf,
+                  vrb = NULL,
+                  col.l = "black",
+                  lwd = 1,
+                  lty = 1,
+                  bg = "white",
+                  col.p = "black",
+                  pch = 19,
+                  cex = 1.2,
+                  which_type = "both") {
+
+      if ( is.null( vrb ) ) {
+        vrb <- c( "x", "y" )
+      }
+
+      if ("col.l" %in% colnames(dtf)) {
+        col.l <- dtf[["col.l"]]
+      }
+      if ("lwd" %in% colnames(dtf)) {
+        lwd <- dtf[["lwd"]]
+      }
+      if ("lty" %in% colnames(dtf)) {
+        lty <- dtf[["lty"]]
+      }
+      if ("bg" %in% colnames(dtf)) {
+        bg <- dtf[["bg"]]
+      }
+      if ("col.p" %in% colnames(dtf)) {
+        col.p <- dtf[["col.p"]]
+      }
+      if ("pch" %in% colnames(dtf)) {
+        pch <- dtf[["pch"]]
+      }
+      if ("cex" %in% colnames(dtf)) {
+        cex <- dtf[["cex"]]
+      }
+
+      if (which_type %in% c("lines", "l", "both", "b", "0", "1")) {
+        lines(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
+              col = col.l, lwd = lwd, lty = lty
+        )
+      }
+      if (which_type %in% c("points", "p", "both", "b", "0", "2")) {
+        points(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
+               col = col.p, bg = bg, pch = pch, cex = cex
+        )
+      }
+    }'
+    cat( func_template )
+    return( invisible(NULL) )
+  }
+
   if (is.null(f)) {
     f <- function(dtf,
                   vrb = NULL,

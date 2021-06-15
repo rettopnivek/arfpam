@@ -7,16 +7,25 @@
 apply_f_to_plot(dtf, entries = NULL, f = NULL, ...)
 }
 \arguments{
-\item{dtf}{...}
+\item{dtf}{A data frame with the data to plot.}
 
-\item{entries}{...}
+\item{entries}{List of logical vectors, each
+matching in length to the number of rows in
+\code{dtf}.}
 
-\item{f}{...}
+\item{f}{A plotting function. If \code{NULL}
+defaults to a function that draws
+connected lines with points based on
+the groupings defined by \code{entries}.}
 
-\item{...}{...}
+\item{...}{Additional arguments to be passed
+to the plotting function \code{f}.}
 }
 \description{
-...
+Given a data frame of values to plot,
+applies a plotting function (optionally
+based on a grouping factor) to add
+elements to an existing plot.
 }
 \examples{
 # Use longitudinal data set on chick weights
@@ -59,5 +68,29 @@ text( rep( 21.5, 4 ), dtf$x[day_21], 'Protein diet ' \%p\% 1:4,
 
 # Plot separate lines per diet
 apply_f_to_plot( dtf, entries = diet, vrb = c( 'Time', 'x' ) )
+
+# Demonstration of how to set options for default function
+obs <- data.frame(
+  x = c( 1:3, 1:3, 1:3 ),
+  y = rep( 1:3, each = 3 ),
+  group = rep( 1:3, each = 3 ),
+  # Set line colors
+  col.l = rep( palettes( index = 1:3 ), each = 3 ),
+  # Set line widths
+  lwd = rep( 1:3, each = 3 ),
+  # Set line type
+  lty = rep( 1:3, each = 3 ),
+  # Set point type
+  pch = rep( c(21,22,24), 3 ),
+  # Set point color
+  col.p = 'black',
+  # Set background point color
+  bg = 'grey',
+  # Point size
+  cex = rep( c( 1, 2, 3 ), 3 )
+)
+
+blank_plot( c(.5,3.5), c(.5,3.5) )
+apply_f_to_plot( obs, list_of_matches( obs$group, 1:3 ) )
 
 }
