@@ -32,6 +32,7 @@ reference:
   - list_of_matches
   - assign_by_match
   - dnr
+  - create_table_of_contents
 - title: "Plotting"
   desc: >
 

@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-06-15
+# Last updated 2021-06-30
 
 # Table of contents
 # 1) blank_plot
@@ -18,10 +18,7 @@
 # TO DO
 # - Add additional color palettes
 
-###
-### 1) blank_plot
-###
-
+#### 1) blank_plot ####
 #' Generate a Blank Plot
 #'
 #' This function generates a completely blank plot.
@@ -89,10 +86,7 @@ blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
   }
 }
 
-###
-### 2) palettes
-###
-
+#### 2) palettes ####
 #' Various Color Palettes
 #'
 #' Returns a vector of hex color values
@@ -227,10 +221,7 @@ palettes <- function(type = "colorblind",
   }
 }
 
-###
-### 3) hv_line
-###
-
+#### 3) hv_line ####
 #' Draw Horizontal/Vertical Lines
 #'
 #' Draws horizontal or vertical lines on an
@@ -292,10 +283,7 @@ hv_line <- function(h = NULL, v = NULL, l = NULL, ...) {
   }
 }
 
-###
-### 4) fill_plot
-###
-
+#### 4) fill_plot ####
 #' Add Filled Vertical/Horizontal Bar
 #'
 #' Adds a vertical or horizontal filled bar
@@ -389,10 +377,7 @@ fill_plot <- function(x = NULL, y = NULL, l = NULL,
   }
 }
 
-###
-### 5) add_axes
-###
-
+#### 5) add_axes ####
 #' Add Axes to a Plot
 #'
 #' Wrapper for a call to either \code{\link[graphics]{axis}}
@@ -589,11 +574,7 @@ add_axes <- function(at, labels = NULL,
   }
 }
 
-
-###
-### 6) col_to_hex
-###
-
+#### 6) col_to_hex ####
 #' Convert Colors to Hex Codes
 #'
 #' Convert a color name to a hex color code.
@@ -632,10 +613,7 @@ col_to_hex <- function(col, alpha = 1) {
   return(out)
 }
 
-###
-### 7) error_bars
-###
-
+#### 7) error_bars ####
 #' Add Error Bars to a Plot
 #'
 #' Adds error bars to an existing plot.
@@ -821,10 +799,7 @@ error_bars <- function(pos, limits = NULL,
   }
 }
 
-###
-### 8)
-###
-
+#### 8) apply_f_to_plot ####
 #' Applies a Function to Add Elements to a Plot
 #'
 #' Given a data frame of values to plot,

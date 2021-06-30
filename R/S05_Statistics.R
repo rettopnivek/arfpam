@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-06-15
+# Last updated 2021-06-30
 
 # Table of contents
 # 1) sem
@@ -18,10 +18,7 @@
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
 #   'pvalues', 'bootstrap', and 'summa'
 
-###
-### 1) sem
-###
-
+#### 1) sem ####
 #' Standard Error of the Mean
 #'
 #' This function calculates the standard error
@@ -58,10 +55,7 @@ sem <- function(x, na.rm = TRUE) {
   return(sd(x) / sqrt(length(x)))
 }
 
-###
-### 2) statistic
-###
-
+#### 2) statistic ####
 #' Compute a Statistic
 #'
 #' This function robustly computes a statistic
@@ -161,10 +155,7 @@ statistic <- function(x,
   return(out)
 }
 
-###
-### 3) boxcox_transform
-###
-
+#### 3) boxcox_transform ####
 #' Box-Cox Transformations for Linear Model
 #'
 #' Wrapper function to the \code{\link[MASS]{boxcox}}
@@ -307,10 +298,7 @@ boxcox_transform <- function(x,
   return(out)
 }
 
-###
-### 4) pvalues
-###
-
+#### 4) pvalues ####
 #' Compute and Format P-values
 #'
 #' Given a set of Monte Carlo
@@ -504,10 +492,7 @@ pvalues <- function(x,
   return(out)
 }
 
-###
-### 5) bootstrap
-###
-
+#### 5) bootstrap ####
 #' Non-Parametric Bootstrap
 #'
 #' Computes a test statistic over multiple
@@ -608,10 +593,7 @@ bootstrap <- function(x, t_x = mean, N = 1000,
   return(out)
 }
 
-###
-### 6) summa
-###
-
+#### 6) summa ####
 #' Flexible Formatted Summary Statistics
 #'
 #' A function that allows users to create
@@ -1030,10 +1012,7 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
   return(out)
 }
 
-###
-### 7) bounds
-###
-
+#### 7) bounds ####
 #' Lower and Upper Limits for Confidence or Credible Intervals
 #'
 #' Given a desired width, computes the lower and upper limit

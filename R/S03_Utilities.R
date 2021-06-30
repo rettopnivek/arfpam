@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-22
+# Last updated 2021-06-30
 
 # Table of contents
 # 1) over
@@ -23,17 +23,15 @@
 #   10.1) list_of_matches
 #   10.2) assign_to_match
 # 11) dnr
-# 12) env_path
+# 12) create_table_of_contents
+# 13) path_from_env_var
 
 # TO DO
-# - Custom tests for 'find_file_name', 'make_file_name', 'env_path'
-# - Add documentation for 'env_path'
+# - Custom tests for 'find_file_name', 'make_file_name',
+#   'dnr', 'create_table_of_contents', 'path_from_env_var'
 # - Add unit tests for 'list_of_matches' and 'assign_to_match'
 
-###
-### 1) over
-###
-
+#### 1) over ####
 #' A Sequence Adjusted by an Iterator
 #'
 #' A function that takes a sequence of values
@@ -93,10 +91,7 @@ over <- function(x, iter,
   return(x + per * (iter + adj))
 }
 
-###
-### 2) templates
-###
-
+#### 2) templates ####
 #' Create Templates for Annotations and Code
 #'
 #' Outputs a template of common annotations
@@ -295,10 +290,7 @@ templates <- function(type = NULL) {
 
 }
 
-###
-### 3) section
-###
-
+#### 3) section ####
 #' Section Numbers for Tracking Progress
 #'
 #' Output section numbers to the console via
@@ -350,10 +342,7 @@ section <- function(x, run = TRUE,
   }
 }
 
-###
-### 4) every
-###
-
+#### 4) every ####
 #' Sequence of Values in Regular Increments
 #'
 #' Extracts a sequence of values from a
@@ -390,8 +379,7 @@ section <- function(x, run = TRUE,
 #' x
 NULL
 
-# 4.1)
-
+#### 4.1) `every` ####
 #' @rdname every
 #' @export
 
@@ -399,8 +387,7 @@ every <- function(x, step = 2, start = 1) {
   return(x[seq(start, length(x), step)])
 }
 
-# 4.2)
-
+#### 4.2) `every<-` ####
 #' @rdname every
 #' @export
 
@@ -410,10 +397,7 @@ every <- function(x, step = 2, start = 1) {
   return(x)
 }
 
-###
-### 5) has_NA
-###
-
+#### 5) has_NA ####
 #' Identify NA Values by Row
 #'
 #' Identifies rows in a matrix or data frame
@@ -467,10 +451,7 @@ has_NA <- function(x, any = TRUE) {
   return(out)
 }
 
-###
-### 6) print_table
-###
-
+#### 6) print_table ####
 #' Print a Nicely Formatted Table
 #'
 #' Given a data frame, prints to console
@@ -554,10 +535,7 @@ print_table <- function(tbl, return = F) {
   }
 }
 
-###
-### 7) lin
-###
-
+#### 7) lin ####
 #' Create Linear Sequence of Evenly Spaced Values
 #'
 #' Generates a sequence of evenly spaced
@@ -578,10 +556,7 @@ lin <- function(start, end, n_intervals) {
   return(seq(start, end, length.out = n_intervals))
 }
 
-###
-### 8) empty_list
-###
-
+#### 8) empty_list ####
 #' Create an Empty List
 #'
 #' Creates a list with a specified
@@ -619,12 +594,9 @@ empty_list <- function(size, labels = NULL) {
   return(lst)
 }
 
-###
-### 9) File name functions
-###
+#### 9) File name functions ####
 
-# 9.1) find_file_name
-
+#### 9.1) find_file_name ####
 #' Check if a File Name can be Found
 #'
 #' Checks if a file name can be found
@@ -703,8 +675,7 @@ find_file_name <- function(string,
   }
 }
 
-# 9.2) make_file_name
-
+#### 9.2) make_file_name ####
 #' Create Formatted File Name
 #'
 #' Create a standardized file name of the
@@ -904,11 +875,9 @@ make_file_name <- function(description,
   return(filename)
 }
 
-###
-### 10) Matching and assignment
-###
+#### 10) Matching and assignment ####
 
-# 10.1) func_for_list_of_matches
+#### 10.1) func_for_list_of_matches ####
 # Internal Function for 'list_of_matches'
 #
 # Internal function to be used in 'list_of_matches
@@ -938,7 +907,7 @@ func_for_list_of_matches <- function(categories,
   }
 }
 
-# 10.2) list_of_matches
+#### 10.2) list_of_matches ####
 #' Create List of Logical Vectors per Match
 #'
 #' Creates a list of logical vectors, one
@@ -997,7 +966,7 @@ list_of_matches <- function(x, categories, column = NULL) {
   }
 }
 
-# 10.3)
+#### 10.3) ####
 #' Create Vector with Values Assigned Based on a List of Matches
 #'
 #' This function takes a list of logical vectors equal to
@@ -1042,10 +1011,7 @@ assign_by_match <- function( values, matches, default = NA ) {
   return( out )
 }
 
-###
-### 11)
-###
-
+#### 11) dnr ####
 #' Do Not Run Multi-Line Code Segments
 #'
 #' Allows a user to write out multiple
@@ -1075,123 +1041,130 @@ dnr <- function(x) {
   }
 }
 
-###
-### 12)
-###
-
-#' ...
+#### 12) create_table_of_contents ####
+#' Create a Table of Contents
 #'
-#' ...
+#' Given a path to an R script, creates a
+#' table of contents by searching for
+#' section headers of the form:
+#' \code{#### X) Label ####} where \code{X} is a
+#' numbering scheme (e.g.,1, 2.1, 3.2.1)
+#' with periods denoting nested sub-sections.
 #'
-#' @param x ...
+#' @param file_path An absolute path to the
+#'   R script.
 #'
-#' @return ...
+#' @return Outputs a message to the R console
+#' window with the table of contents.
 #'
-#' @examples
-#' # Forthcoming
 #' @export
 
-env_path <- function(filename = NULL,
-                     label = NULL,
-                     subfolders = "",
-                     folder_names = c(
-                       "Data",
-                       "Documents",
-                       "Figures",
-                       "Output",
-                       "Source",
-                       "R"
-                     ),
-                     labels = list(
-                       c("Data", "data"),
-                       c("Documents", "doc"),
-                       c("Figures", "fig"),
-                       c("Output", "out"),
-                       c("Source", "src"),
-                       "R"
-                     )) {
+create_table_of_contents <- function( file_path ) {
 
-  #< ...
-  if (is.null(filename) & is.null(label)) {
-    all_files <- dir(all.files = TRUE)
-    check_for_env_file <- grepl(".env", all_files, fixed = TRUE)
+  script_code <- scan(
+    file = file_path,
+    what = 'character', sep = '\n',
+    quiet = TRUE
+  )
 
-    #<| ...
-    if (any(check_for_env_file)) {
-      env_file <- all_files[check_for_env_file]
+  four_asterisks <- sapply(
+    script_code,
+    function(x) grepl( '####', x, fixed = T )
+  )
 
-      env_content <- scan(
-        file = env_file,
-        what = "character", sep = "\n"
+  section_headers <- script_code[ four_asterisks ]
+
+  section_headers <-
+    gsub( '#### ', '', section_headers, fixed = TRUE )
+  section_headers <-
+    gsub( ' ####', '', section_headers, fixed = TRUE )
+
+  pull_num <- function( s ) {
+    out <- strsplit( s, split = ')', fixed = T )[[1]][1]
+    out <- gsub( " ", "", out, fixed = T )
+    out <- paste0( out, ')' )
+
+    n_periods <- sum(
+      grepl(
+        ".", strsplit( out, split = "" )[[1]], fixed = T
       )
-
-      paths_present <-
-        "# Absolute paths for project folders" %in% env_content
-
-      #<|< ...
-      if (!paths_present) {
-        env_var <- paste0("PROJECT_FOLDER_", toupper(folder_names))
-
-        write("# Absolute paths for project folders",
-          file = env_file, append = TRUE
-        )
-
-        #<|<| ...
-        for (i in 1:length(folder_names)) {
-
-          #<|<|<
-          if (folder_names[i] %in% all_files) {
-            write(paste0(
-              env_var[i], "=",
-              paste0(
-                getwd(), "/",
-                folder_names[i]
-              )
-            ),
-            file = env_file,
-            append = TRUE
-            )
-
-            # >|>|> Close conditional
-          }
-
-          #|>|> Close loop
-        }
-
-        # >|> Close conditional
-      }
-
-      #|> Close conditional
+    )
+    if ( n_periods > 0 ) {
+      out <- paste0(
+        paste( rep( "  ", n_periods ), collapse = "" ),
+        out
+      )
     }
 
-    # > Close conditional
+    return( out )
+  }
+  section_labels <- sapply(
+    section_headers,
+    function(s) strsplit( s, split = ')', fixed = T )[[1]][2]
+  )
+
+  out <- paste0(
+    '# ',
+    sapply( section_headers, pull_num ),
+    section_labels,
+    '\n'
+  )
+  out <- c( '# Table of contents\n', out )
+
+  message( out )
+}
+
+
+#### 13) path_from_env_var ####
+#' File/Folder Path From an Environment Variable
+#'
+#' Returns the associated absolute folder path
+#' stored in an existing environment variable,
+#' or the path to a file located in the associated
+#' folder.
+#'
+#' @param env_var A character string, the name for
+#'   the environment variable.
+#' @param file_name A character string, the file name
+#'   to locate in the folder associated with the
+#'   environment variable.
+#' @param latest Logical; if \code{TRUE} returns only
+#'   the latest version of a file whose name contains
+#'   a date.
+#'
+#' @return A character string.
+#'
+#' @export
+
+path_from_env_var <- function(env_var,
+                              file_name = NULL,
+                              latest = TRUE) {
+
+  path = Sys.getenv( env_var )
+  if ( path == '' ) {
+    stop( 'Environmental variable for path not found' )
   }
 
-  #< ...
-  if (!is.null(filename) & !is.null(label)) {
-    env_var <- paste0("PROJECT_FOLDER_", toupper(folder_names))
+  if ( !is.null( file_name ) ) {
 
-    which_folder <- sapply(
-      1:length(labels),
-      function(i) any(label %in% labels[[i]])
+    x <- arfpam::find_file_name(
+      file_name, output = 'name',
+      path = path
     )
 
-    #<| ...
-    if (any(which_folder)) {
-      abs_path <- as.character(Sys.getenv(env_var[which_folder]))
-
-      out <- paste0(
-        abs_path,
-        "/",
-        subfolders,
-        filename
-      )
-
-      return(out)
-
-      #|> Close conditional
+    if ( length( x ) == 0 ) {
+      stop( 'File not found' )
     }
 
-    # > Close conditional
+    if ( latest ) {
+      return( paste0( path, '/', sort( x )[ length(x) ] ))
+    } else {
+      return( paste0( path, '/', sort( x ) ))
+    }
+
+  } else {
+    return( path )
   }
+
 }
+

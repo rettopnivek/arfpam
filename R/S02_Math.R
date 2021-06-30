@@ -13,12 +13,9 @@
 # 3) erf
 # 4) pow
 
-###
-### 1) Log-odds and the logistic function
-###
+#### 1) Log-odds and the logistic function ####
 
-# 1.1) logit
-
+#### 1.1) logit ####
 #' Logit Function
 #'
 #' This function calculates the logit (log of the
@@ -65,8 +62,7 @@ logit <- function(p, na.rm = TRUE) {
   return(log(p / (1 - p)))
 }
 
-# 1.2) logistic
-
+#### 1.2) logistic ####
 #' Logistic Function
 #'
 #' This function applies the logistic function to
@@ -97,10 +93,7 @@ logistic <- function(x, na.rm = TRUE) {
   return(1 / (1 + exp(-x)))
 }
 
-###
-### 2) softmax
-###
-
+#### 2) softmax ####
 #' Softmax Function
 #'
 #' A generalization of the logistic function that takes a
@@ -140,10 +133,7 @@ softmax <- function(x) {
   return(out)
 }
 
-###
-### 3) erf
-###
-
+#### 3) erf ####
 #' Error Function
 #'
 #' Calculates the error function.
@@ -163,10 +153,7 @@ erf <- function(x) {
   return(2 * pnorm(x * sqrt(2), 0, 1) - 1)
 }
 
-###
-### 4) pow
-###
-
+#### 4) pow ####
 #' Raise a Value to a Power
 #'
 #' This function raises a value \code{x} to a power

@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-20
+# Last updated 2021-06-30
 
 # Table of contents
 # 1) binary_SDT
@@ -17,10 +17,7 @@
 # - Add documentation for 'EZ_diffusion'
 # - Add unit tests for functions
 
-###
-### 1) binary_SDT
-###
-
+#### 1) binary_SDT ####
 #' Transform Hit/False Alarm Rates into SDT Parameters
 #'
 #' Calculates d' and c parameter estimates for the Gaussian
@@ -221,9 +218,7 @@ binary_SDT <- function(x,
   return(out)
 }
 
-###
-### 2)
-###
+#### 2) EZ_diffusion ####
 
 #' ...
 #'

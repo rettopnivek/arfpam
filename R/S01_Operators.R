@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-20
+# Last updated 2021-06-30
 
 # Table of contents
 # 1) `%p%`
@@ -12,10 +12,7 @@
 #   2.2) `%-=%`
 # 3) `%w%`
 
-###
-### 1) `%p%`
-###
-
+#### 1) `%p%` ####
 #' Operator to Concatenate Two Strings
 #'
 #' The operator \code{%p%} combines character vectors.
@@ -43,10 +40,7 @@
   return(paste0(x, y))
 }
 
-###
-### 2) `%+=%`
-###
-
+#### 2) `%+=%` ####
 #' Addition/Subtraction Assignment Operators
 #'
 #' The operator \code{%+=%} adds the right operand
@@ -104,7 +98,7 @@
 #' x
 NULL
 
-# 2.1) `%+=%`
+#### 2.1) `%+=%` ####
 
 #' @rdname Assignment
 #' @export
@@ -113,7 +107,7 @@ NULL
   eval.parent(substitute(x <- x + y))
 }
 
-# 2.2) `%-=%`
+#### 2.2) `%-=%` ####
 
 #' @rdname Assignment
 #' @export
@@ -122,10 +116,7 @@ NULL
   eval.parent(substitute(x <- x - y))
 }
 
-###
-### 3) `%w%`
-###
-
+#### 3) `%w%` ####
 #' Operator to Check if String is Part of Another String
 #'
 #' The operator \code{%w%} checks if the string
