@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-06-30
+# Last updated 2021-07-19
 
 # Table of contents
 # 1) sem
@@ -13,6 +13,7 @@
 # 5) bootstrap
 # 6) summa
 # 7) bounds
+# 8) standardize
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
@@ -1045,4 +1046,195 @@ bounds <- function( width ) {
 
   return( .5 + c( -.5, .5 )*width )
 
+}
+
+#### 8) standardize ####
+#' Standardize Columns in a Data Frame or Matrix
+#'
+#' Function to standardize (mean-center and scale
+#' by standard deviation resulting in a mean of 0
+#' and standard deviation of 1) columns in a
+#' matrix or data frame.
+#'
+#' @param x A data frame or matrix of numeric values.
+#' @param y A data frame or matrix of numeric values
+#'   (must have the same column names as \code{x}).
+#' @param columns A character vector of column names,
+#'   the subset of columns in \code{x} to standardize.
+#' @param raw Logical; if \code{TRUE}, uses the means and
+#'   standard deviations stored in each column's
+#'   attributes to restore scaled values to their
+#'   original raw values.
+#' @param scaling Logical; if \code{TRUE} returns
+#'   the means and standard deviations for columns
+#'   stored in their attributes.
+#'
+#' @return A data frame or matrix with standardized
+#' columns.
+#'
+#' @examples
+#' # Create data frame
+#' x_raw <- matrix( rnorm( 1000, 100, 15 ), 100, 10 )
+#' colnames(x_raw) <- paste0( 'X', 1:10 )
+#' x_raw <- data.frame( x_raw )
+#'
+#' # Standardize columns
+#' x <- standardize( x_raw )
+#'
+#' # Create second data frame with same
+#' # variables but new values
+#' y <- matrix( rnorm( 50*10, 50, 15 ), 50, 10 )
+#' colnames(y) <- paste0( 'X', 1:10 )
+#' y <- data.frame( y )
+#'
+#' # Scale columns of y based on means and
+#' # standard deviations from x
+#' y <- standardize( x, y )
+#'
+#' # Undo scaling
+#' all( round( x_raw, 4 ) == round( standardize( x, raw = TRUE ), 4 ) )
+#'
+#' @export
+
+standardize <- function( x, y = NULL,
+                         columns = NULL,
+                         raw = FALSE,
+                         scaling = FALSE ) {
+
+  # If no column names are given
+  if ( is.null( columns ) ) {
+    columns <- colnames( x )
+  }
+
+  # Number of columns
+  K <- length( columns )
+
+  # Vectors for mean and standard deviation
+  m <- rep( NA, K )
+  s <- rep( NA, K )
+
+  # Identify rows with any missing data
+  is_na <- apply( x[,columns], 1, function(x) any( is.na(x) ) )
+
+  #< Check if data frame
+  if ( is.data.frame( x ) ) {
+
+    #<| Loop over columns
+    for ( k in 1:K ) {
+
+      # Extract attributes
+      cur_attr <- attributes( x[[ columns[k] ]] )
+
+      if ( !is.null( cur_attr ) ) {
+
+        if ( 'standardize' %in% names( cur_attr ) ) {
+          m[k] <- cur_attr$standardize$mean
+          s[k] <- cur_attr$standardize$sd
+        }
+
+      }
+
+      #|> Close 'Loop over columns'
+    }
+
+    #<| Convert back to original scale
+    if ( raw ) {
+
+      #<|< Loop over columns
+      for ( k in 1:K ) {
+
+        x[, columns[k]] <-
+          x[, columns[k]]*s[k] + m[k]
+
+        #>|> Close 'Loop over columns'
+      }
+
+      return( x )
+
+      #|> Close 'Convert back to original scale'
+    }
+
+    if ( scaling ) {
+
+      return( lapply(
+        columns,
+        function(i) attributes( x[[ i ]] )$standardize
+      ) )
+
+    }
+
+    #> Close 'Check if data frame'
+  }
+
+  #< Compute means and standard deviations
+  if ( any( is.na( m ) ) ) {
+
+    #<| Loop over columns
+    for ( k in 1:K ) {
+
+      m[k] <- mean( x[ !is_na, columns[k] ] )
+      s[k] <- sd( x[ !is_na, columns[k] ] )
+
+      # Standardize current column
+      x[, columns[k]] <-
+        as.numeric( ( x[, columns[k]] - m[k] )/ s[k] )
+
+      #<|< If x is a data frame
+      if ( is.data.frame( x ) ) {
+
+        cur_attr <- attributes( x[[ columns[k] ]] )
+        if ( is.null( cur_attr ) ) {
+          cur_attr <- list(
+            standardize = list( mean = m[k], sd = s[k] )
+          )
+        } else {
+          cur_attr$standardize = list( mean = m[k], sd = s[k] )
+        }
+
+        attributes( x[[ columns[k] ]] ) <- cur_attr
+
+        #>|> Close 'If x is a data frame'
+      }
+
+      #|> Close 'Loop over columns'
+    }
+
+    #< Close 'Compute means and standard deviations'
+  }
+
+  #< If second matrix or data frame is provided
+  if ( !is.null( y ) ) {
+
+    #<| Loop over columns
+    for ( k in 1:K ) {
+
+      y[, columns[k]] <-
+        as.numeric( ( y[, columns[k]] - m[k] ) / s[k] )
+
+      #<|< If y is a data frame
+      if ( is.data.frame( y ) ) {
+
+        cur_attr <- attributes( y[[ columns[k] ]] )
+        if ( is.null( cur_attr ) ) {
+          cur_attr <- list(
+            standardize = list( mean = m[k], sd = s[k] )
+          )
+        } else {
+          cur_attr$standardize = list( mean = m[k], sd = s[k] )
+        }
+
+        attributes( y[[ columns[k] ]] ) <- cur_attr
+
+        #>|> Close 'If y is a data frame'
+      }
+
+      #|> Close 'Loop over columns'
+    }
+
+    return( y )
+
+    #> Close 'If second matrix or data frame is provided'
+  }
+
+  return( x )
 }

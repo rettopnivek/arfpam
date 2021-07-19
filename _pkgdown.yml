@@ -33,6 +33,7 @@ reference:
   - assign_by_match
   - dnr
   - create_table_of_contents
+  - path_from_env_var
 - title: "Plotting"
   desc: >
 
@@ -56,3 +57,4 @@ reference:
   - bootstrap
   - summa
   - bounds
+  - standardize
