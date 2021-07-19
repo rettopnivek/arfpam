@@ -34,6 +34,7 @@ reference:
   - dnr
   - create_table_of_contents
   - path_from_env_var
+  - runs_in_sequence
 - title: "Plotting"
   desc: >
 

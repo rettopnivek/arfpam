@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-06-30
+# Last updated 2021-07-19
 
 # Table of contents
 # 1) over
@@ -25,6 +25,7 @@
 # 11) dnr
 # 12) create_table_of_contents
 # 13) path_from_env_var
+# 14) runs_in_sequence
 
 # TO DO
 # - Custom tests for 'find_file_name', 'make_file_name',
@@ -1168,3 +1169,99 @@ path_from_env_var <- function(env_var,
 
 }
 
+#### 14) runs_in_sequence ####
+#' Determine Runs in a Sequence
+#'
+#' Given a sequence of values of which
+#' a subset are dubbed 'hits', determine
+#' the number of runs of hits and the
+#' start and end of each run of hits.
+#'
+#' @param x A vector of values.
+#' @param codes_for_run A vector of the values
+#'   in \code{x} indicating a hit.
+#'
+#' @return A list with a) the total number of runs, and
+#' b) a matrix with a column for the start position of
+#' each run and a column for the end position of each
+#' run.
+#'
+#' @examples
+#' # Generate a sequence of zeros and ones
+#' x <- rbinom( 10, 1, .5 )
+#' print(x)
+#' # Determine runs of ones
+#' runs_in_sequence( x )
+#'
+#' @export
+
+runs_in_sequence <- function( x, codes_for_hit = 1 ) {
+
+  # Number of observations
+  n <- length( x )
+
+  # Initialize variables to track
+  # start and end of each run
+  run_start = rep( NA, n )
+  run_end = rep( NA, n )
+
+  # Indicator for start of each run
+  new_run <- FALSE
+
+  # Convert to FALSE/TRUE
+  positive_cases <- x %in% codes_for_hit
+
+  inc <- 0 # Variable for indexing starts of run
+
+  # Loop over observations
+  for ( i in 1:n ) {
+
+    # Check if a run is happening
+    is_true <- positive_cases[i]
+
+    # If not 1st observation
+    if ( i > 1 ) {
+
+      # Check if a new run is occuring
+      if ( is_true & (positive_cases[i-1] != is_true) ) {
+        new_run <- TRUE
+        inc <- inc + 1
+      }
+
+    } else {
+      if ( is_true ) {
+        new_run <- TRUE
+        inc <- inc + 1
+      }
+    }
+
+    if ( new_run ) {
+      # If start of new run
+      # record position
+      run_start[inc] <- i
+      run_end[inc] <- i
+    } else {
+      # if run is continuing
+      if ( is_true ) {
+        run_end[inc] <- i
+      }
+
+    }
+
+    # Reset tracker for new runs
+    new_run <- FALSE
+  }
+
+  # Remove missing cases
+  run_start <- run_start[ !is.na( run_start ) ]
+  run_end <- run_end[ !is.na( run_end ) ]
+
+  n_runs <- length( run_start )
+
+  out <- list(
+    n_runs = n_runs,
+    sequences = cbind( Start = run_start, End = run_end )
+  )
+
+  return( out )
+}
