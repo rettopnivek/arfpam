@@ -46,4 +46,7 @@ templates("Loop")
 # If ... else statement
 templates("Conditional")
 
+# Roxygen2 function documentation
+templates("roxygen")
+
 }

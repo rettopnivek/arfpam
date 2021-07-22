@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-07-19
+# Last updated 2021-07-22
 
 # Table of contents
 # 1) over
@@ -133,6 +133,9 @@ over <- function(x, iter,
 #' # If ... else statement
 #' templates("Conditional")
 #'
+#' # Roxygen2 function documentation
+#' templates("roxygen")
+#'
 #' @export
 
 templates <- function(type = NULL) {
@@ -171,6 +174,11 @@ templates <- function(type = NULL) {
     conditional = c(
       "Conditional", "conditional",
       "if", "6"
+    ),
+    roxygen_documentation = c(
+      'Roxygen2', 'Roxygen', 'roxygen', 'roxygen2',
+      'roxy',
+      '7'
     )#,
     # plot_function = c()
   )
@@ -284,6 +292,28 @@ templates <- function(type = NULL) {
       "  # Do something else\n",
       "  #> Close else for 'Descriptor'\n",
       "}"
+    )
+
+    message(string)
+  }
+
+  if (type %in% types$roxygen_documentation) {
+    string <- paste0(
+      "#' Title\n",
+      "#' \n",
+      "#' Description.\n",
+      "#' \n",
+      "#' @param x ...\n",
+      "#' \n",
+      "#' @details\n",
+      "#' \n",
+      "#' @return Output.\n",
+      "#' \n",
+      "#' @examples\n",
+      "#' # Examples\n",
+      "#' \n",
+      "#' @export\n",
+      "\n"
     )
 
     message(string)
