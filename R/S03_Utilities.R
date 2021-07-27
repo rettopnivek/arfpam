@@ -1295,3 +1295,177 @@ runs_in_sequence <- function( x, codes_for_hit = 1 ) {
 
   return( out )
 }
+
+#### 15) column ####
+#' Extract Column Names Meeting Inclusion/Exclusion Criteria
+#'
+#' A function that matches or excludes column names in a
+#' data frame based on user-supplied sub-strings.
+#'
+#' @param dtf A data frame.
+#' @param ... Character strings with the sub-strings to match
+#'   (or exclude) against the column names in \code{dtf}.
+#'   If an entry starts with either \code{!}, \code{~}, or
+#'   \code{-}, any columns containing the substring will be
+#'   excluded. Otherwise, the function will locate
+#'   all column names containing all inputted sub-strings.
+#'
+#' @author Kevin Potter
+#'
+#' @return A vector of column names meeting the inclusion
+#' and exclusion criteria.
+#'
+#' @examples
+#' # Create a data frame
+#' dtf <- data.frame(
+#'   IDS.INT.Subject = rep( 1:4, each = 2 ),
+#'   SSS.CHR.Group = rep( c( 'A', 'A', 'B', 'B' ), each = 2 ),
+#'   SSS.INT.Group = rep( c( 1, 1, 2, 2 ), each = 2 ),
+#'   SSS.LGC.Group_A = rep( c( T, T, F, F ), each = 2 ),
+#'   SSS.CHR.Time_point = rep( c( 'Pre', 'Post' ), 4 ),
+#'   SSS.INT.Time_point = rep( 0:1, 4 ),
+#'   OUT.DBL.Scores = rnorm( 8 )
+#' )
+#'
+#' #' # All variables containing 'SSS'
+#' column( dtf, 'SSS' )
+#'
+#' # All variables containing both 'SSS' and 'CHR'
+#' column( dtf, 'SSS', 'CHR' )
+#'
+#' # Variables containing 'SSS' but not 'CHR'
+#' column( dtf, 'SSS', '~CHR' )
+#'
+#' @export
+
+column <- function( dtf, ... ) {
+
+  args <- list(...)
+  n_args <- length( args )
+
+  include <- rep( '', n_args )
+  exclude <- rep( '', n_args )
+  inc_i <- 1
+  inc_e <- 1
+  for ( i in 1:n_args ) {
+    txt <- as.character( args[[i]] )
+    if ( grepl( '!', txt, fixed = T ) |
+         grepl( '~', txt, fixed = T ) |
+         grepl( '-', txt, fixed = T ) ) {
+      txt <- gsub( '!', '', txt, fixed = T )
+      txt <- gsub( '~', '', txt, fixed = T )
+      txt <- gsub( '-', '', txt, fixed = T )
+      exclude[inc_e] <- txt
+      inc_e <- inc_e + 1
+    } else {
+      include[inc_i] <- txt
+      inc_i <- inc_i + 1
+    }
+  }
+
+  if ( all( include == '' ) ) {
+    include = NULL
+  } else {
+    include <- include[ include != '' ]
+  }
+  if ( all( exclude == '' ) ) {
+    exclude = NULL
+  } else {
+    exclude <- exclude[ exclude != '' ]
+  }
+
+  clm <- colnames( dtf )
+  K <- length( clm )
+
+  if ( !is.null( include ) ) {
+    each_include <- sapply( include, function(x) {
+      grepl( x, clm, fixed = T )
+    } )
+  } else {
+    each_include = cbind( rep( T, K ) )
+  }
+
+
+  if ( !is.null( exclude ) ) {
+    each_exclude <- sapply( exclude, function(x) {
+      grepl( x, clm, fixed = T )
+    } )
+  } else {
+    each_exclude = cbind( rep( F, K ) )
+  }
+
+  entries =
+    rowSums( each_include ) == length( include ) &
+    !( rowSums( each_exclude ) > 0 )
+
+  return( clm[ entries ] )
+}
+
+#### 16) col_by_other ####
+#' Unique Values of one Column by Another
+#'
+#' A function that takes two columns in a data frame
+#' and reports the unique values of one column
+#' associated with the unique values of the other
+#' column.
+#'
+#' @param dtf A data frame.
+#' @param col1 The first column (non-standard evaluation
+#'   possible).
+#' @param col2 The second column (non-standard evaluation
+#'   possible).
+#'
+#' @author Kevin Potter
+#'
+#' @return A data frame with the unique values
+#' of the first column associated with the
+#' unique values of the second.
+#'
+#' @examples
+#' # Define a data frame
+#' dtf <- data.frame(
+#'   A = c( 1, 1, 2, 2, 3, 3 ),
+#'   B = c( 'A', 'A', 'B', 'B', 'C', 'D' )
+#' )
+#'
+#' # Values of column 'B' by values of column 'A'
+#' col_by_other( dtf, A, B )
+#'
+#' @export
+
+col_by_other <- function( dtf, col1, col2 ) {
+
+  # Non-standard evaluation
+  V <- as.character( substitute( col1 ) )
+  L <- as.character( substitute( col2 ) )
+
+  dtf$Cur_values = dtf[[ V ]]
+  dtf$Cur_labels = dtf[[ L ]]
+
+  val <- sort( unique( dtf$Cur_values ) )
+
+  lbl <- lapply(
+    val,
+    function(x) unique( dtf$Cur_labels[ dtf$Cur_values == x ] )
+  )
+
+  n <- sum( sapply( lbl, length ) )
+  out <- data.frame(
+    V = rep( NA, n ),
+    L = rep( NA, n )
+  )
+  colnames( out ) <- c( V, L )
+
+  inc <- 0
+  for ( i in 1:length( val ) ) {
+
+    index <- 1:length( lbl[[i]] )
+    out[ index + inc, 1 ] <- val[i]
+    out[ index + inc, 2 ] <- lbl[[i]]
+
+    inc <- inc + 1
+  }
+
+  return( out )
+}
+
