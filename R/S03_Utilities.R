@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-07-22
+# Last updated 2021-08-12
 
 # Table of contents
 # 1) over
@@ -24,13 +24,14 @@
 #   10.2) assign_to_match
 # 11) dnr
 # 12) create_table_of_contents
-# 13) path_from_env_var
+# 13) path_to_file
 # 14) runs_in_sequence
+# 15) column
+# 16) col_by_other
 
 # TO DO
-# - Custom tests for 'find_file_name', 'make_file_name',
-#   'dnr', 'create_table_of_contents', 'path_from_env_var'
-# - Add unit tests for 'list_of_matches' and 'assign_to_match'
+# - Add Custom tests for file/folder functions
+# - Add unit tests for functions
 
 #### 1) over ####
 #' A Sequence Adjusted by an Iterator
@@ -1146,19 +1147,19 @@ create_table_of_contents <- function( file_path ) {
 }
 
 
-#### 13) path_from_env_var ####
-#' File/Folder Path From an Environment Variable
+#### 13) path_to_file ####
+#' Returns File/Folder Paths
 #'
-#' Returns the associated absolute folder path
-#' stored in an existing environment variable,
-#' or the path to a file located in the associated
-#' folder.
+#' Returns an absolute file or folder path.
+#' Folder paths can be extracted from a
+#' pre-specified environmental variable.
 #'
+#' @param file_name A character string, a
+#'   partial match to the file of interest.
 #' @param env_var A character string, the name for
 #'   the environment variable.
-#' @param file_name A character string, the file name
-#'   to locate in the folder associated with the
-#'   environment variable.
+#' @param path A character string, a relative or
+#'   absolute path to a folder.
 #' @param latest Logical; if \code{TRUE} returns only
 #'   the latest version of a file whose name contains
 #'   a date.
@@ -1167,13 +1168,20 @@ create_table_of_contents <- function( file_path ) {
 #'
 #' @export
 
-path_from_env_var <- function(env_var,
-                              file_name = NULL,
-                              latest = TRUE) {
+path_to_file <- function( file_name = NULL,
+                          env_var = NULL,
+                          path = NULL,
+                          latest = TRUE ) {
 
-  path = Sys.getenv( env_var )
-  if ( path == '' ) {
-    stop( 'Environmental variable for path not found' )
+  if ( !is.null( env_var ) ) {
+    path = Sys.getenv( env_var )
+    if ( path == '' ) {
+      stop( 'Environmental variable for path not found' )
+    }
+  }
+
+  if ( is.null( path ) ) {
+    path <- getwd()
   }
 
   if ( !is.null( file_name ) ) {

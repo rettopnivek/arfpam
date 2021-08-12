@@ -33,7 +33,7 @@ reference:
   - assign_by_match
   - dnr
   - create_table_of_contents
-  - path_from_env_var
+  - path_to_file
   - runs_in_sequence
   - column
   - col_by_other
