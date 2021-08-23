@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-08-12
+# Last updated 2021-08-17
 
 # Table of contents
 # 1) over
@@ -16,18 +16,20 @@
 # 6) print_table
 # 7) lin
 # 8) empty_list
-# 9) File name functions
+# 9) Functions for files
 #   9.1) find_file_name
 #   9.2) make_file_name
+#   9.3) path_to_file
+#   9.4) source_R_scripts
 # 10) Matching and assignment
-#   10.1) list_of_matches
-#   10.2) assign_to_match
+#   10.1) func_for_list_of_matches
+#   10.2) list_of_matches
+#   10.3) assign_to_match
 # 11) dnr
 # 12) create_table_of_contents
-# 13) path_to_file
-# 14) runs_in_sequence
-# 15) column
-# 16) col_by_other
+# 13) runs_in_sequence
+# 14) column
+# 15) col_by_other
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -626,7 +628,7 @@ empty_list <- function(size, labels = NULL) {
   return(lst)
 }
 
-#### 9) File name functions ####
+#### 9) Functions for files ####
 
 #### 9.1) find_file_name ####
 #' Check if a File Name can be Found
@@ -907,6 +909,165 @@ make_file_name <- function(description,
   return(filename)
 }
 
+#### 9.3) path_to_file ####
+#' Returns File/Folder Paths
+#'
+#' Returns an absolute file or folder path.
+#' Folder paths can be extracted from a
+#' pre-specified environmental variable.
+#'
+#' @param file_name A character string, a
+#'   partial match to the file of interest.
+#' @param env_var A character string, the name for
+#'   the environment variable.
+#' @param path A character string, a relative or
+#'   absolute path to a folder.
+#' @param latest Logical; if \code{TRUE} returns only
+#'   the latest version of a file whose name contains
+#'   a date.
+#'
+#' @return A character string.
+#'
+#' @export
+
+path_to_file <- function( file_name = NULL,
+                          env_var = NULL,
+                          path = NULL,
+                          latest = TRUE ) {
+
+  if ( !is.null( env_var ) ) {
+    path = Sys.getenv( env_var )
+    if ( path == '' ) {
+      stop( 'Environmental variable for path not found' )
+    }
+  }
+
+  if ( is.null( path ) ) {
+    path <- getwd()
+  }
+
+  if ( !is.null( file_name ) ) {
+
+    x <- arfpam::find_file_name(
+      file_name, output = 'name',
+      path = path
+    )
+
+    if ( length( x ) == 0 ) {
+      stop( 'File not found' )
+    }
+
+    if ( latest ) {
+      return( paste0( path, '/', sort( x )[ length(x) ] ))
+    } else {
+      return( paste0( path, '/', sort( x ) ))
+    }
+
+  } else {
+    return( path )
+  }
+
+}
+
+#### 9.4) source_R_scripts ####
+#' Source in Multiple R Scripts in a Folder
+#'
+#' A convenience function that loops through
+#' and reads in code in .R files stored in a
+#' folder located in the current working directory.
+#'
+#' @param files_to_include A vector of either...
+#'   \itemize{
+#'     \item Numeric indices denoting which files
+#'       to include;
+#'     \item A character string matching the initial
+#'        set of letters across all relevant files (e.g., if
+#'        all scripts of interest start with the letter 'S');
+#'     \item A character vector with the full file names
+#'       for the files to include.
+#'   }
+#' @param path The folder name with the scripts to source.
+#'
+#' @author Kevin Potter
+#'
+#' @export
+
+source_R_scripts = function( files_to_include = NULL,
+                             path = 'R' ) {
+
+  # Folders to load
+  all_files <- dir(
+    path = path
+  )
+
+  # Identify R scripts
+
+  f <- function( x ) {
+    grepl( x, all_files, fixed = T )
+  }
+  # Files must have extension .R
+  r_files <-
+    ( f( '.R' ) | f( '.r' ) ) &
+    # Exclude R data files
+    !( f( '.RData' ) | f( '.rdata' ) |
+         f( '.rda' ) |
+         # Exclue R markdown files
+         f( '.Rmd' ) | f( '.rmd' )
+    )
+
+  # Isolate .R files
+  if ( any( r_files ) ) {
+    all_files <- all_files[ r_files ]
+  } else {
+    stop( 'No .R files found' )
+  }
+
+  # Check if subset of files should be included
+  if ( !is.null( files_to_include ) ) {
+
+    # If numeric indices were provided
+    if ( is.numeric( files_to_include ) ) {
+      files_to_source <- all_files[ files_to_include ]
+    }
+
+    # If a character vector was provided
+    if ( is.character( files_to_include ) ) {
+
+      # If a single character string with no '.R' extension
+      # was provided
+      if ( length( files_to_include ) == 1 &
+           !any( grepl( '.R', files_to_include, fixed = T ) ) ) {
+
+        n_letters <- nchar( files_to_include )
+
+        to_check <- substr( all_files, start = 1, stop = n_letters )
+
+        files_to_source <- all_files[
+          files_to_include %in% to_check
+        ]
+
+      } else {
+        # Exact matching to file names
+        files_to_source <- all_files[ all_files %in% files_to_include ]
+      }
+
+    }
+  } else {
+    # Otherwise take all files in folder
+    files_to_source <- all_files
+  }
+
+  # Source in all specified R scripts
+  if ( length( files_to_source ) > 0 ) {
+    sapply( 1:length( files_to_source ), function(i) {
+      source( paste0( path, "/", files_to_source[i] ) )
+    } )
+  } else {
+    stop( 'No files found matching given criteria' )
+  }
+
+}
+
 #### 10) Matching and assignment ####
 
 #### 10.1) func_for_list_of_matches ####
@@ -1146,68 +1307,7 @@ create_table_of_contents <- function( file_path ) {
   message( out )
 }
 
-
-#### 13) path_to_file ####
-#' Returns File/Folder Paths
-#'
-#' Returns an absolute file or folder path.
-#' Folder paths can be extracted from a
-#' pre-specified environmental variable.
-#'
-#' @param file_name A character string, a
-#'   partial match to the file of interest.
-#' @param env_var A character string, the name for
-#'   the environment variable.
-#' @param path A character string, a relative or
-#'   absolute path to a folder.
-#' @param latest Logical; if \code{TRUE} returns only
-#'   the latest version of a file whose name contains
-#'   a date.
-#'
-#' @return A character string.
-#'
-#' @export
-
-path_to_file <- function( file_name = NULL,
-                          env_var = NULL,
-                          path = NULL,
-                          latest = TRUE ) {
-
-  if ( !is.null( env_var ) ) {
-    path = Sys.getenv( env_var )
-    if ( path == '' ) {
-      stop( 'Environmental variable for path not found' )
-    }
-  }
-
-  if ( is.null( path ) ) {
-    path <- getwd()
-  }
-
-  if ( !is.null( file_name ) ) {
-
-    x <- arfpam::find_file_name(
-      file_name, output = 'name',
-      path = path
-    )
-
-    if ( length( x ) == 0 ) {
-      stop( 'File not found' )
-    }
-
-    if ( latest ) {
-      return( paste0( path, '/', sort( x )[ length(x) ] ))
-    } else {
-      return( paste0( path, '/', sort( x ) ))
-    }
-
-  } else {
-    return( path )
-  }
-
-}
-
-#### 14) runs_in_sequence ####
+#### 13) runs_in_sequence ####
 #' Determine Runs in a Sequence
 #'
 #' Given a sequence of values of which
@@ -1304,7 +1404,7 @@ runs_in_sequence <- function( x, codes_for_hit = 1 ) {
   return( out )
 }
 
-#### 15) column ####
+#### 14) column ####
 #' Extract Column Names Meeting Inclusion/Exclusion Criteria
 #'
 #' A function that matches or excludes column names in a
@@ -1409,7 +1509,7 @@ column <- function( dtf, ... ) {
   return( clm[ entries ] )
 }
 
-#### 16) col_by_other ####
+#### 15) col_by_other ####
 #' Unique Values of one Column by Another
 #'
 #' A function that takes two columns in a data frame

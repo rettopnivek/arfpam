@@ -44,6 +44,21 @@ for (i in 1:5) {
 #> [1]  TRUE  TRUE FALSE
 ```
 
+#### Math
+
+```r
+# Convert a probability to log-odds
+logit( .5 )
+#> [1] 0
+# Convert log-odds to a probability
+logistic( 0 )
+#> [1] 0.5
+
+# Raise a value to a power
+pow( 2, 3 )
+#> [1] 8
+```
+
 #### Indices and sequences
 
 ```r
@@ -73,21 +88,15 @@ every( 1:8, 4 )
 # and ending at 1
 lin( 0, 1, 5 )
 #> [1] 0.00 0.25 0.50 0.75 1.00
-```
 
-#### Math
-
-```r
-# Convert a probability to log-odds
-logit( .5 )
-#> [1] 0
-# Convert log-odds to a probability
-logistic( 0 )
-#> [1] 0.5
-
-# Raise a value to a power
-pow( 2, 3 )
-#> [1] 8
+# Create a list of empty 
+# elements
+empty_list( 2 )
+#> [[1]]
+#> NULL
+#> 
+#> [[2]]
+#> NULL
 ```
 
 #### Statistics
@@ -104,6 +113,34 @@ bounds( .95 )
 #> [1] 0.025 0.975
 bounds( .5 )
 #> [1] 0.25 0.75
+
+
+# Compute p-value based on Monte 
+# Carlo samples above/below a cut-off
+set.seed( 293 ) # For reproducibility
+x <- rnorm( 1000, m = 1.96 )
+pvalues( x ) # Should be close to 0.05
+#> 0.048
+
+# Convert a p-value to a nicely 
+# formatted string
+p <- 0.12482493
+pvalues( p )
+#> [1] "p = 0.125"
+p <- 1e-6
+pvalues( p )
+#> [1] "p < 0.001"
+
+# Report mean, standard deviation, and 
+# number of observations for 'mpg' variable 
+# in classic 'mtcars' data set
+data( mtcars )
+summa( mtcars$mpg, '[[M]] ([[SD]]); [[N]]' )
+#> [1] "20.09 (6.03); 32"
+# Report frequency (and percentage) of 
+# 8 cylinder cars in 'mtcars' data set
+summa( mtcars$cyl == 8, '[[C]] ([[P]]%)' )
+#> "14 (43.8%)"
 ```
 
 One can see a complete list of the functions provided by **arfpam** via the command:

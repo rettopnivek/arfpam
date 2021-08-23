@@ -37,6 +37,7 @@ reference:
   - runs_in_sequence
   - column
   - col_by_other
+  - source_R_scripts
 - title: "Plotting"
   desc: >
 
