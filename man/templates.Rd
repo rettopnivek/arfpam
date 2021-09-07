@@ -4,7 +4,7 @@
 \alias{templates}
 \title{Create Templates for Annotations and Code}
 \usage{
-templates(type = NULL)
+templates(type = NULL, val = NULL)
 }
 \arguments{
 \item{type}{The type of template to return,
@@ -13,10 +13,14 @@ with options for...
 \item 'Function (function documentation);
 \item 'Header' (header for a R script);
 \item 'Progress' (progress bar for a loop);
-\item 'Segment' (code segment to conditionally run);
 \item 'Loop' (a \code{for} loop statement);
-\item 'Conditional' (a \code{if} statement).
+\item 'Conditional' (a \code{if} statement);
+\item 'recode' (values for the 'dplyr'
+function \code{\link[dplyr]{recode}}).
 }}
+
+\item{val}{An optional character vector to be used
+with \code{type = 'recode'}.}
 }
 \description{
 Outputs a template of common annotations
@@ -36,9 +40,6 @@ templates("Header")
 
 # Progress bar for loop
 templates("Progress")
-
-# Code segment in a script
-templates("Segment")
 
 # Loop
 templates("Loop")

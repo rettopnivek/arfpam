@@ -29,15 +29,16 @@ reference:
   - empty_list
   - find_file_name
   - make_file_name
+  - path_to_file
+  - source_R_scripts
+  - load_R_object
   - list_of_matches
   - assign_by_match
   - dnr
   - create_table_of_contents
-  - path_to_file
   - runs_in_sequence
   - column
   - col_by_other
-  - source_R_scripts
 - title: "Plotting"
   desc: >
 

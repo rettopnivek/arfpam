@@ -114,7 +114,6 @@ bounds( .95 )
 bounds( .5 )
 #> [1] 0.25 0.75
 
-
 # Compute p-value based on Monte 
 # Carlo samples above/below a cut-off
 set.seed( 293 ) # For reproducibility

@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-08-17
+# Last updated 2021-09-07
 
 # Table of contents
 # 1) over
@@ -21,6 +21,7 @@
 #   9.2) make_file_name
 #   9.3) path_to_file
 #   9.4) source_R_scripts
+#   9.5) load_R_object
 # 10) Matching and assignment
 #   10.1) func_for_list_of_matches
 #   10.2) list_of_matches
@@ -108,10 +109,13 @@ over <- function(x, iter,
 #'     \item 'Function (function documentation);
 #'     \item 'Header' (header for a R script);
 #'     \item 'Progress' (progress bar for a loop);
-#'     \item 'Segment' (code segment to conditionally run);
 #'     \item 'Loop' (a \code{for} loop statement);
-#'     \item 'Conditional' (a \code{if} statement).
+#'     \item 'Conditional' (a \code{if} statement);
+#'     \item 'recode' (values for the 'dplyr'
+#'       function \code{\link[dplyr]{recode}}).
 #'   }
+#' @param val An optional character vector to be used
+#'   with \code{type = 'recode'}.
 #'
 #' @examples
 #' # List of possible inputs to argument
@@ -127,9 +131,6 @@ over <- function(x, iter,
 #' # Progress bar for loop
 #' templates("Progress")
 #'
-#' # Code segment in a script
-#' templates("Segment")
-#'
 #' # Loop
 #' templates("Loop")
 #'
@@ -141,7 +142,7 @@ over <- function(x, iter,
 #'
 #' @export
 
-templates <- function(type = NULL) {
+templates <- function(type = NULL, val = NULL) {
 
   types <- list(
     function_documentation = c(
@@ -164,24 +165,21 @@ templates <- function(type = NULL) {
       "Prog", "prog",
       "3"
     ),
-    code_segment = c(
-      "Segment", "segment",
-      "Section", "section",
-      "Code", "code",
-      "4"
-    ),
     loop = c(
       "Loop", "loop",
-      "for", "5"
+      "for", "4"
     ),
     conditional = c(
       "Conditional", "conditional",
-      "if", "6"
+      "if", "5"
     ),
     roxygen_documentation = c(
       'Roxygen2', 'Roxygen', 'roxygen', 'roxygen2',
       'roxy',
-      '7'
+      '6'
+    ),
+    recode = c(
+      "recode", "7"
     )#,
     # plot_function = c()
   )
@@ -192,23 +190,24 @@ templates <- function(type = NULL) {
 
     for (i in 1:length(types)) {
       message( paste0( '  - ', types[[i]][1] ) )
-      #message(paste0(
-      #  "\t", types[[i]], "\n"
-      #))
     }
     type <- ''
   }
 
   if (type %in% types$function_documentation) {
     string <- paste0(
-      "# Purpose: \n",
+      "# Title \n",
+      "# \n",
       "# ... \n",
-      "# Arguments: \n",
-      "# ... \n",
-      "# Details: \n",
-      "# ... \n",
-      "# Returns: \n",
-      "# ... \n"
+      "# \n",
+      "# @param 'x' ... \n",
+      "# \n",
+      "# @details ... \n",
+      "# \n",
+      "# @return ... \n",
+      "# \n",
+      "# @examples \n",
+      "# Forthcoming \n"
     )
 
     message(string)
@@ -246,28 +245,13 @@ templates <- function(type = NULL) {
       "# Create a progress bar using a base R function\n",
       "pb <- txtProgressBar( min = 1, max = n_cases, style = 3 )\n",
       "\n",
-      "#< Loop over cases\n",
+      "# Loop over cases\n",
       "for (i in 1:n_cases) {\n",
       "  # Update the progress bar\n",
       "  setTxtProgressBar(pb,i)\n",
-      "  #> Close loop 'Loop over cases'\n",
+      "  # Close 'Loop over cases'\n",
       "}\n",
-      "close(pb); rm(pb)\n"
-    )
-
-    message(string)
-  }
-
-  if (type %in% types$code_segment) {
-    string <- paste0(
-      "###\n",
-      "### ?) Section label\n",
-      "###\n",
-      "\n",
-      "if (run_code[1]) {\n",
-      "  section( '?' )\n",
-      "\n",
-      "}\n"
+      "close(pb)\n"
     )
 
     message(string)
@@ -275,10 +259,10 @@ templates <- function(type = NULL) {
 
   if (type %in% types$loop) {
     string <- paste0(
-      "#< Descriptor\n",
+      "# Descriptor\n",
       "for (i in 1:n) {\n",
       "  # Do something\n",
-      "  #> Close loop 'Descriptor'\n",
+      "  # Close 'Descriptor'\n",
       "}"
     )
 
@@ -287,13 +271,13 @@ templates <- function(type = NULL) {
 
   if (type %in% types$conditional) {
     string <- paste0(
-      "#< Descriptor\n",
+      "# Descriptor\n",
       "if (value %in% values) {\n",
       "  # Do something\n",
-      "  #> Close conditional 'Descriptor'\n",
+      "  # Close 'Descriptor'\n",
       "} else {\n",
       "  # Do something else\n",
-      "  #> Close else for 'Descriptor'\n",
+      "  # Close else for 'Descriptor'\n",
       "}"
     )
 
@@ -320,6 +304,21 @@ templates <- function(type = NULL) {
     )
 
     message(string)
+  }
+
+  if (type %in% types$recode & !is.null( val ) ) {
+
+    string <- paste0(
+      "`", val, "` = '',\n"
+    )
+    string[ length( string ) ] <-
+      gsub( ",", "", string[ length( string ) ], fixed = TRUE )
+    string <- c(
+      "recode(\n  x,\n",
+      paste0( "  ", string ),
+      ")"
+    )
+    message( paste( string, collapse = "" ) )
   }
 
 }
@@ -1066,6 +1065,35 @@ source_R_scripts = function( files_to_include = NULL,
     stop( 'No files found matching given criteria' )
   }
 
+}
+
+#### 9.5) load_R_object ####
+#' Load in R Objects From .RData Files
+#'
+#' A convenience function that, given a
+#' path to a .RData file, will load in
+#' a specified R object contained within
+#' the file.
+#'
+#' @param path_to_rdata A character string,
+#'   a path to a .RData file to be passed
+#'   on to the \code{\link[base]{load}}
+#' @param which_object The variable name for
+#'   the R object to return from the set of
+#'   all variables loaded in from the .RData
+#'   file. Uses non-standard evaluation.
+#'
+#' @author Kevin Potter
+#'
+#' @export
+
+load_R_object <- function( path_to_rdata, which_object ) {
+
+  # Load in .RData file
+  load( path_to_rdata )
+
+  # Return specified object loaded in from .RData file
+  return( eval( substitute( which_object ) ) )
 }
 
 #### 10) Matching and assignment ####
