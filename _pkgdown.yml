@@ -39,6 +39,7 @@ reference:
   - runs_in_sequence
   - column
   - col_by_other
+  - date_and_time
 - title: "Plotting"
   desc: >
 

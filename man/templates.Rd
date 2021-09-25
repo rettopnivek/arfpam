@@ -50,4 +50,12 @@ templates("Conditional")
 # Roxygen2 function documentation
 templates("roxygen")
 
+# HTML internal links
+templates("html_links")
+
+# Example table for specifying
+# nomenclature and a glossary
+# in a .Rmd file
+templates("rmd_glossary")
+
 }

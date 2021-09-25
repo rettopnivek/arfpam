@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-09-07
+# Last updated 2021-09-25
 
 # Table of contents
 # 1) over
@@ -31,6 +31,7 @@
 # 13) runs_in_sequence
 # 14) column
 # 15) col_by_other
+# 16) date_and_time
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -140,6 +141,14 @@ over <- function(x, iter,
 #' # Roxygen2 function documentation
 #' templates("roxygen")
 #'
+#' # HTML internal links
+#' templates("html_links")
+#'
+#' # Example table for specifying
+#' # nomenclature and a glossary
+#' # in a .Rmd file
+#' templates("rmd_glossary")
+#'
 #' @export
 
 templates <- function(type = NULL, val = NULL) {
@@ -180,7 +189,21 @@ templates <- function(type = NULL, val = NULL) {
     ),
     recode = c(
       "recode", "7"
-    )#,
+    ),
+    html_links = c(
+      "HTML links", "html links",
+      "HTML link", "html link",
+      "Internal links", "internal links",
+      "Internal link", "internal link",
+      "8"
+    ),
+    rmd_glossary = c(
+      "Rmd glossary", "rmd glossary",
+      "Nomenclature and glossary",
+      "nomenclature and glossary",
+      "nom-gloss",
+      "9"
+    )
     # plot_function = c()
   )
 
@@ -301,6 +324,43 @@ templates <- function(type = NULL, val = NULL) {
       "#' \n",
       "#' @export\n",
       "\n"
+    )
+
+    message(string)
+  }
+
+  if (type %in% types$html_links) {
+
+    string <- paste0(
+      '<a name="SXX"></a>\n',
+      '<a href="#SXX">LINK</a>\n',
+      '<a name="SXX-PXX"></a>\n',
+      '<a href="#SXX-PXX">LINK</a>\n',
+      '<a href="#TOC">&#129145;</a> <a href="#END">&#129147;</a>\n'
+    )
+
+    message(string)
+  }
+
+  if (type %in% types$rmd_glossary) {
+
+    string <- paste0(
+      '### 1. Nomenclature and glossary\n\n',
+      '```{r S01-nom-gloss,echo=FALSE}\n',
+      'nom_gloss <- rbind(\n',
+      '  c("Example term", "ET", "Notes on term" )\n',
+      ')\n',
+      'colnames( nom_gloss ) <- "C" %p% 1:3 \n',
+      'nom_gloss <- data.frame( nom_gloss )\n\n',
+      'th <- create_header( nom_gloss )\n',
+      'th$colA <- c(\n',
+      '  "Term",\n',
+      '  "Abbreviation",\n',
+      '  "Comments"\n',
+      ')\n\n',
+      'ft <- create_ft( nom_gloss, th, alternate_col = "grey95" )\n',
+      'ft\n',
+      '```\n'
     )
 
     message(string)
@@ -1601,6 +1661,101 @@ col_by_other <- function( dtf, col1, col2 ) {
 
     inc <- inc + 1
   }
+
+  return( out )
+}
+
+#### 16) date_and_time ####
+#' Formatted Date and Time for File Names
+#'
+#' Given a R date and time object (see
+#' \code{\link[base]{Sys.time}}), creates
+#' a nicely formatted character
+#' string that can be used as part of
+#' file name to provided a useful time stamp.
+#'
+#' @param cur_time Either 1) a R date and time
+#'   object, such as the output from
+#'   \code{\link[base]{Sys.time}}), or 2)
+#'   a character string typically in the
+#'   form 'Created_YYYY_MM_DD_at_HH_MM'.
+#' @param start A character string, the
+#'   starting part for the formatted output.
+#' @param middle A character string, the
+#'   part separating the date and time
+#'   components.
+#' @param end A character string, an optional
+#'   ending part for the output (e.g., a file
+#'   extension).
+#' @param frmt A character string specifying
+#'   the format for the date and time object
+#'   (see \code{\link[base:strptime]{as.POSIXct}}).
+#' @param sep A character vector of 3 values,
+#'   the separator for the date, time, and
+#'   the replacement.
+#'
+#' @return If \code{cur_time} is a date and time
+#' object, returns a character string, typically
+#' in the form 'Created_YYYY_MM_DD_at_HH_MM',
+#' that can then be incorporated into a file's name.
+#' If \code{cur_time} is instead a character string
+#' in the above format, extracts the date and time
+#' and instead returns a date and time object
+#' (see \code{\link[base:strptime]{as.POSIXct}}).
+#'
+#' @examples
+#' string <- date_and_time( Sys.time() )
+#' string
+#' # Convert back to date and time object
+#' date_and_time( string )
+#'
+#' @export
+
+date_and_time <- function( cur_time,
+                           start = 'Created_',
+                           middle = '_at_',
+                           end = '',
+                           frmt = '%Y-%m-%d %H:%M',
+                           sep = c( '-', ':', '_' ) ) {
+
+  out <- NULL
+
+  if ( !is.character( cur_time ) ) {
+
+    cur_time <- format( cur_time, frmt )
+
+    dt_tm <- strsplit( as.character( cur_time ),
+                       split = " ",
+                       fixed = TRUE )[[1]]
+    dt_tm[1] <- gsub( sep[1], sep[3], dt_tm[1], fixed = TRUE )
+    dt_tm[2] <- gsub( sep[2], sep[3], dt_tm[2], fixed = TRUE )
+
+    out <- paste0(
+      start,
+      dt_tm[1],
+      middle,
+      dt_tm[2],
+      end
+    )
+
+  } else {
+
+    prts <- strsplit( cur_time, split = start, fixed = TRUE )[[1]][2]
+    if ( end != '' ) {
+      prts <- gsub( end, '', prts, fixed = TRUE )
+    }
+    prts <- strsplit( prts, split = middle, fixed = TRUE )[[1]]
+
+    prts[1] <- gsub( sep[3], sep[1], prts[1], fixed = TRUE )
+    prts[2] <- gsub( sep[3], sep[2], prts[2], fixed = TRUE )
+
+    out <- paste( prts[1], prts[2] )
+
+    out <- as.POSIXct( out, format = '%Y-%m-%d %H:%M' )
+
+  }
+
+  if ( is.null( out ) ) stop( 'Incorrect inputs provided' )
 
   return( out )
 }

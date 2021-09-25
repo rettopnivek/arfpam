@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create Formatted File Name — make_file_name • arfpam</title>
+<title>Formatted Date and Time for File Names — date_and_time • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,12 +39,12 @@
 
 
 
-<meta property="og:title" content="Create Formatted File Name — make_file_name" />
-<meta property="og:description" content="Create a standardized file name of the
-form: TXX-Description-MM_DD_YYYY.ext where 'T'
-is a leading tag, 'XX' is a file number,
-'Description' is a human-readable
-label, and 'ext' is a file extension." />
+<meta property="og:title" content="Formatted Date and Time for File Names — date_and_time" />
+<meta property="og:description" content="Given a R date and time object (see
+Sys.time), creates
+a nicely formatted character
+string that can be used as part of
+file name to provided a useful time stamp." />
 
 
 
@@ -107,107 +107,88 @@ label, and 'ext' is a file extension." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create Formatted File Name</h1>
+    <h1>Formatted Date and Time for File Names</h1>
     
-    <div class="hidden name"><code>make_file_name.Rd</code></div>
+    <div class="hidden name"><code>date_and_time.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create a standardized file name of the
-form: TXX-Description-MM_DD_YYYY.ext where 'T'
-is a leading tag, 'XX' is a file number,
-'Description' is a human-readable
-label, and 'ext' is a file extension.</p>
+    <p>Given a R date and time object (see
+<code><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.time</a></code>), creates
+a nicely formatted character
+string that can be used as part of
+file name to provided a useful time stamp.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_file_name</span><span class='op'>(</span>
-  <span class='va'>description</span>,
-  <span class='va'>extension</span>,
-  tag <span class='op'>=</span> <span class='cn'>NULL</span>,
-  number <span class='op'>=</span> <span class='cn'>NULL</span>,
-  file_date <span class='op'>=</span> <span class='cn'>NULL</span>,
-  additional <span class='op'>=</span> <span class='cn'>NULL</span>,
-  date_format <span class='op'>=</span> <span class='st'>"%m_%d_%Y"</span>,
-  exclude <span class='op'>=</span> <span class='st'>""</span>,
-  remove <span class='op'>=</span> <span class='cn'>FALSE</span>
+    <pre class="usage"><span class='fu'>date_and_time</span><span class='op'>(</span>
+  <span class='va'>cur_time</span>,
+  start <span class='op'>=</span> <span class='st'>"Created_"</span>,
+  middle <span class='op'>=</span> <span class='st'>"_at_"</span>,
+  end <span class='op'>=</span> <span class='st'>""</span>,
+  frmt <span class='op'>=</span> <span class='st'>"%Y-%m-%d %H:%M"</span>,
+  sep <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-"</span>, <span class='st'>":"</span>, <span class='st'>"_"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>description</th>
-      <td><p>A human-readable label, with
-words preferably separated by underscores.</p></td>
+      <th>cur_time</th>
+      <td><p>Either 1) a R date and time
+object, such as the output from
+<code><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.time</a></code>), or 2)
+a character string typically in the
+form 'Created_YYYY_MM_DD_at_HH_MM'.</p></td>
     </tr>
     <tr>
-      <th>extension</th>
-      <td><p>A file extension, such as
-'RData', 'R', 'txt', 'pdf'.</p></td>
+      <th>start</th>
+      <td><p>A character string, the
+starting part for the formatted output.</p></td>
     </tr>
     <tr>
-      <th>tag</th>
-      <td><p>A leading tag; If no value is provided,
-automatically set based on the file extension.
-Automatic assignments are...</p><ul>
-<li><p>'S' for extension <code>R</code>;</p></li>
-<li><p>'D' for extensions <code>RData</code> and <code>csv</code>;</p></li>
-<li><p>'T' for extension <code>txt</code>;</p></li>
-<li><p>'W' for extension <code>docx</code>;</p></li>
-<li><p>'P' for extension <code>pptx</code>;</p></li>
-<li><p>'F' for extensions <code>pdf</code>, <code>jpg</code>,
-<code>jpeg</code>, and <code>png</code>.</p></li>
-</ul></td>
+      <th>middle</th>
+      <td><p>A character string, the
+part separating the date and time
+components.</p></td>
     </tr>
     <tr>
-      <th>number</th>
-      <td><p>A file number. If no value is provided,
-automatically set based on number of files in current
-folder with matching tags.</p></td>
+      <th>end</th>
+      <td><p>A character string, an optional
+ending part for the output (e.g., a file
+extension).</p></td>
     </tr>
     <tr>
-      <th>file_date</th>
-      <td><p>The date to include. If no value is
-provided, the current date is used.</p></td>
+      <th>frmt</th>
+      <td><p>A character string specifying
+the format for the date and time object
+(see <code><a href='https://rdrr.io/r/base/strptime.html'>as.POSIXct</a></code>).</p></td>
     </tr>
     <tr>
-      <th>additional</th>
-      <td><p>Additional text to include following
-the date. If provided, is preceded by a '-'.</p></td>
-    </tr>
-    <tr>
-      <th>date_format</th>
-      <td><p>The format to use for the current
-date, defaults to 'MM_DD_YYYY'.</p></td>
-    </tr>
-    <tr>
-      <th>exclude</th>
-      <td><p>A vector of file names to exclude when</p></td>
-    </tr>
-    <tr>
-      <th>remove</th>
-      <td><p>Logical; if TRUE, attempts to locate
-previous versions of the outputted file name
-(i.e., same name but earlier dates) and remove
-them from the current folder.</p></td>
+      <th>sep</th>
+      <td><p>A character vector of 3 values,
+the separator for the date, time, and
+the replacement.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A character string.</p>
+    <p>If <code>cur_time</code> is a date and time
+object, returns a character string, typically
+in the form 'Created_YYYY_MM_DD_at_HH_MM',
+that can then be incorporated into a file's name.
+If <code>cur_time</code> is instead a character string
+in the above format, extracts the date and time
+and instead returns a date and time object
+(see <code><a href='https://rdrr.io/r/base/strptime.html'>as.POSIXct</a></code>).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Different file types</span>
-<span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"RData"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "D01-Example-09_25_2021.RData"</div><div class='input'><span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"pdf"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "F01-Example-09_25_2021.pdf"</div><div class='input'><span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"docx"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "W01-Example-09_25_2021.docx"</div><div class='input'>
-<span class='co'># User-specified tags and numbers</span>
-<span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"RData"</span>, tag <span class='op'>=</span> <span class='st'>"R"</span>, number <span class='op'>=</span> <span class='st'>"02"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "R02-Example-09_25_2021.RData"</div><div class='input'><span class='co'># Additional text</span>
-<span class='fu'>make_file_name</span><span class='op'>(</span><span class='st'>"Example"</span>, <span class='st'>"RData"</span>, additional <span class='op'>=</span> <span class='st'>"v.1.0.0"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "D01-Example-09_25_2021-v.1.0.0.RData"</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>string</span> <span class='op'>&lt;-</span> <span class='fu'>date_and_time</span><span class='op'>(</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.time</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>)</span>
+<span class='va'>string</span>
+</div><div class='output co'>#&gt; [1] "Created_2021_09_25_at_14_44"</div><div class='input'><span class='co'># Convert back to date and time object</span>
+<span class='fu'>date_and_time</span><span class='op'>(</span> <span class='va'>string</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "2021-09-25 14:44:00 EDT"</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
