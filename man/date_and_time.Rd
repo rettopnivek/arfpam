@@ -4,62 +4,34 @@
 \alias{date_and_time}
 \title{Formatted Date and Time for File Names}
 \usage{
-date_and_time(
-  cur_time,
-  start = "Created_",
-  middle = "_at_",
-  end = "",
-  frmt = "\%Y-\%m-\%d \%H:\%M",
-  sep = c("-", ":", "_")
-)
+date_and_time(value = NULL, frmt = "\%Y_\%m_\%d-\%H_\%M")
 }
 \arguments{
-\item{cur_time}{Either 1) a R date and time
-object, such as the output from
-\code{\link[base]{Sys.time}}), or 2)
-a character string typically in the
-form 'Created_YYYY_MM_DD_at_HH_MM'.}
-
-\item{start}{A character string, the
-starting part for the formatted output.}
-
-\item{middle}{A character string, the
-part separating the date and time
-components.}
-
-\item{end}{A character string, an optional
-ending part for the output (e.g., a file
-extension).}
+\item{value}{A character string to convert
+back into a date-time object.}
 
 \item{frmt}{A character string specifying
 the format for the date and time object
 (see \code{\link[base:strptime]{as.POSIXct}}).}
-
-\item{sep}{A character vector of 3 values,
-the separator for the date, time, and
-the replacement.}
 }
 \value{
-If \code{cur_time} is a date and time
-object, returns a character string, typically
-in the form 'Created_YYYY_MM_DD_at_HH_MM',
-that can then be incorporated into a file's name.
-If \code{cur_time} is instead a character string
-in the above format, extracts the date and time
-and instead returns a date and time object
-(see \code{\link[base:strptime]{as.POSIXct}}).
+Either 1) a character string with the
+date and time, to include in a file name, or
+2) a date-time object.
 }
 \description{
-Given a R date and time object (see
-\code{\link[base]{Sys.time}}), creates
-a nicely formatted character
-string that can be used as part of
-file name to provided a useful time stamp.
+Convenience function to generate a
+nicely formatted character string
+with the date and time, typically of
+the form: YYYY_MM_DD-HH_MM to include
+as part of a file name. Can convert
+the character string back into a
+date and time if needed.
 }
 \examples{
-string <- date_and_time( Sys.time() )
+string <- date_and_time()
 string
 # Convert back to date and time object
-date_and_time( string )
+format( date_and_time( string ), '\%Y-\%m-\%d \%H:\%M' )
 
 }

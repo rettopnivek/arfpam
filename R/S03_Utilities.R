@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-09-25
+# Last updated 2022-01-13
 
 # Table of contents
 # 1) over
@@ -32,6 +32,7 @@
 # 14) column
 # 15) col_by_other
 # 16) date_and_time
+# 17) pull_id
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -1668,94 +1669,110 @@ col_by_other <- function( dtf, col1, col2 ) {
 #### 16) date_and_time ####
 #' Formatted Date and Time for File Names
 #'
-#' Given a R date and time object (see
-#' \code{\link[base]{Sys.time}}), creates
-#' a nicely formatted character
-#' string that can be used as part of
-#' file name to provided a useful time stamp.
+#' Convenience function to generate a
+#' nicely formatted character string
+#' with the date and time, typically of
+#' the form: YYYY_MM_DD-HH_MM to include
+#' as part of a file name. Can convert
+#' the character string back into a
+#' date and time if needed.
 #'
-#' @param cur_time Either 1) a R date and time
-#'   object, such as the output from
-#'   \code{\link[base]{Sys.time}}), or 2)
-#'   a character string typically in the
-#'   form 'Created_YYYY_MM_DD_at_HH_MM'.
-#' @param start A character string, the
-#'   starting part for the formatted output.
-#' @param middle A character string, the
-#'   part separating the date and time
-#'   components.
-#' @param end A character string, an optional
-#'   ending part for the output (e.g., a file
-#'   extension).
+#' @param value A character string to convert
+#'   back into a date-time object.
 #' @param frmt A character string specifying
 #'   the format for the date and time object
 #'   (see \code{\link[base:strptime]{as.POSIXct}}).
-#' @param sep A character vector of 3 values,
-#'   the separator for the date, time, and
-#'   the replacement.
 #'
-#' @return If \code{cur_time} is a date and time
-#' object, returns a character string, typically
-#' in the form 'Created_YYYY_MM_DD_at_HH_MM',
-#' that can then be incorporated into a file's name.
-#' If \code{cur_time} is instead a character string
-#' in the above format, extracts the date and time
-#' and instead returns a date and time object
-#' (see \code{\link[base:strptime]{as.POSIXct}}).
+#' @return Either 1) a character string with the
+#' date and time, to include in a file name, or
+#' 2) a date-time object.
 #'
 #' @examples
-#' string <- date_and_time( Sys.time() )
+#' string <- date_and_time()
 #' string
 #' # Convert back to date and time object
-#' date_and_time( string )
+#' format( date_and_time( string ), '%Y-%m-%d %H:%M' )
 #'
 #' @export
 
-date_and_time <- function( cur_time,
-                           start = 'Created_',
-                           middle = '_at_',
-                           end = '',
-                           frmt = '%Y-%m-%d %H:%M',
-                           sep = c( '-', ':', '_' ) ) {
+date_and_time <- function( value = NULL, frmt = '%Y_%m_%d-%H_%M' ) {
 
-  out <- NULL
-
-  if ( !is.character( cur_time ) ) {
-
-    cur_time <- format( cur_time, frmt )
-
-    dt_tm <- strsplit( as.character( cur_time ),
-                       split = " ",
-                       fixed = TRUE )[[1]]
-    dt_tm[1] <- gsub( sep[1], sep[3], dt_tm[1], fixed = TRUE )
-    dt_tm[2] <- gsub( sep[2], sep[3], dt_tm[2], fixed = TRUE )
-
-    out <- paste0(
-      start,
-      dt_tm[1],
-      middle,
-      dt_tm[2],
-      end
-    )
-
+  if ( is.null( value ) ) {
+    return( format( Sys.time(), format = frmt ) )
   } else {
+    return( as.POSIXct( value, format = frmt ) )
+  }
 
-    prts <- strsplit( cur_time, split = start, fixed = TRUE )[[1]][2]
-    if ( end != '' ) {
-      prts <- gsub( end, '', prts, fixed = TRUE )
+}
+
+#### 17) pull_id ####
+#' Extract Subject IDs From a Data-Frame
+#'
+#' Function to extract the unique values for
+#' subject identifiers in a data frame,
+#' assuming a common variable name
+#' (e.g., \code{IDS.CHR.Subject} or \code{ID}).
+#'
+#' @param dtf A data frame.
+#' @param subject Logical; if \code{TRUE}
+#'   looks for common variable names for
+#'   subject identifiers (IDS.CHR.Subject,
+#'   ID, etc.). If \code{FALSE} looks for
+#'   common variable names for screening
+#'   identifiers (IDS.CHR.Screen, etc.).
+#' @param id A user-defined variable name
+#'   if the column with subject identifiers
+#'   is not part of the commonly-used labels.
+#'
+#' @return A vector of values.
+#'
+#' @examples
+#' dtf <- data.frame( ID = rep( 1:3, each = 3 ), X = rnorm(9) )
+#' pull_id( dtf )
+#'
+#' @export
+
+pull_id <- function( dtf, subject = TRUE, id = NULL ) {
+
+  clm <- colnames( dtf )
+
+  if ( is.null( id ) ) {
+
+    if ( subject ) {
+      # Check for standard variable names for subject IDs
+      standard_id_forms <- c(
+        'IDS.CHR.Subject',
+        'IDS.INT.Subject',
+        'IDS.CHR.AT.Subject',
+        'IDS.INT.AT.Subject',
+        'ID',
+        'study_id',
+        'id',
+        'studyid'
+      )
+    } else {
+      # Check for standard variable names for subject IDs
+      standard_id_forms <- c(
+        'IDS.CHR.Screen',
+        'IDS.INT.Screen',
+        'ID'
+      )
     }
-    prts <- strsplit( prts, split = middle, fixed = TRUE )[[1]]
 
-    prts[1] <- gsub( sep[3], sep[1], prts[1], fixed = TRUE )
-    prts[2] <- gsub( sep[3], sep[2], prts[2], fixed = TRUE )
+    any_match <- standard_id_forms %in% clm
 
-    out <- paste( prts[1], prts[2] )
-
-    out <- as.POSIXct( out, format = '%Y-%m-%d %H:%M' )
+    if ( !any( any_match ) ) {
+      stop(
+        'No pre-defined variable name for ID found'
+      )
+    } else {
+      id <- standard_id_forms[any_match][1]
+    }
 
   }
 
-  if ( is.null( out ) ) stop( 'Incorrect inputs provided' )
+  # Extract unique IDs
+  out <- unique( dtf[[ id ]] )
 
   return( out )
 }
