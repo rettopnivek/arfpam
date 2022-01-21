@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-07-19
+# Last updated 2022-01-21
 
 # Table of contents
 # 1) sem
@@ -14,6 +14,7 @@
 # 6) summa
 # 7) bounds
 # 8) standardize
+# 9) density_points
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
@@ -1237,4 +1238,37 @@ standardize <- function( x, y = NULL,
   }
 
   return( x )
+}
+
+#### 9) density_points ####
+#' Estimate Densities for Individual Observations
+#'
+#' Given a vector of values, computes the empirical
+#' density for each observation.
+#'
+#' @param x A numeric vector.
+#' @param ... Additional arguments to be passed
+#'   to the density function.
+#'
+#' @return A list with...
+#' \itemize{
+#'   \item x = the sorted values for the original input;
+#'   \item y = the associated empirical densities.
+#' }
+#'
+#' @examples
+#' plot(c(-4,4),c(0,.5),type='n',ylab='Density',xlab='z-scores')
+#' x = rnorm( 100 )
+#' dp = density_points( x )
+#' points( dp$x, dp$y, pch = 19 )
+#'
+#' @export
+
+density_points <- function (x, ...) {
+
+  ed = density(x, ...)
+  af = approxfun(ed)
+  y = af(sort(x))
+
+  return( list(x = sort(x), y = y) )
 }
