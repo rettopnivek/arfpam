@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-01-13
+# Last updated 2022-02-28
 
 # Table of contents
 # 1) over
@@ -33,6 +33,7 @@
 # 15) col_by_other
 # 16) date_and_time
 # 17) pull_id
+# 18) rep_y_by_x
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -1773,6 +1774,100 @@ pull_id <- function( dtf, subject = TRUE, id = NULL ) {
 
   # Extract unique IDs
   out <- unique( dtf[[ id ]] )
+
+  return( out )
+}
+
+#### 18) rep_y_by_x ####
+#' Repeat Column Values by Unique Cases in Another Column
+#'
+#' Function to duplicate values in column \code{y} by
+#' the unique cases in column \code{x}. Useful, for
+#' example, and extracting and duplicating a subject's
+#' baseline values across all time points in a long-form
+#' data frame for a longitudinal study.
+#'
+#' @param lfd A long-form data frame.
+#' @param x The column to repeat values over
+#'   (non-standard evaluation possible).
+#' @param y The column with values to duplicate
+#'   (non-standard evaluation possible).
+#' @param extra A logical vector matching in
+#'   length to the number of rows of \code{lfd}
+#'   specifying additional cases to match by
+#'   when isolating the values of \code{y} to
+#'   repeat.
+#' @param default The value to substitute if
+#'   no cases for \code{y} based on \code{extra}
+#'   are found to duplicate.
+#'
+#' @return A vector matching in length to the number
+#' of rows of \code{lfd} with the values of \code{y}
+#' repeated for each unique case of \code{x}.
+#'
+#' @examples
+#' # Example long-form data frame
+#' lfd <- data.frame(
+#'   X = rep( 1:3, each = 3 ),
+#'   Y = 1:9,
+#'   E = rep( 1:3, 3 )
+#' )
+#'
+#' # Repeat first value of Y for each value of X
+#' i <- lfd$E == 1
+#' rep_y_by_x( lfd, X, Y, extra = i )
+#' # Repeat last value of Y for each value of X
+#' i <- lfd$E == 3
+#' rep_y_by_x( lfd, X, Y, extra = i )
+#'
+#' @export
+
+rep_y_by_x <- function( lfd, x, y,
+                        extra = NULL,
+                        default = NA ) {
+
+  # Non-standard evaluation
+  X <- as.character(substitute(x))
+  Y <- as.character(substitute(y))
+
+  n <- nrow( lfd )
+
+  if ( is.null( extra ) ) {
+    extra <- rep( TRUE, n )
+  }
+
+  unique_X <- unique( lfd[[ X ]] )
+  n_X <- length( unique_X )
+
+  out <- sapply(
+    1:n_X, function(i) {
+      specific_index <-
+        lfd[[ X ]] == unique_X[i] & extra
+      overall_index <-
+        lfd[[ X ]] == unique_X[i]
+      n_obs <- sum( overall_index )
+
+      if ( sum( specific_index ) > 1 ) {
+        warning(
+          paste0(
+            "Case ", unique_X[i], "\n",
+            "   More than one unique value detected"
+          )
+        )
+      }
+
+      if ( any( specific_index ) ) {
+        return( rep( lfd[[ Y ]][ specific_index ][1], n_obs ) )
+      } else {
+        return( rep( default, n_obs ) )
+      }
+    } )
+
+  if ( is.matrix( out ) ) {
+    out <- matrix( out, n, 1 )[,1]
+  } else {
+    out <- unlist( out )
+  }
 
   return( out )
 }

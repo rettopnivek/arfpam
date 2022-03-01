@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-06-30
+# Last updated 2022-02-28
 
 # Table of contents
 # 1) blank_plot
@@ -14,6 +14,7 @@
 # 6) col_to_hex
 # 7) error_bars
 # 8) add_f_to_plot
+# 9) quick_hist
 
 # TO DO
 # - Add additional color palettes
@@ -1007,3 +1008,70 @@ apply_f_to_plot <- function(dtf,
     }
   }
 }
+
+#### 9) quick_hist ####
+#' Wrapper for Plotting Histograms
+#'
+#' A convenience function making a call to
+#' \code{\link[graphics]{hist}} with changes to
+#' the default options for parameters for pretty
+#' plotting.
+#'
+#' @param x A vector of numeric values.
+#' @param breaks The argument controlling breakpoints
+#'   passed to the \code{\link[graphics]{hist}} function -
+#'   by default uses the Freedman-Diaconis algorithm to
+#'   find the optimal number of breakpoints.
+#' @param border The color of the border around the bars.
+#' @param col The color used to fill the bars.
+#' @param main The main title for the figure.
+#' @param plot Logical; if \code{TRUE} generates a figure.
+#' @param output Logical; if \code{TRUE} returns the
+#'   output from the \code{\link[graphics]{hist}} function.
+#'   Set to \code{TRUE} if \code{plot} is \code{FALSE}.
+#' @param new Logical; if \code{TRUE} generates a new
+#'   plotting window via a call to \code{\link[grDevices]{x11}}.
+#' @param w The width (in inches) of the new plotting
+#'   window.
+#' @param h The height (in inches) of the new plotting
+#'   window.
+#' @param ... Additional arguments to pass to the
+#'   \code{\link[graphics]{hist}} function.
+#'
+#' @return If \code{output} is \code{TRUE}, returns a
+#'   list with the information used to create the
+#'   histogram - see the help page for the
+#'   \code{\link[graphics]{hist}} function for more
+#'   details.
+#'
+#' @examples
+#' x <- rnorm( 100 )
+#' quick_hist( x, new = FALSE )
+#'
+#' @export
+
+quick_hist <- function( x,
+                        breaks = 'FD',
+                        border = 'white',
+                        col = 'grey',
+                        main = '',
+                        plot = TRUE,
+                        output = FALSE,
+                        new = TRUE,
+                        w = 5, h = 5,
+                        ... ) {
+
+  if ( new & plot ) x11( width = w, height = h )
+
+  out<- hist(
+    x, breaks = breaks, main = main,
+    col = col, border = border,
+    plot = plot, ...
+  )
+  if ( !plot ) output <- TRUE
+
+  if ( output ) {
+    return( out )
+  }
+}
+
