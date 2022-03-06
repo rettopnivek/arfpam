@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Softmax Function — softmax • arfpam</title>
+<title>Wrapper for Plotting Histograms — quick_hist • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,12 +39,11 @@
 
 
 
-<meta property="og:title" content="Softmax Function — softmax" />
-<meta property="og:description" content="A generalization of the logistic function that takes a
-K-dimensional vector of arbitrary values and converts
-it to a K-dimensional vector of real values in the range
-(0,1) that sum to 1. The function is also known as the
-normalized exponential." />
+<meta property="og:title" content="Wrapper for Plotting Histograms — quick_hist" />
+<meta property="og:description" content="A convenience function making a call to
+hist with changes to
+the default options for parameters for pretty
+plotting." />
 
 
 
@@ -107,47 +106,103 @@ normalized exponential." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Softmax Function</h1>
+    <h1>Wrapper for Plotting Histograms</h1>
     
-    <div class="hidden name"><code>softmax.Rd</code></div>
+    <div class="hidden name"><code>quick_hist.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A generalization of the logistic function that takes a
-K-dimensional vector of arbitrary values and converts
-it to a K-dimensional vector of real values in the range
-(0,1) that sum to 1. The function is also known as the
-normalized exponential.</p>
+    <p>A convenience function making a call to
+<code><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></code> with changes to
+the default options for parameters for pretty
+plotting.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>softmax</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>quick_hist</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  breaks <span class='op'>=</span> <span class='st'>"FD"</span>,
+  border <span class='op'>=</span> <span class='st'>"white"</span>,
+  col <span class='op'>=</span> <span class='st'>"grey"</span>,
+  main <span class='op'>=</span> <span class='st'>""</span>,
+  plot <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  output <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  new <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  w <span class='op'>=</span> <span class='fl'>5</span>,
+  h <span class='op'>=</span> <span class='fl'>5</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A vector of values from <code>-Inf</code> to <code>Inf</code>.</p></td>
+      <td><p>A vector of numeric values.</p></td>
+    </tr>
+    <tr>
+      <th>breaks</th>
+      <td><p>The argument controlling breakpoints
+passed to the <code><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></code> function -
+by default uses the Freedman-Diaconis algorithm to
+find the optimal number of breakpoints.</p></td>
+    </tr>
+    <tr>
+      <th>border</th>
+      <td><p>The color of the border around the bars.</p></td>
+    </tr>
+    <tr>
+      <th>col</th>
+      <td><p>The color used to fill the bars.</p></td>
+    </tr>
+    <tr>
+      <th>main</th>
+      <td><p>The main title for the figure.</p></td>
+    </tr>
+    <tr>
+      <th>plot</th>
+      <td><p>Logical; if <code>TRUE</code> generates a figure.</p></td>
+    </tr>
+    <tr>
+      <th>output</th>
+      <td><p>Logical; if <code>TRUE</code> returns the
+output from the <code><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></code> function.
+Set to <code>TRUE</code> if <code>plot</code> is <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>new</th>
+      <td><p>Logical; if <code>TRUE</code> generates a new
+plotting window via a call to <code><a href='https://rdrr.io/r/grDevices/x11.html'>x11</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>w</th>
+      <td><p>The width (in inches) of the new plotting
+window.</p></td>
+    </tr>
+    <tr>
+      <th>h</th>
+      <td><p>The height (in inches) of the new plotting
+window.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments to pass to the
+<code><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></code> function.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of values from 0 to 1 that sum to 1.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The function can take either a vector or a matrix of values.
-If a matrix is passed in, the function is applied to each row
-of the matrix.</p>
+    <p>If <code>output</code> is <code>TRUE</code>, returns a
+list with the information used to create the
+histogram - see the help page for the
+<code><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></code> function for more
+details.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>3902</span><span class='op'>)</span>
-<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>)</span> <span class='co'># Should equal 1</span>
-</div><div class='output co'>#&gt; [1] 1</div><div class='input'><span class='va'>mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>9</span><span class='op'>)</span>, <span class='fl'>3</span>, <span class='fl'>3</span><span class='op'>)</span>
-<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>)</span> <span class='co'># Each row should sum to 1</span>
-</div><div class='output co'>#&gt; [1] 1 1 1</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span> <span class='fl'>100</span> <span class='op'>)</span>
+<span class='fu'>quick_hist</span><span class='op'>(</span> <span class='va'>x</span>, new <span class='op'>=</span> <span class='cn'>FALSE</span> <span class='op'>)</span>
+</div><div class='img'><img src='quick_hist-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

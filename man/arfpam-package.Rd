@@ -8,5 +8,7 @@
 The \pkg{arfpam} package provides assorted
 functions to help with a variety of common
 tasks when processing, plotting, analyzing,
-and modeling data.
+and modeling data. See
+\url{https://rettopnivek.github.io/arfpam/}
+for more details.
 }

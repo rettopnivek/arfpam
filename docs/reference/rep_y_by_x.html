@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Softmax Function — softmax • arfpam</title>
+<title>Repeat Column Values by Unique Cases in Another Column — rep_y_by_x • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,12 +39,12 @@
 
 
 
-<meta property="og:title" content="Softmax Function — softmax" />
-<meta property="og:description" content="A generalization of the logistic function that takes a
-K-dimensional vector of arbitrary values and converts
-it to a K-dimensional vector of real values in the range
-(0,1) that sum to 1. The function is also known as the
-normalized exponential." />
+<meta property="og:title" content="Repeat Column Values by Unique Cases in Another Column — rep_y_by_x" />
+<meta property="og:description" content="Function to duplicate values in column y by
+the unique cases in column x. Useful, for
+example, and extracting and duplicating a subject's
+baseline values across all time points in a long-form
+data frame for a longitudinal study." />
 
 
 
@@ -107,47 +107,76 @@ normalized exponential." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Softmax Function</h1>
+    <h1>Repeat Column Values by Unique Cases in Another Column</h1>
     
-    <div class="hidden name"><code>softmax.Rd</code></div>
+    <div class="hidden name"><code>rep_y_by_x.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A generalization of the logistic function that takes a
-K-dimensional vector of arbitrary values and converts
-it to a K-dimensional vector of real values in the range
-(0,1) that sum to 1. The function is also known as the
-normalized exponential.</p>
+    <p>Function to duplicate values in column <code>y</code> by
+the unique cases in column <code>x</code>. Useful, for
+example, and extracting and duplicating a subject's
+baseline values across all time points in a long-form
+data frame for a longitudinal study.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>softmax</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>rep_y_by_x</span><span class='op'>(</span><span class='va'>lfd</span>, <span class='va'>x</span>, <span class='va'>y</span>, extra <span class='op'>=</span> <span class='cn'>NULL</span>, default <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>lfd</th>
+      <td><p>A long-form data frame.</p></td>
+    </tr>
+    <tr>
       <th>x</th>
-      <td><p>A vector of values from <code>-Inf</code> to <code>Inf</code>.</p></td>
+      <td><p>The column to repeat values over
+(non-standard evaluation possible).</p></td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td><p>The column with values to duplicate
+(non-standard evaluation possible).</p></td>
+    </tr>
+    <tr>
+      <th>extra</th>
+      <td><p>A logical vector matching in
+length to the number of rows of <code>lfd</code>
+specifying additional cases to match by
+when isolating the values of <code>y</code> to
+repeat.</p></td>
+    </tr>
+    <tr>
+      <th>default</th>
+      <td><p>The value to substitute if
+no cases for <code>y</code> based on <code>extra</code>
+are found to duplicate.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of values from 0 to 1 that sum to 1.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The function can take either a vector or a matrix of values.
-If a matrix is passed in, the function is applied to each row
-of the matrix.</p>
+    <p>A vector matching in length to the number
+of rows of <code>lfd</code> with the values of <code>y</code>
+repeated for each unique case of <code>x</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>3902</span><span class='op'>)</span>
-<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>)</span> <span class='co'># Should equal 1</span>
-</div><div class='output co'>#&gt; [1] 1</div><div class='input'><span class='va'>mat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>9</span><span class='op'>)</span>, <span class='fl'>3</span>, <span class='fl'>3</span><span class='op'>)</span>
-<span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'>softmax</span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>)</span> <span class='co'># Each row should sum to 1</span>
-</div><div class='output co'>#&gt; [1] 1 1 1</div></pre>
+    <pre class="examples"><div class='input'><span class='co'># Example long-form data frame</span>
+<span class='va'>lfd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+  X <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, each <span class='op'>=</span> <span class='fl'>3</span> <span class='op'>)</span>,
+  Y <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>9</span>,
+  E <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='fl'>3</span> <span class='op'>)</span>
+<span class='op'>)</span>
+
+<span class='co'># Repeat first value of Y for each value of X</span>
+<span class='va'>i</span> <span class='op'>&lt;-</span> <span class='va'>lfd</span><span class='op'>$</span><span class='va'>E</span> <span class='op'>==</span> <span class='fl'>1</span>
+<span class='fu'>rep_y_by_x</span><span class='op'>(</span> <span class='va'>lfd</span>, <span class='va'>X</span>, <span class='va'>Y</span>, extra <span class='op'>=</span> <span class='va'>i</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 1 1 1 4 4 4 7 7 7</div><div class='input'><span class='co'># Repeat last value of Y for each value of X</span>
+<span class='va'>i</span> <span class='op'>&lt;-</span> <span class='va'>lfd</span><span class='op'>$</span><span class='va'>E</span> <span class='op'>==</span> <span class='fl'>3</span>
+<span class='fu'>rep_y_by_x</span><span class='op'>(</span> <span class='va'>lfd</span>, <span class='va'>X</span>, <span class='va'>Y</span>, extra <span class='op'>=</span> <span class='va'>i</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 3 3 3 6 6 6 9 9 9</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

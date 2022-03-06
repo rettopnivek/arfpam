@@ -40,6 +40,8 @@ reference:
   - column
   - col_by_other
   - date_and_time
+  - pull_id
+  - rep_y_by_x
 - title: "Plotting"
   desc: >
 
@@ -52,6 +54,8 @@ reference:
   - col_to_hex
   - error_bars
   - apply_f_to_plot
+  - quick_hist
+  - correlation_heatmap
 - title: "Statistics"
   desc: >
 
@@ -64,3 +68,4 @@ reference:
   - summa
   - bounds
   - standardize
+  - density_points

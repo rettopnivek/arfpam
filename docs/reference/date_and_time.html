@@ -40,11 +40,13 @@
 
 
 <meta property="og:title" content="Formatted Date and Time for File Names — date_and_time" />
-<meta property="og:description" content="Given a R date and time object (see
-Sys.time), creates
-a nicely formatted character
-string that can be used as part of
-file name to provided a useful time stamp." />
+<meta property="og:description" content="Convenience function to generate a
+nicely formatted character string
+with the date and time, typically of
+the form: YYYY_MM_DD-HH_MM to include
+as part of a file name. Can convert
+the character string back into a
+date and time if needed." />
 
 
 
@@ -76,7 +78,7 @@ file name to provided a useful time stamp." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.3</span>
       </span>
     </div>
 
@@ -113,49 +115,24 @@ file name to provided a useful time stamp." />
     </div>
 
     <div class="ref-description">
-    <p>Given a R date and time object (see
-<code><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.time</a></code>), creates
-a nicely formatted character
-string that can be used as part of
-file name to provided a useful time stamp.</p>
+    <p>Convenience function to generate a
+nicely formatted character string
+with the date and time, typically of
+the form: YYYY_MM_DD-HH_MM to include
+as part of a file name. Can convert
+the character string back into a
+date and time if needed.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>date_and_time</span><span class='op'>(</span>
-  <span class='va'>cur_time</span>,
-  start <span class='op'>=</span> <span class='st'>"Created_"</span>,
-  middle <span class='op'>=</span> <span class='st'>"_at_"</span>,
-  end <span class='op'>=</span> <span class='st'>""</span>,
-  frmt <span class='op'>=</span> <span class='st'>"%Y-%m-%d %H:%M"</span>,
-  sep <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"-"</span>, <span class='st'>":"</span>, <span class='st'>"_"</span><span class='op'>)</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>date_and_time</span><span class='op'>(</span>value <span class='op'>=</span> <span class='cn'>NULL</span>, frmt <span class='op'>=</span> <span class='st'>"%Y_%m_%d-%H_%M"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>cur_time</th>
-      <td><p>Either 1) a R date and time
-object, such as the output from
-<code><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.time</a></code>), or 2)
-a character string typically in the
-form 'Created_YYYY_MM_DD_at_HH_MM'.</p></td>
-    </tr>
-    <tr>
-      <th>start</th>
-      <td><p>A character string, the
-starting part for the formatted output.</p></td>
-    </tr>
-    <tr>
-      <th>middle</th>
-      <td><p>A character string, the
-part separating the date and time
-components.</p></td>
-    </tr>
-    <tr>
-      <th>end</th>
-      <td><p>A character string, an optional
-ending part for the output (e.g., a file
-extension).</p></td>
+      <th>value</th>
+      <td><p>A character string to convert
+back into a date-time object.</p></td>
     </tr>
     <tr>
       <th>frmt</th>
@@ -163,31 +140,20 @@ extension).</p></td>
 the format for the date and time object
 (see <code><a href='https://rdrr.io/r/base/strptime.html'>as.POSIXct</a></code>).</p></td>
     </tr>
-    <tr>
-      <th>sep</th>
-      <td><p>A character vector of 3 values,
-the separator for the date, time, and
-the replacement.</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If <code>cur_time</code> is a date and time
-object, returns a character string, typically
-in the form 'Created_YYYY_MM_DD_at_HH_MM',
-that can then be incorporated into a file's name.
-If <code>cur_time</code> is instead a character string
-in the above format, extracts the date and time
-and instead returns a date and time object
-(see <code><a href='https://rdrr.io/r/base/strptime.html'>as.POSIXct</a></code>).</p>
+    <p>Either 1) a character string with the
+date and time, to include in a file name, or
+2) a date-time object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>string</span> <span class='op'>&lt;-</span> <span class='fu'>date_and_time</span><span class='op'>(</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.time</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='va'>string</span> <span class='op'>&lt;-</span> <span class='fu'>date_and_time</span><span class='op'>(</span><span class='op'>)</span>
 <span class='va'>string</span>
-</div><div class='output co'>#&gt; [1] "Created_2021_09_25_at_14_44"</div><div class='input'><span class='co'># Convert back to date and time object</span>
-<span class='fu'>date_and_time</span><span class='op'>(</span> <span class='va'>string</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "2021-09-25 14:44:00 EDT"</div><div class='input'>
+</div><div class='output co'>#&gt; [1] "2022_03_06-14_42"</div><div class='input'><span class='co'># Convert back to date and time object</span>
+<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span><span class='op'>(</span> <span class='fu'>date_and_time</span><span class='op'>(</span> <span class='va'>string</span> <span class='op'>)</span>, <span class='st'>'%Y-%m-%d %H:%M'</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "2022-03-06 14:42"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

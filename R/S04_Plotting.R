@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-02-28
+# Last updated 2022-03-06
 
 # Table of contents
 # 1) blank_plot
@@ -15,6 +15,7 @@
 # 7) error_bars
 # 8) add_f_to_plot
 # 9) quick_hist
+# 10) correlation_heatmap
 
 # TO DO
 # - Add additional color palettes
@@ -44,8 +45,8 @@
 blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
                        margins = FALSE, cex = 1) {
   plot(xDim, yDim,
-    type = "n", ylab = " ", xlab = " ",
-    xaxt = "n", yaxt = "n", bty = "n"
+       type = "n", ylab = " ", xlab = " ",
+       xaxt = "n", yaxt = "n", bty = "n"
   )
 
 
@@ -54,11 +55,11 @@ blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
     # User specified boundaries for
     # plotting window
     segments(xDim[c(1, 2, 1, 1)],
-      yDim[c(1, 1, 1, 2)],
-      xDim[c(1, 2, 2, 2)],
-      yDim[c(2, 2, 1, 2)],
-      col = "black",
-      lwd = 2
+             yDim[c(1, 1, 1, 2)],
+             xDim[c(1, 2, 2, 2)],
+             yDim[c(2, 2, 1, 2)],
+             col = "black",
+             lwd = 2
     )
 
     # Adjusted boundaries for
@@ -67,11 +68,11 @@ blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
     bnd <- par("usr")
 
     segments(bnd[c(1, 2, 1, 1)],
-      bnd[c(3, 3, 3, 4)],
-      bnd[c(1, 2, 2, 2)],
-      bnd[c(4, 4, 3, 4)],
-      col = "grey90",
-      lwd = 2
+             bnd[c(3, 3, 3, 4)],
+             bnd[c(1, 2, 2, 2)],
+             bnd[c(4, 4, 3, 4)],
+             col = "grey90",
+             lwd = 2
     )
 
     mrg <- par("mar")
@@ -193,15 +194,15 @@ palettes <- function(type = "colorblind",
 
       par(mar = c(5.1, 5.1, .5, .5))
       plot(1:n, 1:n,
-        xlab = "", ylab = "",
-        xaxt = "n", yaxt = "n",
-        bty = "n",
-        pch = 15, cex = 4,
-        col = list_of_colors
+           xlab = "", ylab = "",
+           xaxt = "n", yaxt = "n",
+           bty = "n",
+           pch = 15, cex = 4,
+           col = list_of_colors
       )
       axis(1, 1:n, tick = F, cex = 1.25)
       axis(2, 1:n, names(list_of_colors),
-        tick = F, cex = 1.25, las = 1
+           tick = F, cex = 1.25, las = 1
       )
       par(mar = c(5.1, 4.1, 4.1, 2.1))
     }
@@ -331,7 +332,7 @@ fill_plot <- function(x = NULL, y = NULL, l = NULL,
                       border = NA, ...) {
   if (!is.null(x)) {
     if (is.vector(x) &
-      length(x) == 2) {
+        length(x) == 2) {
       xv <- rbind(x[c(1, 1, 2, 2)])
     }
 
@@ -352,7 +353,7 @@ fill_plot <- function(x = NULL, y = NULL, l = NULL,
 
   if (!is.null(y)) {
     if (is.vector(y) &
-      length(y) == 2) {
+        length(y) == 2) {
       yv <- rbind(y[c(1, 1, 2, 2)])
     }
 
@@ -465,9 +466,9 @@ add_axes <- function(at, labels = NULL,
     if (is.null(line)) line <- -.5
 
     axis(at, labels,
-      side = side, tick = tick,
-      line = line, cex.axis = cex, xpd = xpd,
-      ...
+         side = side, tick = tick,
+         line = line, cex.axis = cex, xpd = xpd,
+         ...
     )
 
     # > Close conditional on no rotated axes
@@ -742,9 +743,9 @@ error_bars <- function(pos, limits = NULL,
         # If arrows should be drawn at each position
 
         arrows(limits[1, ], pos,
-          limits[2, ], pos,
-          length = length, code = code,
-          angle = angle, ...
+               limits[2, ], pos,
+               length = length, code = code,
+               angle = angle, ...
         )
       } else {
 
@@ -759,9 +760,9 @@ error_bars <- function(pos, limits = NULL,
       # If a single set of limits was provided
 
       arrows(limits[1], pos,
-        limits[2], pos,
-        length = length, code = code,
-        angle = angle, ...
+             limits[2], pos,
+             length = length, code = code,
+             angle = angle, ...
       )
     }
   } else {
@@ -775,9 +776,9 @@ error_bars <- function(pos, limits = NULL,
         # If arrows should be drawn at each position
 
         arrows(pos, limits[1, ],
-          pos, limits[2, ],
-          length = length, code = code,
-          angle = angle, ...
+               pos, limits[2, ],
+               length = length, code = code,
+               angle = angle, ...
         )
       } else {
         # If positions are points on a unified polygon
@@ -792,9 +793,9 @@ error_bars <- function(pos, limits = NULL,
       # If a single set of limits was provided
 
       arrows(pos, limits[1],
-        pos, limits[2],
-        length = length, code = code,
-        angle = angle, ...
+             pos, limits[2],
+             length = length, code = code,
+             angle = angle, ...
       )
     }
   }
@@ -987,12 +988,12 @@ apply_f_to_plot <- function(dtf,
 
       if (which_type %in% c("lines", "l", "both", "b", "0", "1")) {
         lines(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
-          col = col.l, lwd = lwd, lty = lty
+              col = col.l, lwd = lwd, lty = lty
         )
       }
       if (which_type %in% c("points", "p", "both", "b", "0", "2")) {
         points(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
-          col = col.p, bg = bg, pch = pch, cex = cex
+               col = col.p, bg = bg, pch = pch, cex = cex
         )
       }
     }
@@ -1073,5 +1074,459 @@ quick_hist <- function( x,
   if ( output ) {
     return( out )
   }
+}
+
+#### 10) correlation_heatmap ####
+#' Plot a Heatmap for a Correlation Matrix
+#'
+#' Generates a heatmap of the upper triangle of
+#' a correlation matrix.
+#'
+#' @param x A data frame (all variables will be used
+#'   when generating the correlation matrix).
+#' @param ttl An optional title for the figure.
+#' @param labels The labels for the rows/columns.
+#' @param lyt An optional matrix specifying the layout
+#'   of the main panel (1) versus the side panel
+#'   (2) with the color gradient.
+#' @param gradient The final end colors for the negative
+#'   and positive correlations, respectively.
+#' @param txtSz The size of the text in the figure.
+#' @param mc_adjust The method to use when correcting for
+#'   multiple comparisons (see \code{\link[stats]{p.adjust}}).
+#' @param cut_off Cut-off for statistical significance.
+#' @param new Logical; if \code{TRUE} generates a new
+#'   plotting window via \code{\link[grDevices]{x11}}.
+#' @param H The height in inches of the figure if a new
+#'   plotting window is generated.
+#' @param W The width in inches of the figure if a new
+#'   plotting window is generated.
+#' @param abbr_labels Logical; if \code{TRUE} abbreviates
+#'   labels to 4 characters.
+#' @param status Logical; if \code{TRUE} displays the
+#'   progress of the function for debugging purposes.
+#'
+#' @return A heatmap for the upper-triangle portion of
+#' the correlation matrix.
+#'
+#' @examples
+#' # Load data
+#' data("mtcars")
+#' x <- mtcars[, c(1,3,4,5,6,7)]
+#' correlation_heatmap( x, new = FALSE )
+#'
+#' # Simulate a correlation matrix
+#'
+#' # 5 x 5 matrix of random values
+#' rand_mat <- matrix( rnorm(25), 5, 5 )
+#' # Create covariance matrix by
+#' # multiplying matrix by its transpose
+#' cov_mat <- rand_mat %*% t( rand_mat )
+#' corr_mat <- cov_mat/sqrt(diag(cov_mat)%*%t(diag(cov_mat)))
+#'
+#' # Simulate data
+#' x <- MASS::mvrnorm( 100, rep( 0, nrow( corr_mat ) ), corr_mat )
+#' colnames( x ) <- paste0( 'V', 1:ncol( x ) )
+#' x <- data.frame(x)
+#' correlation_heatmap( x, new = FALSE )
+#'
+#' @export
+
+correlation_heatmap <- function( x,
+                                 ttl = "Correlation matrix",
+                                 labels = NULL,
+                                 lyt = NULL,
+                                 gradient = c( "#E69F00", "#56B4E9" ),
+                                 txtSz = 1.25,
+                                 mc_adjust = "BH",
+                                 cut_off = 0.05,
+                                 new = T,
+                                 H = 20/3, W = 25/3,
+                                 abbr_labels = TRUE,
+                                 status = FALSE ) {
+
+  if ( !is.data.frame( x ) ) {
+    stop( 'x must be a data frame' )
+  }
+
+  #### 10.1) Compute correlations and significance ####
+  if ( status ) message( '  [1]' )
+
+  # Determine observed correlation matrix
+  omega <- cor( as.matrix(x) )
+
+  # Row names
+  rn <- rownames( omega )
+  # Column names
+  cn <- colnames( omega )
+
+  # Number of variables
+  NV <- nrow( omega )
+
+  # Number of correlations
+  NC <- NV * ( NV - 1 )/2
+
+  # Initialize matrix to store p-values
+  p_mat <- matrix( NA, NV, NV )
+
+  # Vector of p-values for adjustment for multiple comparisons
+  p_val <- rep( NA, NC )
+
+  # Compute p-value for each correlation
+  inc <- 1
+  # Loop over rows
+  for ( j in 1:NV ) {
+
+    # Loop over columns starting from diagonal position
+    for (k in j:NV) {
+
+      # Non-diagonal entries
+      if ( j != k ) {
+
+        # Compute p-value for correlation
+        tst = cor.test( x[[ rn[j] ]], x[[ cn[k] ]] )
+
+        # Save to vector for later adjustment for
+        # multiple comparisons
+        if (k > j) {
+          p_val[inc] <- tst$p.value
+          inc %+=% 1
+        }
+
+        # Close 'Non-diagonal entries'
+      }
+
+      # Close 'Loop over columns starting from diagonal position'
+    }
+
+    # Close 'Loop over rows'
+  }
+
+  # Adjust p-values for multiple comparisons
+  p_val <- p.adjust(p_val, method = mc_adjust)
+
+  # Save adjusted p-values to matrix
+
+  # Compute p-value for each correlation
+  inc <- 1
+  # Loop over rows
+  for ( j in 1:NV ) {
+
+    # Loop over columns starting from diagonal position
+    for (k in j:NV) {
+
+      # Non-diagonal entries
+      if ( j != k ) {
+
+        # Save adjusted p-values
+        if (k > j) {
+          p_mat[j, k] <- p_val[inc]
+          p_mat[k, j] <- p_mat[j, k]
+          inc %+=% 1
+        }
+
+        # Close 'Non-diagonal entries'
+      }
+
+      # Close 'Loop over columns starting from diagonal position'
+    }
+
+    # Close 'Loop over rows'
+  }
+
+  diag(p_mat) <- 0
+
+  #### 10.2) Setup for figure ####
+  if ( status ) message( '  [2]' )
+
+  pos = seq( NV, 0, -1)
+
+  # Default layout for...
+  # [1] Panel with correlation matrix
+  # [2] Panel with legend
+  if (is.null(lyt)) {
+    lyt = cbind(1, 1, 1, 1, 2)
+  }
+
+  # Plotting boundaries
+  xl = range(pos)
+  yl = range(pos)
+  mrg = c(7, 7, 2, 0.5)
+
+  # Color coding for correlation magnitudes
+  r_range = c( 0, .1, .3, .5, .7, .9, 1 )
+  color_f = colorRampPalette(c("white", gradient[2]))
+  color_pos = color_f(length(r_range))
+  color_f = colorRampPalette(c("white", gradient[1]))
+  color_neg = color_f(length(r_range))
+
+  #### 10.2.1) draw_box ####
+  # Draw Box at Specified Coordinates
+  #
+  # Function to draw a box at a specified
+  # set of coordinates with a given fill
+  # color and border. Can also draw a
+  # slash instead (to indicate
+  # non-significance) and can adjust
+  # the size of the box to also denote
+  # the magnitude of a correlation.
+  #
+  # @param 'ri' The row index.
+  # @param 'ci' The column index.
+  # @param 'clr' The fill color.
+  # @param 'brd' The border color.
+  # @param 'slash' Logical; if TRUE
+  #   draws a slash instead of a
+  #   box.
+
+  draw_box = function(pos, ri, ci,
+                      clr = NULL, brd = NULL,
+                      slash = FALSE, r = 1 ) {
+
+    xa = c(ci + 1, ci + 1, ci, ci)
+    ya = c(ri, ri + 1, ri + 1, ri)
+
+    xv <- rev( pos )[ xa ]
+    yv <- pos[ ya ]
+
+    mmv <- list(
+      xa == min( xa ), xa == max( xa )
+    )
+    xv[ mmv[[1]] ] <- xv[ mmv[[1]] ] + (1-r)/2
+    xv[ mmv[[2]] ] <- xv[ mmv[[2]] ] - (1-r)/2
+
+    mmv <- list(
+      ya == min( ya ), ya == max( ya )
+    )
+    yv[ mmv[[1]] ] <- yv[ mmv[[1]] ] - (1-r)/2
+    yv[ mmv[[2]] ] <- yv[ mmv[[2]] ] + (1-r)/2
+
+    if (is.null(clr))
+      clr = "white"
+
+    if (is.null(brd))
+      brd = clr
+
+    if (!slash) {
+      polygon( xv, yv, col = clr, border = brd)
+    }
+    else {
+      segments(
+        xv[1], yv[1],
+        xv[3], yv[2]
+      )
+    }
+  }
+
+  #### 10.3) Create figure ####
+  if ( status ) message( '  [3]' )
+
+  # If specified create new plotting window
+  if (new) {
+    x11( height = H, width = W )
+  }
+
+  # Create panels for heatmap and
+  # for legend
+  layout(lyt)
+
+  # Create blank plot as basis for heatmap
+  par(mar = mrg)
+  blank_plot(xl, yl)
+
+  # Loop over rows
+  for (ri in 1:NV) {
+
+    # Loop over columns
+    for (ci in 1:NV) {
+
+      # Extract correlation
+      cur_R <- omega[ri, ci]
+
+      # If correlation is positive
+      if (cur_R > 0) {
+        # Determine color for magnitude of correlation
+        cur_clr <- color_pos[
+          max( which( r_range <= cur_R ) )
+        ]
+      }
+
+      # If correlation is negative
+      if (cur_R < 0) {
+        # Determine color for magnitude of correlation
+        cur_clr <- color_neg[
+          max( which( r_range <= abs( cur_R ) ) )
+        ]
+      }
+
+      # White boxes
+      if (cur_R == 0) {
+        cur_clr = "white"
+      }
+      if (ri == ci) {
+        cur_clr = "white"
+      }
+      if (ri >= ci) {
+        cur_clr = "white"
+      }
+      cur_brd = NULL
+
+      # Add box to figure
+      if ( ci > ri ) {
+        draw_box(pos, ri, ci,
+                 brd = 'grey90' )
+      }
+      draw_box(pos, ri, ci, clr = cur_clr,
+               brd = cur_brd, r = abs( omega[ri, ci] ) )
+
+      # Close 'Loop over columns'
+    }
+
+    # Close 'Loop over rows'
+  }
+
+  # Loop over rows
+  for (ri in 1:NV) {
+
+    # Loop over columns
+    for (ci in 1:NV) {
+
+      cur_R <- round(omega[ri, ci], 2)
+      cur_p <- p_mat[ri, ci]
+
+      if (is.na(cur_p)) {
+        cur_p <- 0
+      }
+
+      # If non-significant draw a slash
+      if (cur_p > cut_off) {
+
+        # If part of upper triangle
+        if (ri < ci) {
+
+          # If correlation is positive
+          if (cur_R > 0) {
+            # Determine color for magnitude of correlation
+            cur_clr <-
+              color_pos[round(r_range, 2) == round(cur_R, 2)]
+          }
+          # If correlation is negative
+          if (cur_R < 0) {
+            # Determine color for magnitude of correlation
+            cur_clr <-
+              color_neg[round(r_range, 2) == round( abs(cur_R), 2)]
+          }
+
+          # Add black border
+          cur_brd = "black"
+          draw_box(
+            pos, ri, ci, clr = cur_clr,
+            brd = cur_brd, slash = T
+          )
+
+          # Close 'If part of upper triangle'
+        }
+
+        # Close 'If non-significant draw a slash'
+      }
+
+      # Close 'Loop over columns'
+    }
+
+    # Close 'Loop over rows'
+  }
+
+  # Legend for indicator of non-significance
+
+  draw_box(pos, NV, 1, clr = "white", brd = "black")
+  draw_box(pos, NV, 1, clr = "white", brd = "black", slash = T)
+  text(
+    1.25, 0.5,
+    paste("Non-significant at p >", cut_off),
+    pos = 4, cex = txtSz
+  )
+
+  # Default labels for variables
+  if (is.null(labels)) {
+    labels = colnames(omega)
+  }
+
+  if ( abbr_labels ) {
+    labels <- abbreviate( labels, minlength = 4 )
+  }
+
+  # Add labels to figures
+  for (ri in 1:(NV-1)) {
+
+    text(
+      NV - (ri - 1), ri - 0.5,
+      rev(labels)[ri], pos = 2,
+      xpd = NA, cex = txtSz
+    )
+
+    # Close 'Add labels to figures'
+  }
+
+  # By necessity abbreviate labels at top of figure
+  labels <- abbreviate( labels, minlength = 4 )
+
+  axis( 3, 2:NV - .5, labels[-1], cex.axis = txtSz,
+        line = -1.5, tick = FALSE )
+
+  # Title for correlation heatmap
+  mtext(ttl, side = 1, line = 1, cex = txtSz)
+
+  #### 10.4) Legends ####
+  if ( status ) message( '  [4]' )
+
+  # Range of correlation values
+  lbl = c( -rev( r_range ), r_range[-1] )
+  # Mapping to color gradients
+  all_clr <- c( rev( color_neg ), color_pos[-1] )
+  # Reverse order so positive values at top and
+  # negative values at bottom
+  lbl = rev(lbl)
+  all_clr <- rev( all_clr )
+
+  # Row positions
+  pos = rev(0:(length(lbl)))
+
+  # Create panel for legend
+
+  # Plotting boundaries
+  xl = c(0, 2)
+  yl = range(pos)
+
+  # Match margin to main panel
+  par(mar = c(mrg[1], 0, mrg[3], mrg[4]))
+
+  # Create blank plot
+  blank_plot(xl, yl)
+
+  # Loop over rows
+  for (ri in 1:length(lbl)) {
+
+    # Draw box with color mapped to given
+    # correlation value
+    cur_clr <- all_clr[ri]
+    draw_box(pos, ri, 1, clr = cur_clr)
+
+    # Close 'Loop over rows'
+  }
+
+  # Format values for nice spacing
+  string = as.character(lbl)
+  string[lbl > 0] = paste(" ", string[lbl > 0])
+  string[lbl == 0] = " 0.0"
+  string[lbl == 1] = " 1.0"
+  string[lbl == -1] = "-1.0"
+
+  # Add correlations values next to
+  # corresponding colors
+  text(rep(txtSz, length(lbl)), pos[-1] + 0.5, string)
+
+  # Add legend title
+  mtext("R", side = 1, line = 1, cex = txtSz)
+
 }
 
