@@ -1456,7 +1456,7 @@ correlation_heatmap <- function( x,
   }
 
   # Add labels to figures
-  for (ri in 1:(NV-1)) {
+  for (ri in 2:NV) {
 
     text(
       NV - (ri - 1), ri - 0.5,
