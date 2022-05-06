@@ -42,6 +42,9 @@ reference:
   - date_and_time
   - pull_id
   - rep_y_by_x
+  - squish
+  - align_strings
+  - format_numbers
 - title: "Plotting"
   desc: >
 

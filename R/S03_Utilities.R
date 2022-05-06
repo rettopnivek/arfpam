@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-02-28
+# Last updated 2022-05-06
 
 # Table of contents
 # 1) over
@@ -34,6 +34,9 @@
 # 16) date_and_time
 # 17) pull_id
 # 18) rep_y_by_x
+# 19) squish
+# 20) align_strings
+# 21) format_numbers
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -1870,5 +1873,178 @@ rep_y_by_x <- function( lfd, x, y,
   }
 
   return( out )
+}
+
+#### 19) squish ####
+#' Collapse a Character Vector
+#'
+#' Function that combines elements of a
+#' character vector into a single string.
+#'
+#' @param chr_vec A character vector.
+#' @param between The value to use as spacing between
+#'   each element in \code{chr_vec}.
+#'
+#' @return A character string.
+#'
+#' @examples
+#' # Collapse a character vector
+#' print( squish( c( "A", "B", "C" ) ) )
+#'
+#' # Collapse a characcter vector with custom spacing
+#' print( squish( c( "1", "2", "3" ), " + " ) )
+#'
+#' @export
+
+squish <- function( chr_vec, between = "" ) {
+
+  return( paste( chr_vec, collapse = between ) )
+
+}
+
+#### 20) align_strings ####
+#' Pad Strings to be the Same Length
+#'
+#' Function that pads strings to be the same
+#' length, with padding applied either to the
+#' left or right-hand side.
+#'
+#' @param strings A character vector.
+#' @param left Logical; if \code{TRUE}
+#'   left-aligns strings, otherwise
+#'   right-aligns strings.
+#'
+#' @return A character vector.
+#'
+#' @examples
+#' # Strings of unequal length
+#' x <- c( "A", "BB", "CCC" )
+#'
+#' # Left-aligned
+#' s <- align_strings( x )
+#' message( paste0( s, '\n' ) )
+#'
+#' # Right-aligned
+#' s <- align_strings( x, FALSE )
+#' message( paste0( s, '\n' ) )
+#'
+#' @export
+
+align_strings <- function( strings, left = TRUE ) {
+
+  nc <- nchar( strings )
+  mx <- max( nc )
+
+  padding <- sapply( mx - nc, function(v) {
+    if ( v > 0 ) {
+      return( squish( rep( " ", v ) ) )
+    } else {
+      return( "" )
+    }
+  } )
+
+  if ( left ) {
+    return( paste0( strings, padding ) )
+  } else {
+    return( paste0( padding, strings ) )
+  }
+
+}
+
+#### 21) format_numbers ####
+#' Pad Numeric Values to be the Same Length
+#'
+#' Function that pads numeric values to be
+#' the same length by adding spaces to the
+#' left-hand side and trailing zeros after
+#' the decimal place.
+#'
+#' @param x A numeric vector.
+#'
+#' @return A character vector.
+#'
+#' @examples
+#' # Decimal values
+#' message( paste0( format_numbers( round( rnorm( 3 ), 2 ) ), "\n" ) )
+#' # Whole numbers
+#' message( paste0( format_numbers( rbinom( 3, 100, .1 ) ), "\n" ) )
+#'
+#' @export
+
+format_numbers <- function( x ) {
+
+  xchr <- as.character( x )
+
+  any_decimals <- any( grepl( ".", xchr, fixed = TRUE ) )
+
+  if ( any_decimals ) {
+
+    lhs <- sapply(
+      xchr, function(s) {
+        strsplit(
+          s, split = ".", fixed = TRUE
+        )[[1]][1]
+      }
+    )
+
+    rhs <- sapply(
+      xchr, function(s) {
+        strsplit(
+          s, split = ".", fixed = TRUE
+        )[[1]][2]
+      }
+    )
+
+    if ( any( is.na( rhs ) ) ) {
+      rhs[ is.na( rhs ) ] <- "0"
+    }
+
+    nc <- nchar( lhs )
+    mx <- max( nc )
+
+    padding <- sapply( mx - nc, function(v) {
+      if ( v > 0 ) {
+        squish( rep( " ", v ) )
+      } else {
+        return( "" )
+      }
+    } )
+
+    lhs <- paste0( padding, lhs )
+
+    nc <- nchar( rhs )
+    mx <- max( nc )
+
+    padding <- sapply( mx - nc, function(v) {
+      if ( v > 0 ) {
+        squish( rep( "0", v ) )
+      } else {
+        return( "" )
+      }
+    } )
+
+    rhs <- paste0( rhs, padding )
+
+    return( paste0( lhs, ".", rhs ) )
+
+  } else {
+
+    nc <- nchar( xchr )
+    mx <- max( nc )
+
+    padding <- sapply( mx - nc, function(v) {
+      if ( v > 0 ) {
+        squish( rep( " ", v ) )
+      } else {
+        return( "" )
+      }
+    } )
+
+    lhs <- paste0( padding, xchr )
+
+    return( lhs )
+
+  }
+
 }
 
