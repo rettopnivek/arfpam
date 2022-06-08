@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create an Empty List — empty_list • arfpam</title>
+<title>Convenience Function to Load in R Packages — load_package • arfpam</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,10 @@
 
 
 
-<meta property="og:title" content="Create an Empty List — empty_list" />
-<meta property="og:description" content="Creates a list with a specified
-number of empty slots." />
+<meta property="og:title" content="Convenience Function to Load in R Packages — load_package" />
+<meta property="og:description" content="Convenience function to load in a set of R packages -
+can be used to first install missing packages before
+loading them." />
 
 
 
@@ -104,61 +105,47 @@ number of empty slots." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create an Empty List</h1>
+    <h1>Convenience Function to Load in R Packages</h1>
     
-    <div class="hidden name"><code>empty_list.Rd</code></div>
+    <div class="hidden name"><code>load_package.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Creates a list with a specified
-number of empty slots.</p>
+    <p>Convenience function to load in a set of R packages -
+can be used to first install missing packages before
+loading them.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>empty_list</span><span class='op'>(</span><span class='va'>size</span>, labels <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>load_package</span><span class='op'>(</span>pkg <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"dplyr"</span>, <span class='st'>"arfpam"</span><span class='op'>)</span>, install <span class='op'>=</span> <span class='cn'>FALSE</span>, quietly <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>size</th>
-      <td><p>The number of slots.</p></td>
+      <th>pkg</th>
+      <td><p>A character vector of package names to
+load - by default loads the current package
+in addition to the package
+<code><a href='https://dplyr.tidyverse.org/reference/dplyr-package.html'>dplyr</a></code>.</p></td>
     </tr>
     <tr>
-      <th>labels</th>
-      <td><p>An optional character
-vector (whose length equals
-<code>size</code>) with labels for the
-slots.</p></td>
+      <th>install</th>
+      <td><p>Logical; if <code>TRUE</code> attempts
+to install missing packages.</p></td>
+    </tr>
+    <tr>
+      <th>quietly</th>
+      <td><p>Logical; if <code>TRUE</code> loads
+in packages with no console messages (including
+warnings and/or error messages).</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list.</p>
+    <p>Loads in a set of R packages (see
+<code><a href='https://rdrr.io/r/base/library.html'>library</a></code>).</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># An empty list with 3 slots</span>
-<span class='fu'>empty_list</span><span class='op'>(</span><span class='fl'>3</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [[1]]
-#&gt; NULL
-#&gt; 
-#&gt; [[2]]
-#&gt; NULL
-#&gt; 
-#&gt; [[3]]
-#&gt; NULL
-#&gt; </div><div class='input'>
-<span class='co'># An empty list with labels</span>
-<span class='fu'>empty_list</span><span class='op'>(</span> <span class='fl'>3</span>, <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span> <span class='st'>"S0"</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span> <span class='op'>)</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; $S01
-#&gt; NULL
-#&gt; 
-#&gt; $S02
-#&gt; NULL
-#&gt; 
-#&gt; $S03
-#&gt; NULL
-#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

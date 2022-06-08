@@ -45,6 +45,7 @@ reference:
   - squish
   - align_strings
   - format_numbers
+  - load_package
 - title: "Plotting"
   desc: >
 

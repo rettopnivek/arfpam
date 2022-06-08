@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-05-06
+# Last updated 2022-06-08
 
 # Table of contents
 # 1) over
@@ -37,6 +37,7 @@
 # 19) squish
 # 20) align_strings
 # 21) format_numbers
+# 22) load_package
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -673,13 +674,12 @@ lin <- function(start, end, n_intervals) {
 #' empty_list(3)
 #'
 #' # An empty list with labels
-#' empty_list(3, c("S01", "S02", "S03"))
+#' empty_list( 3, paste0( "S0", 1:3 ) )
 #' @export
 
 empty_list <- function(size, labels = NULL) {
-  lst <- lapply(1:size, function(x) {
-    return(NULL)
-  })
+
+  lst <- rep( list(NULL), size )
 
   if (!is.null(labels)) {
     if (length(labels) == length(lst)) {
@@ -1252,7 +1252,7 @@ list_of_matches <- function(x, categories, column = NULL) {
   }
 }
 
-#### 10.3) ####
+#### 10.3) assign_by_match ####
 #' Create Vector with Values Assigned Based on a List of Matches
 #'
 #' This function takes a list of logical vectors equal to
@@ -2048,3 +2048,78 @@ format_numbers <- function( x ) {
 
 }
 
+#### 22) load_package ####
+#' Convenience Function to Load in R Packages
+#'
+#' Convenience function to load in a set of R packages -
+#' can be used to first install missing packages before
+#' loading them.
+#'
+#' @param pkg A character vector of package names to
+#'   load - by default loads the current package
+#'   in addition to the package
+#'   \code{\link[dplyr:dplyr-package]{dplyr}}.
+#' @param install Logical; if \code{TRUE} attempts
+#'   to install missing packages.
+#' @param quietly Logical; if \code{TRUE} loads
+#'   in packages with no console messages (including
+#'   warnings and/or error messages).
+#'
+#' @return Loads in a set of R packages (see
+#' \code{\link[base]{library}}).
+#'
+#' @export
+
+load_package <- function( pkg = c( 'dplyr', 'arfpam' ),
+                          install = FALSE,
+                          quietly = FALSE ) {
+
+  # Packages on Github repo for 'rettopwnivek'
+  rettopwnivek_packages <- c(
+    'arfpam',
+    'extbrms',
+    'extofficer',
+    'pathdiagrams'
+  )
+
+  # Number of packages to load in
+  K <- length( pkg )
+
+  # Loop over packages
+  for ( k in 1:K ) {
+
+    # If specified install missing packages
+    if ( install ) {
+
+      already_installed <- installed.packages()
+
+      # If package hs not been installed
+      if ( !pkg[k] %in% rownames( already_installed ) ) {
+
+        # If package is on Github repo
+        if ( pkg[k] %in% rettopwnivek_packages ) {
+
+          devtools::install_github(
+            paste0( 'rettopwnivek/', pkg[k] )
+          )
+
+          # Close 'If package is on Github repo'
+        } else {
+
+          install.packages( pkg[k] )
+
+          # Close else for 'If package is on Github repo'
+        }
+
+        # Close 'If package hs not been installed'
+      }
+
+      # Close 'If specified install missing packages'
+    }
+
+    library( pkg[k], character.only = TRUE, quietly = quietly )
+
+    # Close 'Loop over packages'
+  }
+
+}

@@ -26,5 +26,5 @@ number of empty slots.
 empty_list(3)
 
 # An empty list with labels
-empty_list(3, c("S01", "S02", "S03"))
+empty_list( 3, paste0( "S0", 1:3 ) )
 }
