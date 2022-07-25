@@ -20,9 +20,6 @@ The operator \code{\%w\%} checks if the string
 on the left-hand side is contained within the
 string on the right-hand side.
 }
-\details{
-
-}
 \examples{
 # Check if a string is part of
 # another string

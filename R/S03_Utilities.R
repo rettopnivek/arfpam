@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-06-08
+# Last updated 2022-07-25
 
 # Table of contents
 # 1) over
@@ -33,11 +33,13 @@
 # 15) col_by_other
 # 16) date_and_time
 # 17) pull_id
-# 18) rep_y_by_x
+# 18) take_x_by_y
 # 19) squish
 # 20) align_strings
 # 21) format_numbers
 # 22) load_package
+# 23) new_limits
+# 24) rep_x_by_y
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -1781,96 +1783,87 @@ pull_id <- function( dtf, subject = TRUE, id = NULL ) {
   return( out )
 }
 
-#### 18) rep_y_by_x ####
+#### 18) take_x_by_y ####
 #' Repeat Column Values by Unique Cases in Another Column
 #'
-#' Function to duplicate values in column \code{y} by
-#' the unique cases in column \code{x}. Useful, for
+#' Function to duplicate values in column \code{x} by
+#' the unique cases in column \code{y}. Useful, for
 #' example, and extracting and duplicating a subject's
 #' baseline values across all time points in a long-form
 #' data frame for a longitudinal study.
 #'
 #' @param lfd A long-form data frame.
-#' @param x The column to repeat values over
+#' @param x The column with values to duplicate
 #'   (non-standard evaluation possible).
-#' @param y The column with values to duplicate
+#' @param y The column to repeat values over
 #'   (non-standard evaluation possible).
 #' @param extra A logical vector matching in
 #'   length to the number of rows of \code{lfd}
 #'   specifying additional cases to match by
-#'   when isolating the values of \code{y} to
+#'   when isolating the values of \code{x} to
 #'   repeat.
 #' @param default The value to substitute if
-#'   no cases for \code{y} based on \code{extra}
+#'   no cases for \code{x} based on \code{extra}
 #'   are found to duplicate.
 #'
 #' @return A vector matching in length to the number
-#' of rows of \code{lfd} with the values of \code{y}
-#' repeated for each unique case of \code{x}.
+#' of rows of \code{lfd} with the values of \code{x}
+#' repeated for each unique case of \code{y}.
 #'
 #' @examples
 #' # Example long-form data frame
 #' lfd <- data.frame(
-#'   X = rep( 1:3, each = 3 ),
-#'   Y = 1:9,
-#'   E = rep( 1:3, 3 )
+#'   ID = rep( 1:3, each = 3 ),
+#'   Value = 1:9,
+#'   Time = rep( 0:2, 3 )
 #' )
 #'
 #' # Repeat first value of Y for each value of X
-#' i <- lfd$E == 1
-#' rep_y_by_x( lfd, X, Y, extra = i )
+#' i <- lfd$Time == 0
+#' take_x_by_y( lfd, Value, ID, extra = i )
 #' # Repeat last value of Y for each value of X
-#' i <- lfd$E == 3
-#' rep_y_by_x( lfd, X, Y, extra = i )
+#' i <- lfd$Time == 2
+#' take_x_by_y( lfd, Value, ID, extra = i )
 #'
 #' @export
 
-rep_y_by_x <- function( lfd, x, y,
-                        extra = NULL,
-                        default = NA ) {
+take_x_by_y <- function( lfd, x, y,
+                         extra = NULL,
+                         default = NA ) {
 
   # Non-standard evaluation
   X <- as.character(substitute(x))
   Y <- as.character(substitute(y))
 
-  n <- nrow( lfd )
+  N <- nrow( lfd )
 
   if ( is.null( extra ) ) {
-    extra <- rep( TRUE, n )
+    extra <- rep( TRUE, N )
   }
 
-  unique_X <- unique( lfd[[ X ]] )
-  n_X <- length( unique_X )
-
   out <- sapply(
-    1:n_X, function(i) {
+    1:N, function(i) {
+
       specific_index <-
-        lfd[[ X ]] == unique_X[i] & extra
-      overall_index <-
-        lfd[[ X ]] == unique_X[i]
-      n_obs <- sum( overall_index )
+        !is.na( lfd[[ Y ]] ) &
+        lfd[[ Y ]] %in% lfd[[ Y ]][i] &
+        extra
 
       if ( sum( specific_index ) > 1 ) {
         warning(
           paste0(
-            "Case ", unique_X[i], "\n",
+            "Case ", lfd[[ Y ]][i], "\n",
             "   More than one unique value detected"
           )
         )
       }
 
       if ( any( specific_index ) ) {
-        return( rep( lfd[[ Y ]][ specific_index ][1], n_obs ) )
+        return( lfd[[ X ]][ specific_index ][1] )
       } else {
-        return( rep( default, n_obs ) )
+        return( default )
       }
     } )
-
-  if ( is.matrix( out ) ) {
-    out <- matrix( out, n, 1 )[,1]
-  } else {
-    out <- unlist( out )
-  }
 
   return( out )
 }
@@ -2123,3 +2116,112 @@ load_package <- function( pkg = c( 'dplyr', 'arfpam' ),
   }
 
 }
+
+#### 23) new_limits ####
+#' Rescale Values to Have New Limits
+#'
+#' A function that rescales a vector of
+#' values to have a new minimum and maximum.
+#'
+#' @param x A vector of numeric values.
+#' @param lower The new lower limit or minimum value.
+#' @param upper The new upper limit or maximum value.
+#' @param ... Additional parameters for the
+#'   \code{\link[base:max]{min}} and
+#'   \code{\link[base:max]{max}} functions.
+#'
+#' @return A vector of rescaled values.
+#'
+#' @examples
+#' x <- 1:3
+#' new_limits( x, 0, 1 )
+#'
+#' @export
+
+new_limits <- function( x, lower, upper, ... ) {
+
+  mn <- min(x, ... )
+  mx <- max( x, ... )
+
+  x_unit <- (x - mn) / (mx - mn)
+
+  out <- x_unit*(upper-lower) + lower
+
+  return( out )
+}
+
+#### 24) rep_x_by_y ####
+#' Duplicate Values from Wide-Form to Long-Form Data
+#'
+#' Function to duplicate values in column \code{x}
+#' from a wide-form (one row per case) data set \code{wf}
+#' based on a shared column \code{y} with a long-form
+#' (multiple rows per case) data set \code{lf}.
+#'
+#' @param wf A wide-form data frame.
+#' @param lf A long-form data frame.
+#' @param x The column in \code{wf} with values to
+#'   duplicate (non-standard evaluation possible).
+#' @param y The column in both \code{wf} and \code{lf}
+#'   over which to repeat values over (non-standard
+#'   evaluation possible).
+#' @param default The value to substitute if
+#'   no cases for \code{x} based on \code{y}
+#'   are found to duplicate.
+#'
+#' @return A vector matching in length to the number
+#' of rows of \code{lf} with the values of \code{x}
+#' repeated for each unique case of \code{y}.
+#'
+#' @examples
+#' # Example wide-form data-frame
+#' wf <- data.frame(
+#'   ID = 1:3,
+#'   Value = 4:6
+#' )
+#'
+#' # Example long-form data-frame
+#' lf <- data.frame(
+#'   ID = rep( 1:3, each = 3),
+#'   Value = NA
+#' )
+#'
+#' # Duplicate values from 'wf' based
+#' # on shared # column 'ID'
+#' lf$Value <- rep_x_by_y( wf, lf, x = Value, y = ID )
+#' print( lf )
+#'
+#' @export
+
+rep_x_by_y <- function( wf, lf, x, y, default = NA ) {
+
+  # Non-standard evaluation
+  X <- as.character(substitute(x))
+  Y <- as.character(substitute(y))
+
+  N <- nrow( lf )
+
+  out <- sapply( 1:N, function(j) {
+
+    val <- default
+
+    if ( !is.na( lf[[ Y ]][j] ) ) {
+
+      match_to_wf <-
+        wf[[ Y ]] %in% lf[[ Y ]][j] &
+        !is.na( wf[[ Y ]] )
+
+      if ( any( match_to_wf ) ) {
+
+        val <- wf[[ X ]][ match_to_wf ][1]
+
+      }
+
+    }
+
+    return( val )
+  } )
+
+  return( out )
+}
+

@@ -129,8 +129,6 @@ NULL
 #' @return A logical vector, \code{TRUE} if \code{x} is
 #' contained in a given element of \code{y}.
 #'
-#' @details
-#'
 #' @examples
 #' # Check if a string is part of
 #' # another string

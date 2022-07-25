@@ -41,11 +41,13 @@ reference:
   - col_by_other
   - date_and_time
   - pull_id
-  - rep_y_by_x
+  - take_x_by_y
   - squish
   - align_strings
   - format_numbers
   - load_package
+  - new_limits
+  - rep_x_by_y
 - title: "Plotting"
   desc: >
 
@@ -73,3 +75,14 @@ reference:
   - bounds
   - standardize
   - density_points
+- title: "Modeling"
+  desc: >
+
+- contents:
+  - binary_SDT
+  - EZ_diffusion
+- title: "Miscellaneous"
+  desc: >
+
+- contents:
+  - arfpam-package
