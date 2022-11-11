@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-06-30
+# Last updated 2022-11-03
 
 # Table of contents
 # 1) `%p%`
@@ -11,6 +11,7 @@
 #   2.1) `%+=%`
 #   2.2) `%-=%`
 # 3) `%w%`
+# 4) `%rows%`
 
 #### 1) `%p%` ####
 #' Operator to Concatenate Two Strings
@@ -149,3 +150,51 @@ NULL
 
   return(out)
 }
+
+#### 4) `%rows%` ####
+#' Operator to Subset Rows While Preserving Attributes
+#'
+#' The binary operator %rows% returns the subset of
+#' specified rows for a data frame without removing
+#' column attributes.
+#'
+#' @param x A data frame
+#' @param y An integer vector, logical vector, or
+#'   character vector specifying the rows in x to keep.
+#'
+#' @return A data frame.
+#'
+#' @examples
+#' dtf <- data.frame(
+#'   X1 = 1:4,
+#'   X2 = LETTERS[1:4],
+#'   X3 = c( TRUE, TRUE, FALSE, FALSE )
+#' )
+#' attributes( dtf$X1 ) <- list( Example_attr = "Integer" )
+#' attributes( dtf$X2 ) <- list( Example_attr = "Character" )
+#' attributes( dtf$X3 ) <- list( Example_attr = "Logical" )
+#'
+#' # Each column has an attribute
+#' str( dtf )
+#'
+#' # Normal indexing removes attributes
+#' str( dtf[1:2,] )
+#'
+#' # Can use operator to avoid losing attributes
+#' str( dtf %rows% 1:2 )
+#'
+#' @export
+
+`%rows%` <- function( x, y ) {
+
+  out <- x[y,]
+
+  K <- ncol( x )
+
+  for ( k in 1:K ) {
+    attributes( out[[k]] ) <- attributes( x[[k]] )
+  }
+
+  return( out )
+}
+

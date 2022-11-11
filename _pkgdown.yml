@@ -6,6 +6,7 @@ reference:
   - Assignment
   - "`%p%`"
   - "`%w%`"
+  - "`%rows%`"
 - title: "Math"
   desc: >
 
@@ -47,7 +48,8 @@ reference:
   - format_numbers
   - load_package
   - new_limits
-  - rep_x_by_y
+  - duplicate_wide_to_long
+  - create_analysis_project
 - title: "Plotting"
   desc: >
 

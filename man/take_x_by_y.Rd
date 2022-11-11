@@ -4,7 +4,7 @@
 \alias{take_x_by_y}
 \title{Repeat Column Values by Unique Cases in Another Column}
 \usage{
-take_x_by_y(lfd, x, y, extra = NULL, default = NA)
+take_x_by_y(lfd, x, y, extra = NULL, default = NA, per_row = TRUE)
 }
 \arguments{
 \item{lfd}{A long-form data frame.}
@@ -24,16 +24,23 @@ repeat.}
 \item{default}{The value to substitute if
 no cases for \code{x} based on \code{extra}
 are found to duplicate.}
+
+\item{per_row}{Logical; if \code{FALSE} returns
+the associated value of \code{x} for each
+unique value of \code{y}, otherwise returns
+a value of \code{x} per each frow of \code{lfd}.}
 }
 \value{
 A vector matching in length to the number
-of rows of \code{lfd} with the values of \code{x}
-repeated for each unique case of \code{y}.
+of rows of \code{lfd} (for \code{per_row = TRUE}) or
+to the number of unique values of \code{y} with the
+values of \code{x} repeated for each unique case of
+\code{y}.
 }
 \description{
 Function to duplicate values in column \code{x} by
 the unique cases in column \code{y}. Useful, for
-example, and extracting and duplicating a subject's
+example, in extracting and duplicating a subject's
 baseline values across all time points in a long-form
 data frame for a longitudinal study.
 }
@@ -51,5 +58,7 @@ take_x_by_y( lfd, Value, ID, extra = i )
 # Repeat last value of Y for each value of X
 i <- lfd$Time == 2
 take_x_by_y( lfd, Value, ID, extra = i )
+# Per unique case of ID
+take_x_by_y( lfd, Value, ID, extra = i, per_row = FALSE )
 
 }
