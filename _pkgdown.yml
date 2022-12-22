@@ -50,6 +50,8 @@ reference:
   - new_limits
   - duplicate_wide_to_long
   - create_analysis_project
+  - strip_value
+  - percent_that_sums_to_100
 - title: "Plotting"
   desc: >
 

@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-11-11
+# Last updated 2022-12-21
 
 # Table of contents
 # 1) over
@@ -41,6 +41,8 @@
 # 23) new_limits
 # 24) duplicate_wide_to_long
 # 25) create_analysis_project
+# 26) strip_value
+# 27) percent_that_sums_to_100
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -2556,3 +2558,102 @@ create_analysis_project <- function( initial = TRUE,
 
 }
 
+#### 26) strip_value ####
+#' Strip Vector of a Value
+#'
+#' Removes a specified value from a vector.
+#'
+#' @param x A vector of values.
+#' @param value The value to remove (defaults
+#'   to \code{NA})
+#'
+#' @return A vector of values sans the one removed.
+#'
+#' @examples
+#' x <- c( 1, 2, NA, 3 )
+#' print( strip_value(x) )
+#'
+#' x <- c( 'Hello', '', 'world' )
+#' print( strip_value(x, '') )
+#'
+#' @export
+
+strip_value <- function( x, value = NA ) {
+
+  # If removing NA
+  if ( is.na( value ) ) {
+
+    out <- x[ !is.na(x) ]
+
+    # Close 'If removing NA'
+  } else {
+
+    out <- x[ !( x %in% value ) ]
+
+    # Close else for 'If removing NA'
+  }
+
+  return( out )
+}
+
+#### 27) percent_that_sums_to_100 ####
+#' Compute Percentage That Sums to 100%
+#'
+#' Function that uses the largest remainder method to
+#' ensure that a set of percentages sum to 100%
+#' even in the presence of rounding error.
+#'
+#' @param x A vector of proportions or frequencies
+#'   that are suppose to sum to 100%.
+#' @param digits The number of digits to round to.
+#' @param freq Logical; if \code{TRUE} assumes \code{x}
+#'   is a vector of frequencies, otherwise assumes
+#'   \code{x} is a vector of proportions.
+#'
+#' @return A vector of percentages that sum to 100%.
+#'
+#' @examples
+#' x <- c( 9990, 5, 5 )
+#' # Convert to percentage and round
+#' p <- round( 100*x/sum(x), 1 )
+#' # No longer sums to 100% due to rounding error
+#' print( sum(p) )
+#' # Adjust percentages using the
+#' # largest remainder method so
+#' # they sum to 100%
+#' print( percent_that_sums_to_100( p/100 ) )
+#' # Works with frequencies as well
+#' print( percent_that_sums_to_100( x, freq = TRUE ) )
+#'
+#' @export
+
+percent_that_sums_to_100 <- function( x, digits = 1, freq = FALSE ) {
+
+  # Convert to proportion
+  if ( freq ) {
+
+    p <- x / sum(x)
+
+    # Close 'Convert to proportion'
+  } else {
+
+    p <- x
+
+    # Close else for 'Convert to proportion'
+  }
+
+  # Number of frequencies
+  n <- length(x)
+
+  # Implement largest remainder method
+  # so percentages sum to 100
+  Nz <- 100 * 10^digits
+  lrm <- p * Nz
+  r <- Nz - sum( floor( lrm ) )
+  a <- rep( 0, n )
+  a[ 1:r ] <- 1
+  o <- order( lrm - floor( lrm ), decreasing = TRUE )
+  lrm[o] <- floor( lrm[o] ) + a[o]
+
+  return( 100*(lrm / Nz) )
+}

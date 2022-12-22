@@ -213,4 +213,10 @@
   <url>
     <loc>/reference/create_analysis_project.html</loc>
   </url>
+  <url>
+    <loc>/reference/strip_value.html</loc>
+  </url>
+  <url>
+    <loc>/reference/percent_that_sums_to_100.html</loc>
+  </url>
 </urlset>
