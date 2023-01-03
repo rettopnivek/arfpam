@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-05-20
+# Last updated 2023-01-03
 
 # Table of contents
 # 1) Log-odds and the logistic function
@@ -12,6 +12,7 @@
 # 2) softmax
 # 3) erf
 # 4) pow
+# 5) log_of_sum_of_exp_x
 
 #### 1) Log-odds and the logistic function ####
 
@@ -183,3 +184,88 @@ pow <- function(x, a) {
 
   return(out)
 }
+
+#### 5) log_of_sum_of_exp_x ####
+#' Compute the Log of the Sum of the Exponent of Log-Values
+#'
+#' Function to compute the log of the sum of exponent of
+#' a set of log-values.
+#'
+#' @param x A numeric vector of log-values.
+#' @param na.rm Logical; if \code{TRUE} removes \code{NA} values.
+#'
+#' @details It is often useful to take the log of very small
+#' or large values (e.g., likelihoods). Working with log-values
+#' makes exponentiation, multiplication, and division easier.
+#' However, addition and subtraction become harder.
+#'
+#' Assume \code{ a = log(a.) } and \code{ b = log(b.) }. The identity
+#' \code{log(a. + b.) = a + log(1 + exp(b - a))} allows us to compute
+#' the log of the sum of the exponentiated values of a and b. This can
+#' be further extended to a series of log-values
+#' \code{x = {x[1], x[2], ..., x[n]}} as
+#' \code{x[1] + log( 1 + exp(x[2] - x[1]) + ... + exp(x[n] - x[1]) )}.
+#'
+#' @references
+#' http://bayesfactor.blogspot.com/2016/05/numerical-pitfalls-in-computing-variance.html
+#'
+#' https://stackoverflow.com/questions/65233445/how-to-calculate-sums-in-log-space-without-underflow
+#'
+#' @returns The log of the sum of the exponentiated values of \code{x}.
+#'
+#' @examples
+#' exp_x <- 1:4
+#' x <- log( exp_x )
+#' log( sum( exp_x) )
+#' log_of_sum_of_exp_x( x )
+#'
+#' @export
+
+log_of_sum_of_exp_x <- function(x, na.rm = FALSE) {
+
+  # Remove NA values
+  if ( na.rm ) {
+
+    x <- x[ !is.na(x) ]
+
+    # Close 'Remove NA values'
+  } else {
+
+    # If any NA values
+    if ( any( is.na(x) ) ) {
+
+      return( NA )
+
+      # Close 'If any NA values'
+    }
+
+    # Close else for 'Remove NA values'
+  }
+
+  # Number of elements
+  n <- length( x )
+
+  # Largest log-value
+  max_x <- max( x )
+  # Number of duplicate max log-values
+  matches_max <- x == max_x
+  n_max <- sum( matches_max )
+
+  # Remove max log-value
+  x_no_max <- x[ !matches_max ]
+
+  # Compute cumulative sum of exp( x[i] - max(x) )
+  exp_x_minus_max <- exp( x_no_max - max_x )
+  sum_exp <- sum( exp_x_minus_max )
+
+  # Adjust if duplicate cases of max log-value
+  if ( n_max > 1 ) {
+    sum_exp <- sum_exp + 1*(n_max - 1)
+  }
+
+  # Compute log of sum of exp(x)
+  out <- max_x + log1p( sum_exp )
+
+  return( out )
+}
+

@@ -16,6 +16,7 @@ reference:
   - logistic
   - pow
   - softmax
+  - log_of_sum_of_exp_x
 - title: "Utilities"
   desc: >
 
