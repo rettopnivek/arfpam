@@ -3,24 +3,35 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-03-06
+# Last updated 2023-01-04
 
 # Table of contents
-# 1) blank_plot
-# 2) palettes
-# 3) hv_line
-# 4) fill_plot
-# 5) add_axes
-# 6) col_to_hex
-# 7) error_bars
-# 8) add_f_to_plot
-# 9) quick_hist
-# 10) correlation_heatmap
+# 1) Utility functions for plotting
+#   1.1) blank_plot
+#   1.2) palettes
+#   1.3) hv_line
+#   1.4) fill_plot
+#   1.5) add_axes
+#   1.6) col_to_hex
+#   1.7) error_bars
+#   1.8) apply_f_to_plot
+#   1.9) draw_by_group
+# 2) Functions to draw onto existing plot
+#   2.1) draw_dots
+#   2.2) draw_lines
+#   2.3) draw_boxplots
+# 3) Functions to plot specific types of plots
+#   3.1) plot_histogram
+#   3.2) plot_correlation_heatmap
+#     3.2.1) Compute correlations and significance
+#     3.2.2) Setup for figure
+#       3.2.2.1) draw_box
+#     3.2.3) Create figure
+#     3.2.4) Legends
 
-# TO DO
-# - Add additional color palettes
+#### 1) Utility functions for plotting ####
 
-#### 1) blank_plot ####
+#### 1.1) blank_plot ####
 #' Generate a Blank Plot
 #'
 #' This function generates a completely blank plot.
@@ -88,7 +99,7 @@ blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
   }
 }
 
-#### 2) palettes ####
+#### 1.2) palettes ####
 #' Various Color Palettes
 #'
 #' Returns a vector of hex color values
@@ -223,7 +234,7 @@ palettes <- function(type = "colorblind",
   }
 }
 
-#### 3) hv_line ####
+#### 1.3) hv_line ####
 #' Draw Horizontal/Vertical Lines
 #'
 #' Draws horizontal or vertical lines on an
@@ -285,7 +296,7 @@ hv_line <- function(h = NULL, v = NULL, l = NULL, ...) {
   }
 }
 
-#### 4) fill_plot ####
+#### 1.4) fill_plot ####
 #' Add Filled Vertical/Horizontal Bar
 #'
 #' Adds a vertical or horizontal filled bar
@@ -379,7 +390,7 @@ fill_plot <- function(x = NULL, y = NULL, l = NULL,
   }
 }
 
-#### 5) add_axes ####
+#### 1.5) add_axes ####
 #' Add Axes to a Plot
 #'
 #' Wrapper for a call to either \code{\link[graphics]{axis}}
@@ -576,7 +587,7 @@ add_axes <- function(at, labels = NULL,
   }
 }
 
-#### 6) col_to_hex ####
+#### 1.6) col_to_hex ####
 #' Convert Colors to Hex Codes
 #'
 #' Convert a color name to a hex color code.
@@ -615,7 +626,7 @@ col_to_hex <- function(col, alpha = 1) {
   return(out)
 }
 
-#### 7) error_bars ####
+#### 1.7) error_bars ####
 #' Add Error Bars to a Plot
 #'
 #' Adds error bars to an existing plot.
@@ -801,7 +812,7 @@ error_bars <- function(pos, limits = NULL,
   }
 }
 
-#### 8) apply_f_to_plot ####
+#### 1.8) apply_f_to_plot ####
 #' Applies a Function to Add Elements to a Plot
 #'
 #' Given a data frame of values to plot,
@@ -1010,7 +1021,656 @@ apply_f_to_plot <- function(dtf,
   }
 }
 
-#### 9) quick_hist ####
+#### 1.9) draw_by_group ####
+#' Add Elements to Existing Figure by Groups
+#'
+#' Function that will add elements to an existing
+#' plot via different \code{draw} functions per
+#' each level of a grouping factor.
+#'
+#' @param dtf A data frame.
+#' @param variable A character string, the column with
+#'   the grouping levels.
+#' @param groups The grouping levels to plot over.
+#' @param draw_fun A function, either [draw_dots], [draw_lines],
+#'   or [draw_boxplots].
+#' @param ... Additional arguments for the relevant function.
+#'   For a given argument, a list with different values per
+#'   group can be provided.
+#'
+#' @returns Adds elements to an existing plot per each group level.
+#'
+#' @examples
+#' # Compute mean, SE, and 95% CI limits for data set
+#' dtf <- aggregate(
+#'   mtcars$mpg, list( mtcars$cyl ), function(x) c( mean(x), sem(x) )
+#' )
+#' dtf$X <- 1:3
+#' dtf$M <- dtf$x[,1];
+#' dtf$LB <- dtf$x[,1] - dtf$x[,2] * 1.96
+#' dtf$UB <- dtf$x[,1] + dtf$x[,2] * 1.96
+#'
+#' # Create blank plot
+#' xl <- c( .5, 3.5 )
+#' yl <- c( 5, 35 )
+#' blank_plot( xl, yl )
+#' hv_line( h = yl, l = xl )
+#' hv_line( v = xl, l = yl )
+#'
+#' # Add means and error bars by car cylinder type
+#' draw_by_group(
+#'   dtf, variable = 'Group.1', groups = c( 4, 6, 8 ),
+#'   draw_fun = draw_dots,
+#'   columns = c( 'X', 'M', 'LB', 'UB' ),
+#'   bg = list( 'black', 'blue', 'red' ),
+#'   pch = list( 21, 22, 24 )
+#' )
+#'
+#' # Add axes and labels
+#' add_axes( 1:3, dtf$Group.1 )
+#' mtext( 'Cylinders', side = 1, line = 2, cex = 1.25 )
+#' add_axes( c( 10, 20, 30 ), side = 2 )
+#' mtext( 'MPG', side = 2, line = 2, cex = 1.25 )
+#'
+#' @export
+
+draw_by_group <- function( dtf, variable, groups, draw_fun, ... ) {
+
+  K <- length( groups )
+
+  arg_list <- list( ... )
+  arg_names <- names( list( ... ) )
+  J <- length( arg_list )
+
+  # Loop over group levels
+  for ( k in 1:K ) {
+
+    index <- dtf[[ variable ]] %in% groups[k]
+
+    list_of_arg <- list(
+      x = dtf[ index, ]
+    )
+
+    for ( j in 1:J ) {
+
+      cur_arg <- arg_list[[j]]
+
+      if ( is.list( cur_arg ) ) {
+        cur_arg <- cur_arg[[k]]
+      }
+
+      list_of_arg[[j+1]] <- cur_arg
+
+    }
+    names( list_of_arg ) <- c( "x", arg_names )
+
+    do.call( draw_fun, list_of_arg )
+
+    # Close 'Loop over group levels'
+  }
+
+}
+
+#### 2) Functions to draw onto existing plot ####
+
+#### 2.1) draw_dots ####
+#' Add Points and Error Bars to an Existing Plot
+#'
+#' Function to add points and error bars to an
+#' existing plot.
+#'
+#' @param x Either a numeric vector or a data frame.
+#' @param y An optional numeric vector matching in length to \code{x}.
+#' @param lb An optional numeric vector matching in length to \code{x},
+#'   specifying the lower bounds for error bars.
+#' @param ub An optional numeric vector matching in length to \code{x},
+#'   specifying the upper bounds for error bars.
+#' @param columns A character vector of either 2 or 4 elements, the
+#'   column names for the x and y-axis values and (optionally) the
+#'   column names for the lower and upper bounds of the error bars.
+#' @param pch The type of point to draw
+#'   (see \code{\link[graphics]{par}}).
+#' @param cex The size of the points to draw
+#'   (see \code{\link[graphics]{par}}).
+#' @param lwd The width of the lines
+#'   (see \code{\link[graphics]{par}}).
+#' @param length The width of the caps on the error bars.
+#' @param col The color of the points
+#'   (see \code{\link[graphics]{par}}).
+#' @param bg The background color of the points
+#'   (see \code{\link[graphics]{par}}).
+#' @param col.eb The color of the error bars.
+#'
+#' @returns Adds points and error bars to an existing plot.
+#'
+#' @examples
+#' # Add three points
+#' blank_plot()
+#' draw_dots( c( 0, .5, 1 ), c( 0, .5, 1 ) )
+#'
+#' # Pass points in via data frame
+#' draw_dots(
+#'   data.frame( X = c( .1, .2, .3 ), Y = c( .8, .8, .8 ) ),
+#'   col = 'blue'
+#' )
+#'
+#' # Compute mean, SE, and 95% CI limits for data set
+#' dtf <- aggregate(
+#'   mtcars$mpg, list( mtcars$cyl ), function(x) c( mean(x), sem(x) )
+#' )
+#' dtf$X <- 1:3
+#' dtf$M <- dtf$x[,1];
+#' dtf$LB <- dtf$x[,1] - dtf$x[,2] * 1.96
+#' dtf$UB <- dtf$x[,1] + dtf$x[,2] * 1.96
+#'
+#' # Create blank plot
+#' xl <- c( .5, 3.5 ); yl <- c( 10, 30 )
+#' blank_plot( xl, yl )
+#' hv_line( h = yl, l = xl )
+#' hv_line( v = xl, l = yl )
+#'
+#' draw_dots(
+#'   dtf, columns = c( 'X', 'M', 'LB', 'UB' ),
+#'   col = palettes( index = 1:3 )
+#' )
+#'
+#' # Add axes and labels
+#' add_axes( 1:3, dtf$Group.1 )
+#' mtext( 'Cylinders', side = 1, line = 2, cex = 1.25 )
+#' add_axes( c( 10, 20, 30 ), side = 2 )
+#' mtext( 'MPG', side = 2, line = 2, cex = 1.25 )
+#'
+#' @export
+
+draw_dots <- function( x, y = NULL,
+                       lb = NULL, ub = NULL,
+                       columns = NULL,
+                       pch = 19, cex = 1.25,
+                       lwd = 2, length = .05,
+                       col = 'black',
+                       bg = 'white',
+                       col.eb = 'black' ) {
+
+  # Check use cases
+  current_use <- "Incorrect input"
+
+  # Data frame provided
+  if ( is.data.frame(x) & is.null(y) ) {
+    current_use <- "Variable 'x' is a data frame"
+  }
+
+  # Numeric vectors provided
+  if ( is.numeric(x) & !is.null(y) ) {
+
+    if ( is.numeric(y) ) {
+      current_use <- "Variables 'x' and 'y' are numeric vectors"
+    }
+
+    # Close 'Numeric vectors provided'
+  }
+
+  # If no correct inputs found
+  if ( current_use == "Incorrect input" ) {
+
+    stop(
+      '\n' %p% current_use %p% ' - expected that either...\n' %p%
+        "   (1) variable 'x' is a data frame\n" %p%
+        "   (2) variable 'x' and 'y' are numeric vectors\n"
+    )
+
+    # Close 'If no correct inputs found'
+  }
+
+  # Extract variables for data frame
+  if ( current_use == "Variable 'x' is a data frame" ) {
+
+    # Save data frame
+    dtf <- x
+
+    # Specify separate vectors for 'x' and 'y'
+
+    # Column names are provided
+    if ( !is.null( columns ) ) {
+
+      x <- dtf[[ columns[1] ]]
+      y <- dtf[[ columns[2] ]]
+
+      # Lower and upper bounds provided
+      if ( length( columns ) == 4 ) {
+
+        lb <- dtf[[ columns[3] ]]
+        ub <- dtf[[ columns[4] ]]
+
+        # Close 'Lower and upper bounds provided'
+      }
+
+      # Close 'Column names are provided'
+    } else {
+
+      # Data frame has X/Y variables
+      if ( all( c( 'X', 'Y' ) %in% colnames( dtf ) ) ) {
+
+        x <- dtf$X
+        y <- dtf$Y
+
+        # Close 'Data frame has X/Y variables'
+      } else {
+
+        # Use first two columns
+        x <- dtf[[1]]
+        y <- dtf[[2]]
+
+        # Close else for 'Data frame has X/Y variables'
+      }
+
+      # Close else for 'Column names are provided'
+    }
+
+    # Close 'Extract variables for data frame'
+  }
+
+  # Add error bars to figure
+  if ( !is.null(lb) & !is.null(ub) ) {
+
+    error_bars(
+      x, lb = lb, ub = ub, lwd = lwd, length = length, col = col.eb
+    )
+
+    # Close 'Add error bars to figure'
+  }
+
+  # Add points to figure
+  points( x, y, pch = pch, cex = cex, col = col, bg = bg )
+
+}
+
+#### 2.2) draw_lines ####
+#' Add Lines and Error Bars to an Existing Plot
+#'
+#' Function to add lines and error bars to an
+#' existing plot.
+#'
+#' @param x Either a numeric vector or a data frame.
+#' @param y An optional numeric vector matching in length to \code{x}.
+#' @param lb An optional numeric vector matching in length to \code{x},
+#'   specifying the lower bounds for error bars.
+#' @param ub An optional numeric vector matching in length to \code{x},
+#'   specifying the upper bounds for error bars.
+#' @param columns A character vector of either 2 or 4 elements, the
+#'   column names for the x and y-axis values and (optionally) the
+#'   column names for the lower and upper bounds of the error bars.
+#' @param pch The type of point to draw
+#'   (see \code{\link[graphics]{par}}).
+#' @param cex The size of the points to draw
+#'   (see \code{\link[graphics]{par}}).
+#' @param lwd The width of the lines
+#'   (see \code{\link[graphics]{par}}).
+#' @param lty The type of line to draw
+#'   (see \code{\link[graphics]{par}}).
+#' @param arrow Logical; if \code{TRUE} draws individual error bars
+#'   while if \code{FALSE} draws a single filled bar.
+#' @param length The width of the caps on the error bars.
+#' @param col The color of the lines
+#'   (see \code{\link[graphics]{par}}).
+#' @param col.p The color of the points
+#'   (see \code{\link[graphics]{par}}).
+#' @param bg The background color of the points
+#'   (see \code{\link[graphics]{par}}).
+#' @param col.eb The color of the error bars.
+#' @param border The color for the border of a single
+#'   filled error bar.
+#'
+#' @returns Adds lines and error bars to an existing plot.
+#'
+#' @examples
+#' # Draw a line
+#' blank_plot()
+#' draw_lines( c( 0, .5, 1 ), c( 0, .5, 1 ) )
+#'
+#' # Pass points in via data frame
+#' draw_lines(
+#'   data.frame( X = c( .1, .2, .3 ), Y = c( .8, .8, .8 ) ),
+#'   lty = 2, lwd = 3, col.p = 'blue', col = 'blue'
+#' )
+#'
+#' # Compute mean, SE, and 95% CI limits for data set
+#' dtf <- aggregate(
+#'   mtcars$mpg, list( mtcars$cyl, mtcars$am ),
+#'   function(x) c( mean(x), sem(x) )
+#' )
+#' dtf$X <- rep( 1:3, 2 )
+#' dtf$M <- dtf$x[,1];
+#' dtf$LB <- dtf$x[,1] - dtf$x[,2] * 1.96
+#' dtf$UB <- dtf$x[,1] + dtf$x[,2] * 1.96
+#'
+#' # Create blank plot
+#' xl <- c( .5, 3.5 ); yl <- c( 5, 35 )
+#' blank_plot( xl, yl )
+#' hv_line( h = yl, l = xl )
+#' hv_line( v = xl, l = yl )
+#'
+#' # Draw lines for automatic transmission
+#' draw_lines(
+#'   dtf[1:3,],
+#'   columns = c( 'X', 'M', 'LB', 'UB' )
+#' )
+#'
+#' # Draw lines for manual transmission
+#' draw_lines(
+#'   dtf[1:3 + 3,],
+#'   columns = c( 'X', 'M', 'LB', 'UB' ),
+#'   col = 'blue', col.p = 'blue', col.eb = col_to_hex( 'blue', .3 )
+#' )
+#'
+#' # Add axes and labels
+#' add_axes( 1:3, dtf$Group.1[1:3] )
+#' mtext( 'Cylinders', side = 1, line = 2, cex = 1.25 )
+#' add_axes( c( 10, 20, 30 ), side = 2 )
+#' mtext( 'MPG', side = 2, line = 2, cex = 1.25 )
+#'
+#' # Add legend
+#' legend(
+#'   2.5, 30,
+#'   c( 'Automatic', 'Manual' ),
+#'   fill = c( 'black', 'blue' ),
+#'   bty = 'n'
+#' )
+#'
+#' @export
+
+draw_lines <- function( x, y = NULL,
+                        lb = NULL, ub = NULL,
+                        columns = NULL,
+                        pch = 19, cex = 1.25,
+                        lwd = 2, lty = 1,
+                        arrow = FALSE, length = .05,
+                        col = 'black',
+                        col.p = 'black',
+                        col.eb = col_to_hex( 'grey', .3 ),
+                        bg = 'white',
+                        border = NA ) {
+
+  # Check use cases
+  current_use <- "Incorrect input"
+
+  # Data frame provided
+  if ( is.data.frame(x) & is.null(y) ) {
+    current_use <- "Variable 'x' is a data frame"
+  }
+
+  # Numeric vectors provided
+  if ( is.numeric(x) & !is.null(y) ) {
+
+    if ( is.numeric(y) ) {
+      current_use <- "Variables 'x' and 'y' are numeric vectors"
+    }
+
+    # Close 'Numeric vectors provided'
+  }
+
+  # If no correct inputs found
+  if ( current_use == "Incorrect input" ) {
+
+    stop(
+      '\n' %p% current_use %p% ' - expected that either...\n' %p%
+        "   (1) variable 'x' is a data frame\n" %p%
+        "   (2) variable 'x' and 'y' are numeric vectors\n"
+    )
+
+    # Close 'If no correct inputs found'
+  }
+
+  # Extract variables for data frame
+  if ( current_use == "Variable 'x' is a data frame" ) {
+
+    # Save data frame
+    dtf <- x
+
+    # Specify separate vectors for 'x' and 'y'
+
+    # Column names are provided
+    if ( !is.null( columns ) ) {
+
+      x <- dtf[[ columns[1] ]]
+      y <- dtf[[ columns[2] ]]
+
+      # Lower and upper bounds provided
+      if ( length( columns ) == 4 ) {
+
+        lb <- dtf[[ columns[3] ]]
+        ub <- dtf[[ columns[4] ]]
+
+        # Close 'Lower and upper bounds provided'
+      }
+
+      # Close 'Column names are provided'
+    } else {
+
+      # Data frame has X/Y variables
+      if ( all( c( 'X', 'Y' ) %in% colnames( dtf ) ) ) {
+
+        x <- dtf$X
+        y <- dtf$Y
+
+        # Close 'Data frame has X/Y variables'
+      } else {
+
+        # Use first two columns
+        x <- dtf[[1]]
+        y <- dtf[[2]]
+
+        # Close else for 'Data frame has X/Y variables'
+      }
+
+      # Close else for 'Column names are provided'
+    }
+
+    # Close 'Extract variables for data frame'
+  }
+
+  # Add error bars to figure
+  if ( !is.null(lb) & !is.null(ub) ) {
+
+    error_bars(
+      x, lb = lb, ub = ub,
+      lwd = lwd, length = length,
+      col = col.eb, arrow = arrow,
+      border = border
+    )
+
+    # Close 'Add error bars to figure'
+  }
+
+  # Add lines to figure
+  lines( x, y, lwd = lwd, col = col, lty = lty )
+
+  # Add points to figure
+  points( x, y, pch = pch, cex = cex, col = col.p, bg = bg )
+
+}
+
+#### 2.3) draw_boxplots ####
+#' Add Boxplot to an Existing Plot
+#'
+#' Function to add a boxplot at a specified x-axis position
+#' to an existing figure.
+#'
+#' @param x Either a single value or a data frame.
+#' @param y An optional vector of 5 values giving the cut-offs
+#'   for the boxplot (typically the 2.5%, 25%, 50%, 75%, and 97.5%
+#'   quantiles).
+#' @param columns A character vector, giving the column with the
+#'   x-axis value and the 5 columns with the cut-offs for the
+#'   boxplot, respectively.
+#' @param width The spacing to add to the left and right of the
+#'   x-axis value.
+#' @param lwd The width of the lines
+#'   (see \code{\link[graphics]{par}}).
+#' @param col The color of the lines
+#'   (see \code{\link[graphics]{par}}).
+#' @param col The fill color for the box component.
+#'
+#' @returns Adds a boxplot to an existing figure.
+#'
+#' @examples
+#' # Compare normal and log-normal distributions
+#' dtf_data <- data.frame(
+#'   Normal = rnorm( 100, 100, sqrt( 225 ) ),
+#'   Log_normal = exp(
+#'     rnorm( 100, 4.594045, sqrt( 0.02225061 ) )
+#'   )
+#' )
+#'
+#' # Create blank plot
+#' xl <- c( .5, 2.5 )
+#' yl <- c( 50, 150 )
+#' blank_plot( xl, yl )
+#'
+#' # Add boxplots
+#'
+#' y <- quantile( dtf_data$Normal, prob = c( .025, .25, .5, .75, .975 ) )
+#' draw_boxplots( 1, y )
+#'
+#' y <- quantile( dtf_data$Log_normal, prob = c( .025, .25, .5, .75, .975 ) )
+#' draw_boxplots( 2, y, col = 'blue' )
+#'
+#' # Compute cut-offs for boxplots for data set
+#' dtf <- aggregate(
+#'   mtcars$mpg, list( mtcars$cyl ),
+#'   quantile, prob = c( .025, .25, .5, .75, .975 )
+#' )
+#' dtf$X <- 1:3
+#' colnames( dtf$x ) <- 'Q' %p% c( '02.5', '25.0', '50.0', '75.0', '97.5' )
+#' dtf <- cbind( dtf[,c('Group.1', 'X') ], dtf$x )
+#'
+#' # Create blank plot
+#' xl <- c( .5, 3.5 )
+#' yl <- c( 5, 35 )
+#' blank_plot( xl, yl )
+#' hv_line( h = yl, l = xl )
+#' hv_line( v = xl, l = yl )
+#'
+#' # Add boxplots per cylinder type
+#' draw_boxplots(
+#'   dtf[1,], bg = palettes( index = 1 )
+#' )
+#' draw_boxplots(
+#'   dtf[2,], bg = palettes( index = 2 )
+#' )
+#' draw_boxplots(
+#'   dtf[3,], bg = palettes( index = 3 )
+#' )
+#'
+#' # Add axes and labels
+#' add_axes( 1:3, dtf$Group.1 )
+#' mtext( 'Cylinders', side = 1, line = 2, cex = 1.25 )
+#' add_axes( c( 10, 20, 30 ), side = 2 )
+#' mtext( 'MPG', side = 2, line = 2, cex = 1.25 )
+#'
+#' @export
+
+draw_boxplots <- function( x, y = NULL,
+                           columns = NULL,
+                           width = .25,
+                           lwd = 2,
+                           col = 'black', bg = NA ) {
+
+  # Check use cases
+  current_use <- "Incorrect input"
+
+  # Data frame provided
+  if ( is.data.frame(x) & is.null(y) ) {
+    current_use <- "Variable 'x' is a data frame"
+  }
+
+  # Numeric vectors provided
+  if ( is.numeric(x) & !is.null(y) ) {
+
+    if ( is.numeric(y) ) {
+      current_use <- "Variable 'x' is a value and 'y' is a numeric vector"
+    }
+
+    # Close 'Numeric vectors provided'
+  }
+
+  # If no correct inputs found
+  if ( current_use == "Incorrect input" ) {
+
+    stop(
+      '\n' %p% current_use %p% ' - expected that either...\n' %p%
+        "   (1) variable 'x' is a data frame\n" %p%
+        "   (2) variable 'x' is a value and 'y' is a numeric vector\n"
+    )
+
+    # Close 'If no correct inputs found'
+  }
+
+  # Extract variables for data frame
+  if ( current_use == "Variable 'x' is a data frame" ) {
+
+    # Save data frame
+    dtf <- x
+
+    # Specify separate vectors for 'x' and 'y'
+
+    # Column names are provided
+    if ( !is.null( columns ) ) {
+
+      x <- dtf[[ columns[1] ]][1]
+      y <- as.numeric( dtf[1, columns[1 + 1:5] ] )
+
+      # Close 'Column names are provided'
+    } else {
+
+      # Data frame has X/Q variables
+      columns_to_find <- c(
+        'X',
+        'Q' %p% c( '02.5', '25.0', '50.0', '75.0', '97.5' )
+      )
+
+      if ( all( columns_to_find %in% colnames( dtf ) ) ) {
+
+        x <- dtf$X[1]
+        y <- as.numeric( dtf[1, columns_to_find[-1] ] )
+
+        # Close 'Data frame has X/Y variables'
+      } else {
+
+        # Throw an error
+        stop(
+          "Must specify column for 'x' and 5 columns for 'y'"
+        )
+
+      }
+
+      # Close else for 'Column names are provided'
+    }
+
+    # Close 'Extract variables for data frame'
+  }
+
+
+  # Draw box for 25% - 75% interval
+  polygon(
+    c( x - width, x - width, x + width, x + width ),
+    c( y[2], y[4], y[4], y[2] ),
+    lwd = lwd, col = bg, border = col
+  )
+
+  # Draw line from 2.5% to 25%
+  segments( x, y[1], x, y[2], lwd = lwd, col = col )
+
+  # Draw line for median
+  segments( x - width, y[3], x + width, y[3], lwd = lwd, col = col )
+
+  # Draw line from 75% to 97.5%
+  segments( x, y[4], x, y[5], lwd = lwd, col = col )
+
+}
+
+#### 3) Functions to plot specific types of plots ####
+
+#### 3.1) plot_histogram ####
 #' Wrapper for Plotting Histograms
 #'
 #' A convenience function making a call to
@@ -1047,20 +1707,20 @@ apply_f_to_plot <- function(dtf,
 #'
 #' @examples
 #' x <- rnorm( 100 )
-#' quick_hist( x, new = FALSE )
+#' plot_histogram( x, new = FALSE )
 #'
 #' @export
 
-quick_hist <- function( x,
-                        breaks = 'FD',
-                        border = 'white',
-                        col = 'grey',
-                        main = '',
-                        plot = TRUE,
-                        output = FALSE,
-                        new = TRUE,
-                        w = 5, h = 5,
-                        ... ) {
+plot_histogram <- function( x,
+                            breaks = 'FD',
+                            border = 'white',
+                            col = 'grey',
+                            main = '',
+                            plot = TRUE,
+                            output = FALSE,
+                            new = TRUE,
+                            w = 5, h = 5,
+                            ... ) {
 
   if ( new & plot ) x11( width = w, height = h )
 
@@ -1076,7 +1736,7 @@ quick_hist <- function( x,
   }
 }
 
-#### 10) correlation_heatmap ####
+#### 3.2) plot_correlation_heatmap ####
 #' Plot a Heatmap for a Correlation Matrix
 #'
 #' Generates a heatmap of the upper triangle of
@@ -1113,7 +1773,7 @@ quick_hist <- function( x,
 #' # Load data
 #' data("mtcars")
 #' x <- mtcars[, c(1,3,4,5,6,7)]
-#' correlation_heatmap( x, new = FALSE )
+#' plot_correlation_heatmap( x, new = FALSE )
 #'
 #' # Simulate a correlation matrix
 #'
@@ -1128,28 +1788,28 @@ quick_hist <- function( x,
 #' x <- MASS::mvrnorm( 100, rep( 0, nrow( corr_mat ) ), corr_mat )
 #' colnames( x ) <- paste0( 'V', 1:ncol( x ) )
 #' x <- data.frame(x)
-#' correlation_heatmap( x, new = FALSE )
+#' plot_correlation_heatmap( x, new = FALSE )
 #'
 #' @export
 
-correlation_heatmap <- function( x,
-                                 ttl = "Correlation matrix",
-                                 labels = NULL,
-                                 lyt = NULL,
-                                 gradient = c( "#E69F00", "#56B4E9" ),
-                                 txtSz = 1.25,
-                                 mc_adjust = "BH",
-                                 cut_off = 0.05,
-                                 new = T,
-                                 H = 20/3, W = 25/3,
-                                 abbr_labels = TRUE,
-                                 status = FALSE ) {
+plot_correlation_heatmap <- function( x,
+                                      ttl = "Correlation matrix",
+                                      labels = NULL,
+                                      lyt = NULL,
+                                      gradient = c( "#E69F00", "#56B4E9" ),
+                                      txtSz = 1.25,
+                                      mc_adjust = "BH",
+                                      cut_off = 0.05,
+                                      new = T,
+                                      H = 20/3, W = 25/3,
+                                      abbr_labels = TRUE,
+                                      status = FALSE ) {
 
   if ( !is.data.frame( x ) ) {
     stop( 'x must be a data frame' )
   }
 
-  #### 10.1) Compute correlations and significance ####
+  #### 3.2.1) Compute correlations and significance ####
   if ( status ) message( '  [1]' )
 
   # Determine observed correlation matrix
@@ -1236,7 +1896,7 @@ correlation_heatmap <- function( x,
 
   diag(p_mat) <- 0
 
-  #### 10.2) Setup for figure ####
+  #### 3.2.2) Setup for figure ####
   if ( status ) message( '  [2]' )
 
   pos = seq( NV, 0, -1)
@@ -1260,7 +1920,7 @@ correlation_heatmap <- function( x,
   color_f = colorRampPalette(c("white", gradient[1]))
   color_neg = color_f(length(r_range))
 
-  #### 10.2.1) draw_box ####
+  #### 3.2.2.1) draw_box ####
   # Draw Box at Specified Coordinates
   #
   # Function to draw a box at a specified
@@ -1318,7 +1978,7 @@ correlation_heatmap <- function( x,
     }
   }
 
-  #### 10.3) Create figure ####
+  #### 3.2.3) Create figure ####
   if ( status ) message( '  [3]' )
 
   # If specified create new plotting window
@@ -1419,12 +2079,12 @@ correlation_heatmap <- function( x,
 
           # Add black border
           cur_brd = "black"
-          draw_box(
-            pos, ri, ci, clr = cur_clr,
-            brd = cur_brd, slash = T
-          )
+            draw_box(
+              pos, ri, ci, clr = cur_clr,
+              brd = cur_brd, slash = T
+            )
 
-          # Close 'If part of upper triangle'
+            # Close 'If part of upper triangle'
         }
 
         # Close 'If non-significant draw a slash'
@@ -1476,7 +2136,7 @@ correlation_heatmap <- function( x,
   # Title for correlation heatmap
   mtext(ttl, side = 1, line = 1, cex = txtSz)
 
-  #### 10.4) Legends ####
+  #### 3.2.4) Legends ####
   if ( status ) message( '  [4]' )
 
   # Range of correlation values
@@ -1529,4 +2189,3 @@ correlation_heatmap <- function( x,
   mtext("R", side = 1, line = 1, cex = txtSz)
 
 }
-

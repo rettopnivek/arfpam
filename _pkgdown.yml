@@ -65,8 +65,12 @@ reference:
   - col_to_hex
   - error_bars
   - apply_f_to_plot
-  - quick_hist
-  - correlation_heatmap
+  - draw_by_group
+  - draw_dots
+  - draw_lines
+  - draw_boxplots
+  - plot_histogram
+  - plot_correlation_heatmap
 - title: "Statistics"
   desc: >
 

@@ -222,4 +222,22 @@
   <url>
     <loc>/reference/log_of_sum_of_exp_x.html</loc>
   </url>
+  <url>
+    <loc>/reference/draw_by_group.html</loc>
+  </url>
+  <url>
+    <loc>/reference/draw_dots.html</loc>
+  </url>
+  <url>
+    <loc>/reference/draw_lines.html</loc>
+  </url>
+  <url>
+    <loc>/reference/draw_boxplots.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_histogram.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_correlation_heatmap.html</loc>
+  </url>
 </urlset>
