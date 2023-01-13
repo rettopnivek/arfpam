@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-01-04
+# Last updated 2023-01-13
 
 # Table of contents
 # 1) Utility functions for plotting
@@ -1751,7 +1751,8 @@ plot_histogram <- function( x,
 #'   (2) with the color gradient.
 #' @param gradient The final end colors for the negative
 #'   and positive correlations, respectively.
-#' @param txtSz The size of the text in the figure.
+#' @param txtSz The size of the text in the figure (a second
+#'   value can be provided to adjust variable labels separately).
 #' @param mc_adjust The method to use when correcting for
 #'   multiple comparisons (see \code{\link[stats]{p.adjust}}).
 #' @param cut_off Cut-off for statistical significance.
@@ -1762,7 +1763,8 @@ plot_histogram <- function( x,
 #' @param W The width in inches of the figure if a new
 #'   plotting window is generated.
 #' @param abbr_labels Logical; if \code{TRUE} abbreviates
-#'   labels to 4 characters.
+#'   labels to 4 characters. A second value can be provided
+#'   to abbreviate labels on the top separately.
 #' @param status Logical; if \code{TRUE} displays the
 #'   progress of the function for debugging purposes.
 #'
@@ -1807,6 +1809,19 @@ plot_correlation_heatmap <- function( x,
 
   if ( !is.data.frame( x ) ) {
     stop( 'x must be a data frame' )
+  }
+
+  # Default is same text size for labels and legends
+  if ( length( txtSz ) == 1 ) {
+    txtSz <- rep( txtSz, 2 )
+  }
+
+  # Default is to abbreviate top labels
+  if ( length( abbr_labels ) == 1 ) {
+    abbr_labels <- c(
+      abbr_labels,
+      TRUE
+    )
   }
 
   #### 3.2.1) Compute correlations and significance ####
@@ -2103,7 +2118,7 @@ plot_correlation_heatmap <- function( x,
   text(
     1.25, 0.5,
     paste("Non-significant at p >", cut_off),
-    pos = 4, cex = txtSz
+    pos = 4, cex = txtSz[1]
   )
 
   # Default labels for variables
@@ -2111,7 +2126,7 @@ plot_correlation_heatmap <- function( x,
     labels = colnames(omega)
   }
 
-  if ( abbr_labels ) {
+  if ( abbr_labels[1] ) {
     labels <- abbreviate( labels, minlength = 4 )
   }
 
@@ -2121,20 +2136,21 @@ plot_correlation_heatmap <- function( x,
     text(
       NV - (ri - 1), ri - 0.5,
       rev(labels)[ri], pos = 2,
-      xpd = NA, cex = txtSz
+      xpd = NA, cex = txtSz[2]
     )
 
     # Close 'Add labels to figures'
   }
 
-  # By necessity abbreviate labels at top of figure
-  labels <- abbreviate( labels, minlength = 4 )
+  if ( abbr_labels[2] ) {
+    labels <- abbreviate( labels, minlength = 4 )
+  }
 
-  axis( 3, 2:NV - .5, labels[-1], cex.axis = txtSz,
+  axis( 3, 2:NV - .5, labels[-1], cex.axis = txtSz[2],
         line = -1.5, tick = FALSE )
 
   # Title for correlation heatmap
-  mtext(ttl, side = 1, line = 1, cex = txtSz)
+  mtext(ttl, side = 1, line = 1, cex = txtSz[1] )
 
   #### 3.2.4) Legends ####
   if ( status ) message( '  [4]' )
@@ -2183,9 +2199,9 @@ plot_correlation_heatmap <- function( x,
 
   # Add correlations values next to
   # corresponding colors
-  text(rep(txtSz, length(lbl)), pos[-1] + 0.5, string)
+  text(rep(txtSz[1], length(lbl)), pos[-1] + 0.5, string)
 
   # Add legend title
-  mtext("R", side = 1, line = 1, cex = txtSz)
+  mtext("R", side = 1, line = 1, cex = txtSz[1])
 
 }

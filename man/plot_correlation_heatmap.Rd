@@ -35,7 +35,8 @@ of the main panel (1) versus the side panel
 \item{gradient}{The final end colors for the negative
 and positive correlations, respectively.}
 
-\item{txtSz}{The size of the text in the figure.}
+\item{txtSz}{The size of the text in the figure (a second
+value can be provided to adjust variable labels separately).}
 
 \item{mc_adjust}{The method to use when correcting for
 multiple comparisons (see \code{\link[stats]{p.adjust}}).}
@@ -52,7 +53,8 @@ plotting window is generated.}
 plotting window is generated.}
 
 \item{abbr_labels}{Logical; if \code{TRUE} abbreviates
-labels to 4 characters.}
+labels to 4 characters. A second value can be provided
+to abbreviate labels on the top separately.}
 
 \item{status}{Logical; if \code{TRUE} displays the
 progress of the function for debugging purposes.}
