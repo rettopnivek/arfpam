@@ -12,6 +12,7 @@
 #   2.2) `%-=%`
 # 3) `%w%`
 # 4) `%rows%`
+# 5) `%btw%`
 
 #### 1) `%p%` ####
 #' Operator to Concatenate Two Strings
@@ -127,7 +128,7 @@ NULL
 #' @param x A character string.
 #' @param y A character vector.
 #'
-#' @return A logical vector, \code{TRUE} if \code{x} is
+#' @returns A logical vector, \code{TRUE} if \code{x} is
 #' contained in a given element of \code{y}.
 #'
 #' @examples
@@ -162,7 +163,7 @@ NULL
 #' @param y An integer vector, logical vector, or
 #'   character vector specifying the rows in x to keep.
 #'
-#' @return A data frame.
+#' @returns A data frame.
 #'
 #' @examples
 #' dtf <- data.frame(
@@ -193,6 +194,68 @@ NULL
 
   for ( k in 1:K ) {
     attributes( out[[k]] ) <- attributes( x[[k]] )
+  }
+
+  return( out )
+}
+
+#### 5) `%btw%` ####
+#' Operator to Determine Range Between Which a Value Falls
+#'
+#' The binary operator %btw% returns a logical vector
+#' indicating all values in a vector that fall within
+#' a specified lower and upper limit.
+#'
+#' @param x A numeric vector.
+#' @param y Either a numeric vector specifying a lower and upper
+#'   limit, or a character string in the form \code{'(x,y)'},
+#'   \code{'[x,y]'}, \code{'(x,y]'}, or \code{'[x,y)'}.
+#'   Here \code{x} and \code{y} denote the lower and upper
+#'   limits, while square brackets indicate the end point
+#'   is included, while round parentheses indicate the end
+#'   point is excluded.
+#'
+#' @returns A logical vector.
+#'
+#' @examples
+#' x <- 1:10
+#'
+#' # Limits specified as numeric vector
+#' x[ x %btw% c( 3, 6 ) ]
+#'
+#' # Limits specified as character string
+#' x[ x %btw% '(3,6)' ]
+#' x[ x %btw% '[3,6]' ]
+#' x[ x %btw% '(3,6]' ]
+#' x[ x %btw% '[3,6)' ]
+#'
+#' @export
+
+`%btw%` <- function( x, y ) {
+
+  if ( is.character(y) ) {
+
+    values <- replace_string( y, c( '(', '[', ')', ']' ) )
+    values <- strsplit( values, split = ',', fixed = TRUE )[[1]]
+    values <- as.numeric( values )
+
+    if ( '(' %w% y & ')' %w% y ) {
+      out <- x > values[1] & x < values[2]
+    }
+    if ( '(' %w% y & ']' %w% y ) {
+      out <- x > values[1] & x <= values[2]
+    }
+    if ( '[' %w% y & ')' %w% y ) {
+      out <- x >= values[1] & x < values[2]
+    }
+    if ( '[' %w% y & ']' %w% y ) {
+      out <- x >= values[1] & x <= values[2]
+    }
+
+  } else {
+
+    out <- x > y[1] & x <= y[2]
+
   }
 
   return( out )

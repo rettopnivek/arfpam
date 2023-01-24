@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-12-21
+# Last updated 2023-01-24
 
 # Table of contents
 # 1) over
@@ -43,6 +43,9 @@
 # 25) create_analysis_project
 # 26) strip_value
 # 27) percent_that_sums_to_100
+# 28) replace_string
+# 29) replace_cases
+# 30) match_and_reorder
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -2657,3 +2660,189 @@ percent_that_sums_to_100 <- function( x, digits = 1, freq = FALSE ) {
 
   return( 100*(lrm / Nz) )
 }
+
+#### 28) replace_string ####
+#' Replace String Contents
+#'
+#' Function that replaces a specified pattern found
+#' within a string (or vector of strings) with
+#' a user-specified pattern.
+#'
+#' @param s A character vector.
+#' @param to_replace A character vector, the patterns to
+#'   match and replace within each string.
+#' @param replace_with An optional character vector,
+#'   either of length one or of matching length to
+#'   \code{to_replace}, the patterns to substitute.
+#'
+#' @return A character string.
+#'
+#' @examples
+#' # Example string
+#' x <- c( 'AA', 'AB', 'AC', 'DD' )
+#' # Remove the letter 'A'
+#' replace_string( x, 'A' )
+#' # Replace the letter 'A' with '1'
+#' replace_string( x, 'A', '1' )
+#' # Replace multiple letters
+#' replace_string( x, c( 'B', 'C' ), c( '1', '2' ) )
+#'
+#' @export
+
+replace_string <- function( s, to_replace, replace_with = '' ) {
+
+  if ( length( replace_with ) == 1 ) {
+    replace_with <- rep( replace_with, length( to_replace ) )
+  }
+
+
+  n_cases <- length( to_replace )
+  out <- s
+
+  for ( i in 1:n_cases ) {
+    out <- gsub( to_replace[i], replace_with[i], out, fixed = TRUE )
+  }
+
+  return( out )
+}
+
+#### 29) replace_cases ####
+#' Replace Cases
+#'
+#' Function that matches cases in a vector and
+#' replaces them with user-specified values.
+#' Robust to NA values.
+#'
+#' @param x A vector.
+#' @param to_replace Either a vector of values to
+#'   replace, or a list of vectors for the sets of values
+#'   to replace.
+#' @param replace_with A vector of values, either a single
+#' value or a vector matching in length with \code{to_replace}.
+#'
+#' @return A vector.
+#'
+#' @examples
+#' # Example vector
+#' x <- rep( LETTERS[1:4], each = 3 )
+#' # Replace all cases
+#' replace_cases( x, c( 'A', 'B', 'C', 'D' ), 1:4 )
+#' # Replace some cases and use default value for others
+#' replace_cases( x, c( 'A', 'B', 'C' ), 1:3 )
+#' # Replace combinations of cases
+#' replace_cases( x, list( c( 'A', 'B' ), c( 'C', 'D' ) ), 1:2 )
+#'
+#' # Robust to NA values
+#' x <- c( 1, 1, 2, 2, NA, NA )
+#' replace_cases( x, c( 1, 2, NA ), c( 'A', 'B', '' ) )
+#'
+#' @export
+
+replace_cases <- function( x, to_replace, replace_with, default = NA ) {
+
+  N <- length(x)
+  out <- rep( default, N )
+
+  K <- length( to_replace )
+
+  if ( length( replace_with ) == 1 ) {
+    replace_with <- rep( replace_with, K )
+  }
+
+  if ( length( replace_with ) != length( to_replace ) ) {
+    chr_error <- paste0(
+      "Argument 'replace_with' must be either single value or ",
+      "match in length with argument 'to_replace'."
+    )
+
+    stop( chr_error )
+  }
+
+  is_list <- is.list( to_replace )
+
+  for ( k in 1:K ) {
+
+    if ( is_list ) {
+
+      if ( any( is.na( to_replace[[k]] ) ) ) {
+        cases_that_match <- is.na(x)
+      } else {
+        cases_that_match <- x %in% to_replace[[k]]
+      }
+
+    } else {
+
+      if ( is.na( to_match[k] ) ) {
+        cases_that_match <- is.na(x)
+      } else {
+        cases_that_match <- x %in% to_replace[k]
+      }
+
+    }
+
+    out[ cases_that_match ] <- replace_with[k]
+
+  }
+
+  return( out )
+}
+
+#### 30) match_and_reorder ####
+#' Match and Reorder Vectors
+#'
+#' Function to match a vector of values against
+#' another vector and reorder the original
+#' vector based on the matching indices.
+#'
+#' @param x A vector.
+#' @param values A vector containing the values to match
+#'   against in \code{x}.
+#' @param y An optional vector matching in length to \code{x}
+#'   to reorder - otherwise the function returns the indices
+#'   for reordering.
+#'
+#' @return Either a vector of indices for reordering or the
+#' reordered output from the input \code{y}.
+#'
+#' @examples
+#' x <- rep( LETTERS[1:3], 3 )
+#' values <- c( 'C', 'B', 'A' )
+#' y <- rep( 1:3, 3 )
+#' match_and_reorder( x, values, y )
+#'
+#' set.seed( 111 ) # For reproducibility
+#' # Example data frame
+#' dtf_example <- data.frame(
+#'   X = rep( 1:4, each = 2 ),
+#'   Y = round( rnorm( 8 ), 2 )
+#' )
+#' # Resample with replacement from 'X'
+#' shuffled_x <- sample( 1:4, size = 4, replace = TRUE )
+#' # Create a reordered data frame based on the resampled values
+#' dtf_shuffled <- data.frame(
+#'   X = match_and_reorder( dtf_example$X, shuffled_x, dtf_example$X ),
+#'   Y = match_and_reorder( dtf_example$X, shuffled_x, dtf_example$Y )
+#' )
+#'
+#' @export
+
+match_and_reorder <- function( x, values, y = NULL ) {
+
+  new_index <- lapply(
+    values, function(v) {
+    which( x %in% v )
+  } ) |> unlist()
+
+  if ( is.null( y ) ) {
+    return( new_index )
+  } else {
+
+    if ( length(y) != length(x) ) {
+      stop( "Length of 'x' and 'y' must match" )
+    }
+
+    return( y[ new_index ] )
+  }
+
+}
+

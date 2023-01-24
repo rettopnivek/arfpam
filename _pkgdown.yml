@@ -7,6 +7,7 @@ reference:
   - "`%p%`"
   - "`%w%`"
   - "`%rows%`"
+  - "`%btw%`"
 - title: "Math"
   desc: >
 
@@ -53,6 +54,9 @@ reference:
   - create_analysis_project
   - strip_value
   - percent_that_sums_to_100
+  - replace_string
+  - replace_cases
+  - match_and_reorder
 - title: "Plotting"
   desc: >
 
