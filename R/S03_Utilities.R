@@ -2772,7 +2772,7 @@ replace_cases <- function( x, to_replace, replace_with, default = NA ) {
 
     } else {
 
-      if ( is.na( to_match[k] ) ) {
+      if ( is.na( to_replace[k] ) ) {
         cases_that_match <- is.na(x)
       } else {
         cases_that_match <- x %in% to_replace[k]
