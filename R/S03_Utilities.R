@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-01-24
+# Last updated 2023-05-25
 
 # Table of contents
 # 1) over
@@ -40,12 +40,15 @@
 # 22) load_package
 # 23) new_limits
 # 24) duplicate_wide_to_long
-# 25) create_analysis_project
+# 25) vector_elements
 # 26) strip_value
 # 27) percent_that_sums_to_100
 # 28) replace_string
 # 29) replace_cases
 # 30) match_and_reorder
+# 31) match_rows
+# 32) assign_by_interval
+# 33) not_NA
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -541,7 +544,7 @@ has_NA <- function(x, any = TRUE) {
 
   # If input is matrix or data frame
   if (is.matrix(x) |
-    is.data.frame(x)) {
+      is.data.frame(x)) {
     # Check whether NA values are present in
     # any of the rows
     if (any) {
@@ -613,8 +616,8 @@ print_table <- function(tbl, return = F) {
       #<|< Pad with empty spaces
       if (cur_nc < nc) {
         val <- paste(paste(rep(" ", nc - cur_nc), collapse = ""),
-          val,
-          sep = ""
+                     val,
+                     sep = ""
         )
         out[j, i] <- val
         #>|> Close conditional 'Pad with empty spaces'
@@ -897,26 +900,26 @@ make_file_name <- function(description,
     only_files_no_placeholder <-
       # Exclude folders
       grepl(".", all_files, fixed = T) &
-        # Exclude user-specified files
-        !all_files %in% exclude
+      # Exclude user-specified files
+      !all_files %in% exclude
 
     matching_tags <-
       substr(all_files, start = 1, stop = 1) == tag &
-        only_files_no_placeholder
+      only_files_no_placeholder
 
     matching_description <-
       grepl("-" %p% description %p% "-", all_files, fixed = T) &
-        only_files_no_placeholder
+      only_files_no_placeholder
 
     matching_extension <-
       grepl(extension %p% "$", all_files) &
-        only_files_no_placeholder
+      only_files_no_placeholder
 
     # Check for existing file
     found_match <-
       matching_description &
-        matching_tags &
-        matching_extension
+      matching_tags &
+      matching_extension
 
     # If needed, increment file number
     if (is.null(number)) {
@@ -2254,311 +2257,46 @@ duplicate_wide_to_long <- function( wf, lf, x, y, default = NA ) {
   return( out )
 }
 
-#### 25) create_analysis_project ####
-#' Create Files and Folders for Analysis Project
+#### 25) vector_elements ####
+#' Extract Elements for a Vector
 #'
-#' Function to initialize an analysis project folder,
-#' creating folders and files typical to most
-#' analysis projects.
+#' Function to extract unique elements of
+#' a vector and output example code to the
+#' console.
 #'
-#' @param initial Logical; if \code{TRUE} creates
-#'   folders for source data and R scripts, creates
-#'   the \code{'_targets.R'} file, and creates
-#'   an example R script for cleaning source data.
-#'   Otherwise generates a single template R script.
-#' @param work Logical; if \code{TRUE} using current
-#'   work email rather than personal email.
-#' @param proj A character string, the project label
-#'   to start each function with.
+#' @param x A vector of elements.
+#' @param inner A character vector with [1] the
+#'   string to add before each element and [2]
+#'   the string to add after each element.
+#' @param outer A character with [1] the
+#'   string to add before all elements and
+#'   [2] the string to add after all elements.
 #'
-#' @returns As a side effect, creates a set of folders
-#' and files in the current working directory.
+#' @returns Example code in the console.
+#'
+#' @examples
+#' vector_elements( LETTERS[1:3] )
 #'
 #' @export
 
-create_analysis_project <- function( initial = TRUE,
-                                     work = FALSE,
-                                     proj = 'XXX_AYY') {
+vector_elements <- function( x,
+                             inner = c( '  "', '",\n' ),
+                             outer = c( 'c(\n', ')' ),
+                             na.rm = TRUE ) {
 
-  # Determine whether to report work or personal email
-  if ( work ) {
-    email_address <- "kpotter5@mgh.harvard.edu"
-  } else {
-    "kevin.w.potter@gmail.com"
+  if ( na.rm ) {
+    x <- x[ !is.na(x) ]
   }
 
-  # Current date as YYYY-MM-DD
-  cur_date <-
-    as.character( format( Sys.Date(), "%Y-%m-%d" ) )
+  u <- sort( unique( x ) )
 
-  # Current 'arfpam' version
-  pkgs <- installed.packages()
-  arfpam_ver <- pkgs[ pkgs[,1] == 'arfpam', 3]
-
-
-  # Create template for header at start of each R script
-  proj_header <- c(
-    "# Written by Kevin Potter",
-    paste0( "# email: ", email_address ),
-    "# Please email me directly if you ",
-    "# have any questions or comments",
-    paste0( "# Last updated ", cur_date ),
-    "",
-    "# Table of contents"
-  )
-
-  # Initialize folders and files
-  if ( initial ) {
-
-    message( 'Initializing folders and files for analysis project' )
-
-    ### Template for the '_targets.R' script
-
-    template_for_targets <- c(
-      "# Script to generate targets",
-      proj_header,
-      "# 1) Initial setup",
-      "# 2) Generate targets",
-      "",
-      "### To generate targets ###",
-      "# 1. Click on 'Session' and in pull-down menu for ",
-      "#    'Set Working Directory' select 'To Project Directory'",
-      "# 2. <Optional>",
-      "#    - Clear workspace (click broom icon)",
-      "#    - Restart R (Click on 'Session' and select 'Restart R')",
-      "# 3. Type in console: targets::tar_make()",
-      "",
-      "#### 0) Template for function documentation ####",
-      "# Title ",
-      "# ",
-      "# ... ",
-      "# ",
-      "# @param 'obj_x' An R object (see target output ",
-      paste0(
-        "#   from the '", proj, ".RXX.example' function)."
-      ),
-      "# ",
-      "# @details ",
-      "# Prerequisites:",
-      "#   * The R package '?' (version ?)",
-      paste0( "#   * The '", proj, ".RXX.example' function" ),
-      "# ",
-      "# @return ...",
-      "",
-      "#### 1) Initial setup ####",
-      "",
-      "# Load in package to manage generation of target outputs",
-      "# install.packages( 'targets' )",
-      "library(targets)",
-      "",
-      "library(dotenv)",
-      "",
-      "# Source in all R scripts with functions",
-      "arfpam::source_R_scripts( path = 'R' )",
-      "",
-      "# Load in packages",
-      "tar_option_set(",
-      "  packages = c(",
-      "    # Data frame manipulation and '%>%' operator",
-      "    #   To install:",
-      "    #   install.packages( 'dplyr' )",
-      "    'dplyr',",
-      "    # Assorted R functions for processing, analyses, and models",
-      "    #   To install:",
-      "    #   devtools::install_github( 'rettopwnivek/arfpam' )",
-      "    'arfpam'",
-      "  )",
-      ")",
-      "",
-      "#### 2) Generate targets ####",
-      "",
-      "list(",
-      "  tar_target(",
-      "    chr_path_to_source_file,",
-      paste0( "    ", proj, ".R01.path_to_source_file()," ),
-      "    format = 'file'",
-      "  )",
-      ")",
-      ""
+  out <- paste0( inner[1], u, inner[2] )
+  if ( inner[2] == '",\n' ) {
+    out[ length(out) ] <- gsub(
+      '",\n', '"\n', out[ length(out) ], fixed = TRUE
     )
-
-    # Create R script
-    write(
-      template_for_targets,
-      file = '_targets.R',
-      sep = "\n"
-    )
-
-    ### Template for .env file
-
-    template_for_dotenv <- c(
-      "# User-specific environment variables",
-      paste0( "# User: Kevin Potter (", cur_date, ")" ),
-      "",
-      "# Local paths",
-      "LOCAL_PROJECT=D:/CAM_postdoc/CAM_R_projects/CAM_analyses/<...>",
-      "",
-      "# DropBox folder paths",
-      paste0(
-        "DROPBOX_ANALYSES=C:/Users/tempp/Dropbox (Partners HealthCare)/",
-        "CAM Data and Analyses/PCORI/Analyses/<...>"
-      ),
-      ""
-    )
-
-    # Create .env file
-    write(
-      template_for_dotenv,
-      file = '.env',
-      sep = "\n"
-    )
-
-    ### Create R folder
-
-    dir.create( "R" )
-
-    ### Template for script to clean data
-
-    template_for_S01 <- c(
-      "# Functions to clean data",
-      proj_header,
-      paste0( "# 1) ", proj, ".data.path_to_source_file" ),
-      "",
-      "#### 0) Code for debugging ####",
-      "if ( FALSE ) {",
-      "  ",
-      "  # Load in packages",
-      "  library(dplyr)",
-      "  library(arfpam)",
-      "  ",
-      "  # Test current function(s)",
-      "  source('R/R01-functions_to_clean_data.R')",
-      "  ",
-      "  ### 1) ",
-      "  ",
-      paste0(
-        "  path_to_source_file <- ",
-        proj, ".R01.path_to_source_file()"
-      ),
-      "",
-      "}",
-      "",
-      paste0(
-        "#### 1) ", proj, ".R01.path_to_source_file ####"
-      ),
-      "# Return Absolute Paths to Files in Source Folder",
-      "# ",
-      "# A convenience function that returns the ",
-      "# absolute path to files in the 'Source' folder.",
-      "# ",
-      "# @param 'chr_partial_label' A character string, part of ",
-      "#   the file name to locate in the 'Source' folder.",
-      "# ",
-      "# @details ",
-      "# Prerequisites:",
-      paste0(
-        "#   * The package 'arfpam' (version ", arfpam_ver, ")"
-      ),
-      "# ",
-      "# @return A character string, an absolute path to a ",
-      "# given file.",
-      "",
-      paste0(
-        proj, ".R01.path_to_source_file <- function( "
-      ),
-      "  chr_partial_label ) {",
-      "  ",
-      "  proj <- getwd()",
-      "  chr_out <- find_file_name( ",
-      "    chr_partial_label,",
-      "    path = 'Source', output = 'name'",
-      "  )",
-      "  ",
-      "  chr_out <- proj %p% '/Source/' %p% chr_out",
-      "  ",
-      "  return( chr_out )",
-      "}",
-      ""
-    )
-
-    write(
-      template_for_S01,
-      file = 'R/R01-functions_to_clean_data.R',
-      sep = "\n"
-    )
-
-    ### Output and source folders
-
-    dir.create( "Output" )
-    dir.create( "Source" )
-
-    message( 'Done!' )
-
-    # Close 'Initialize folders and files'
-  } else {
-
-    message( 'Create template for analysis R script' )
-
-    template_for_script <- c(
-      "# Title",
-      proj_header,
-      paste0( "# 1) ", proj, ".function" ),
-      "",
-      "#### 0) Code for debugging ####",
-      "if ( FALSE ) {",
-      "  ",
-      "  # Load in packages",
-      "  library(dplyr)",
-      "  library(arfpam)",
-      "  ",
-      "  # Test current function(s)",
-      "  source('R/RXX-functions_to_do_something.R')",
-      "  ",
-      "  ### 1) ",
-      "  ",
-      paste0(
-        "  obj_output <- ",
-        proj, ".RXX.function()"
-      ),
-      "}",
-      "",
-      paste0(
-        "#### 1) ", proj, ".RXX.function ####"
-      ),
-      "# Title ",
-      "# ",
-      "# ... ",
-      "# ",
-      "# @param 'obj_x' ... ",
-      "# ",
-      "# @details ",
-      "# Prerequisites:",
-      "#   * The package '?' (version ?)",
-      "# ",
-      "# @return ...",
-      "",
-      paste0(
-        proj, ".RXX.function <- function( "
-      ),
-      "  obj_x ) {",
-      "  ",
-      "  # Do something",
-      "  ",
-      "}",
-      ""
-    )
-
-    write(
-      template_for_script,
-      file = 'R/SXX-functions_to_do_something.R',
-      sep = "\n"
-    )
-
-    message( 'Done!' )
-
-    # Close else for 'Initialize folders and files'
   }
-
+  cat( c( outer[1], out, outer[2] ) )
 }
 
 #### 26) strip_value ####
@@ -2830,8 +2568,8 @@ match_and_reorder <- function( x, values, y = NULL ) {
 
   new_index <- lapply(
     values, function(v) {
-    which( x %in% v )
-  } ) |> unlist()
+      which( x %in% v )
+    } ) |> unlist()
 
   if ( is.null( y ) ) {
     return( new_index )
@@ -2843,6 +2581,277 @@ match_and_reorder <- function( x, values, y = NULL ) {
 
     return( y[ new_index ] )
   }
+
+}
+
+#### 31) match_rows ####
+#' Match Rows Across Two Data Frames
+#'
+#' Function that returns an index indicating
+#' the row in one data frame that matches the
+#' row in another data frame.
+#'
+#' @param dtf_to A data frame with the rows to match over.
+#' @param dtf_from A data frame with the rows to compared against.
+#'
+#' @returns A list equal in length to the number of rows in
+#' \code{dtf_to} with the row indices from \code{dtf_from} that
+#' matches a given row in \code{dtf_to}. If no matches are found
+#' returns \code{NA}.
+#'
+#' @examples
+#' dtf_example_1 <- data.frame( c( LETTERS[3:1], 'Z' ), V2 = c( 3:1, 26 ) )
+#' dtf_example_2 <- data.frame( LETTERS[1:6], V2 = 1:6 )
+#' match_rows( dtf_example_1, dtf_example_2 )
+#'
+#' @export
+
+match_rows <- function(
+    dtf_to,
+    dtf_from ) {
+
+  N_rows_from <- nrow( dtf_from )
+  N_rows_to <- nrow( dtf_to )
+
+  lst_index <- lapply(
+    1:N_rows_to, function(r_to) {
+
+      lgc_matches <- sapply( 1:N_rows_from, function (r_from) {
+        all( all.equal(
+          dtf_to[r_to, ],
+          dtf_from[r_from, ],
+          check.attributes = FALSE
+        ) %in% TRUE )
+      } )
+
+      if ( any( lgc_matches ) ) {
+        return( which( lgc_matches ) )
+      } else {
+        return( NA )
+      }
+
+    }
+
+  )
+
+  return( lst_index )
+}
+
+#### 32) assign_by_interval ####
+#' Assign Values by Cases Within Intervals
+#'
+#' Function that assigns user-specified values
+#' for when a numeric variable falls within
+#' intervals defined by a set of
+#'
+#' @param x A numeric vector of values.
+#' @param breakpoints A numeric vector of values, the
+#'   breakpoints for the intervals. By default, the
+#'   lowest and highest breakpoints are set to
+#'   \code{-Inf} and \code{Inf}, so only the intervening
+#'   points need to be specified (this behavior can be changed).
+#' @param values A vector of values to assign for all cases
+#'   within a given interval.
+#' @param include A character vector with two elements,
+#'   either \code{'>'} or \code{'>='} and \code{'<'} or
+#'   \code{'<='}.
+#' @param ends An optional vector specifying the lowest and
+#'   and highest breakpoints. Can be set to \code{NA} to
+#'   prevent adding to \code{breakpoints}.
+#' @param default The default value to use for cases that
+#'   are not within any intervals.
+#'
+#' @return A vector of values.
+#'
+#' @examples
+#' # Default l > x <= u
+#' x <- 1:6
+#' assign_by_interval( x, c( 2, 4 ) )
+#'
+#' # Can quickly define splits
+#' x <- c( 1, 1, 1, 1, 2, 2, 10 )
+#' # Mean split
+#' assign_by_interval( x, mean(x) )
+#' # Median split
+#' assign_by_interval( x, median(x) )
+#' # Custom values
+#' assign_by_interval( x, mean(x), values = c( 'Below', 'Above' ) )
+#'
+#' # Custom conditions and bounds
+#' x <- 1:6
+#' assign_by_interval(
+#'   x, c( 1, 2, 4, 6 ), include = c('>=', '<' ), ends = NULL
+#' )
+#' # Can change default value for when nothing in range
+#' assign_by_interval(x, 6, ends = c( 2, NA ), default = -1 )
+#'
+#' @export
+
+assign_by_interval <- function(
+    x,
+    breakpoints,
+    values = NULL,
+    include = c( '>', '<=' ),
+    ends = c( -Inf, Inf ),
+    default = NA ) {
+
+  # If limits for breakpoints given
+  if ( !is.null( ends ) ) {
+
+    lgc_misspecified <- TRUE
+
+    # If only lower limit given
+    if ( length( ends ) == 1 ) {
+
+      if ( !is.na( ends[1] ) ) {
+        breakpoints <- c( ends[1], breakpoints )
+      }
+
+      lgc_misspecified <- FALSE
+
+      # Close 'If only lower limit given'
+    }
+
+    # If lower and upper limit given
+    if ( length( ends ) == 2 ) {
+
+      if ( !is.na( ends[1] ) ) {
+        breakpoints <- c( ends[1], breakpoints )
+      }
+
+      if ( !is.na( ends[2] ) ) {
+        breakpoints <- c( breakpoints, ends[2] )
+      }
+
+      lgc_misspecified <- FALSE
+
+      # Close 'If lower and upper limit given'
+    }
+
+    if ( lgc_misspecified ) {
+
+      chr_error <- paste0(
+        "Argument 'ends' must be a vector of one or two values ",
+        "giving the lower and upper limits for the breakpoints ",
+        "respectively"
+      )
+      stop( chr_error )
+
+    }
+
+    # Close 'If limits for breakpoints given'
+  }
+
+  # Ensure no duplicate cut-offs
+  breakpoints <- unique( breakpoints )
+
+  # Number of bins
+  bins <- length( breakpoints ) - 1
+  # Number of observations
+  n <- length(x)
+
+  # By default assign integers for values
+  if ( is.null( values ) ) {
+
+    values <- 1:bins
+
+    # Close 'By default assign integers for values'
+  }
+
+  # Check number of bins and values
+  if ( length(values) != bins ) {
+
+    chr_error <- paste0(
+      "Must specify set of replacement values equal to ",
+      "number of intervals (i.e., for B breakpoints there are B - 1 values)"
+    )
+    stop( chr_error )
+
+    # Close 'Check number of bins and values'
+  }
+
+  # Shorthand for conditional statements
+  if ( length( include ) == 1 ) {
+
+    include <- switch(
+      include,
+      `<` = c( '>=', '<' ),
+      `>` = c( '>', '<=' ),
+      `>=` = c( '>=', '<=' ),
+      `<=` = c( '>=', '<=' )
+    )
+
+    # Close 'Shorthand for conditional statements'
+  }
+
+  # Check conditional statements
+  if ( !include[1] %in% c( '>', '>=' ) |
+       !include[2] %in% c( '<', '<=' ) ) {
+
+    chr_error <- paste0(
+      "Argument 'include' must be 2-element vector with either ",
+      "'>' or '>=' and '<' or '<='"
+    )
+    stop( chr_error )
+
+    # Close 'Check conditional statements'
+  }
+
+  # Initialize output
+  y <- rep( default, n )
+
+  # Loop over bins
+  for ( b in 1:bins ) {
+
+    limits <- breakpoints[0:1 + b]
+
+    if ( all( include == c( '>', '<' ) ) ) {
+      lgc_inside <-
+        !is.na(x) & x > limits[1] & x < limits[2]
+    }
+
+    if ( all( include == c( '>=', '<' ) ) ) {
+      lgc_inside <-
+        !is.na(x) & x >= limits[1] & x < limits[2]
+    }
+
+    if ( all( include == c( '>', '<=' ) ) ) {
+      lgc_inside <-
+        !is.na(x) & x > limits[1] & x <= limits[2]
+    }
+
+    if ( all( include == c( '>=', '<=' ) ) ) {
+      lgc_inside <-
+        !is.na(x) & x >= limits[1] & x <= limits[2]
+    }
+
+    y[lgc_inside] <- values[b]
+
+    # Close 'Loop over intervals'
+  }
+
+  return(y)
+}
+
+#### 33) not_NA ####
+#' Return a Logical Vector With NA Values set to FALSE
+#'
+#' Function that takes a logical vector and ensures
+#' any \code{NA} values are set to \code{FALSE}.
+#'
+#' @param x A logical vector.
+#'
+#' @return A logical vector with \code{NA} cases
+#' set to \code{FALSE}.
+#'
+#' @examples
+#' not_NA( c(TRUE, FALSE, NA) )
+#'
+#' @export
+
+not_NA <- function( lgc ) {
+
+  return( lgc & !is.na(lgc) )
 
 }
 

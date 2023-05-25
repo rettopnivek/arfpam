@@ -3,15 +3,13 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2021-06-30
+# Last updated 2023-05-24
 
 # Table of contents
 # 1) binary_SDT
 # 2) EZ_diffusion
 
 # TO DO
-# - Add details and examples for documentation of
-#   'binary_SDT'
 # - Update equations and implementation for
 #   'EZ_diffusion'
 # - Add documentation for 'EZ_diffusion'
@@ -40,35 +38,65 @@
 #'   are equidistant from zero.
 #' @param correct Type of correction to apply, either...
 #'   \itemize{
-#'     \item '0', '', 'None', 'none', 'No', or 'no' = No
-#'     correction applied;
-#'     \item '1', 'log-linear', 'H', or 'hautus' = The log-linear
+#'     \item{'none':}{ No correction applied.}
+#'     \item{'log-linear':}{ The log-linear
 #'     approach, adds \code{0.5} to the hits and false alarm
 #'     frequencies, then adds \code{1} to the total number of
 #'     observations for the signal and noise items respectively
-#'     (Hautus, 1995);
-#'     \item '2', 'conditional', 'MK', or 'macmillan' =
-#'     The conditional approach, where proportions equal
-#'     to 0 or 1 are adjusted by \code{0.5/N} or \code{(N-0.5)/N}
-#'     respectively, with \code{N} referring the associated number
-#'     of total observations for the given proportion
-#'     (Macmillan & Kaplan, 1985).
+#'     (Hautus, 1995).}
+#'     \item{'conditional': }{ The conditional approach, where
+#'     proportions equal to 0 or 1 are adjusted by \code{0.5/N}
+#'     or \code{(N-0.5)/N} respectively, with \code{N} referring
+#'     the associated number of total observations for the given
+#'     proportion (Macmillan & Kaplan, 1985).}
 #'   }
 #'
-#' @details Forthcoming
+#' @details The basic binary signal detection model assumes responses
+#'   (correct identification of a signal during 'signal' trials and
+#'   incorrect identification of a signal - a false alarm - during
+#'   'noise' trials) arise by classifying a latent continuous value
+#'   sampled either from a 'signal' or 'noise' distribution. If the
+#'   value is above a threshold, participants indicates there is
+#'   a 'signal', otherwise they indicate it is 'noise'. Because the
+#'   'signal' and 'noise' distribution overlap, sometimes a
+#'   value sampled from the 'noise' distribution will fall above the
+#'   threshold and classified as a 'signal', and sometime a value
+#'   sampled from the 'signal' distribution will fall below the
+#'   threshold and be classified as 'noise'.
+#'
+#'   Assuming the distributions of evidence for 'signal' and 'noise'
+#'   are Gaussian with their variances fixed to 1, their means
+#'   fixed to 0.5(&#948;) and -0.5(&#948;) respectively,
+#'   and a threshold parameter &#954;, one can solve for the
+#'   parameters &#948; and &#954; given the proportion of
+#'   hits H and false alarms FA:
+#'
+#'   &#954; = -0.5( &#934;&#8315;&#185;(H) +
+#'   &#934;&#8315;&#185;(FA) ) and
+#'   &#948; = 2( &#934;&#8315;&#185;(H) + &#954;), where
+#'   &#934;&#8315;&#185; is the inverse of the
+#'   standard normal cumulative distribution function
+#'   (see [stats::qnorm]).
+#'
+#'   Other parameterizations exist, but the benefit of this one
+#'   is easier interpretation of &#954;, as a value of 0
+#'   indicates no bias in responding, values above zero
+#'   indicate bias against responding 'noise' and
+#'   values below zero indicate bias against responding 'signal'.
+#'
 #'
 #' @return A named vector with five values:
 #' \enumerate{
-#'   \item \code{d'} - The estimate of separation between the noise
-#'   and signal distributions;
-#'   \item \code{c} - The estimate of response bias (the cut-off
-#'   determining whether a response is 'signal' versus 'noise');
-#'   \item \code{A'} - A non-parametric estimate of discrimination
-#'   (however see Pastore, Crawley, Berens, & Skelly, 2003);
-#'   \item \code{B} - The ratio of whether people favor responding
-#'   'signal' over whether they favor responding 'noise';
-#'   \item \code{B”} - A non-parametric estimate of B (however see
-#'   Pastore et al., 2003).
+#'   \item{d': }{The estimate of separation between the noise
+#'   and signal distributions.}
+#'   \item{c: }{The estimate of response bias (the cut-off
+#'   determining whether a response is 'signal' versus 'noise').}
+#'   \item{A': }{A non-parametric estimate of discrimination
+#'   (however see Pastore, Crawley, Berens, & Skelly, 2003).}
+#'   \item{B: }{The ratio of whether people favor responding
+#'   'signal' over whether they favor responding 'noise'}.
+#'   \item{B'': }{A non-parametric estimate of B (however see
+#'   Pastore et al., 2003).}
 #' }
 #'
 #' @references
@@ -94,8 +122,21 @@
 #' Instruments, & Computers, 31, 137 - 149.
 #' DOI: 10.3758/BF03207704
 #'
+#' @encoding UTF-8
+#'
 #' @examples
-#' # Forthcoming
+#' # Proportion of hits and false alarms
+#' x <- c(.8, .2)
+#' round( binary_SDT( x ), 3 )
+#' # Frequency of hits, false alarms, signal trials, noise trials
+#' x <- c(15, 2, 20, 20)
+#' round( binary_SDT( x ), 3 )
+#' # Cannot compute d' if 100% or 0% for hits or false alarms
+#' x <- c(20, 0, 20, 20)
+#' binary_SDT( x )
+#' # Corrections allow computation
+#' round( binary_SDT( x, correct = 'log-linear' ), 3 )
+#' round( binary_SDT( x, correct = 'conditional' ), 3 )
 #'
 #' @export
 
@@ -219,24 +260,60 @@ binary_SDT <- function(x,
 }
 
 #### 2) EZ_diffusion ####
-
-#' ...
+#' Estimate Parameters for EZ-Diffusion Model
 #'
-#' ...
+#' Function that estimates the parameters of the EZ-diffusion
+#' model (Wagenmakers, van der Mass, Grasman, 2007) using
+#' the mean and variance of all response times and the
+#' proportion correct.
 #'
-#' @param x ...
+#' @param x A numeric vector with 1) the mean for the response times
+#'   (over both correct and incorrect trials), 2) the variance for the
+#'   response times (over both correct and incorrect trials), and
+#'   3) the proportion of correct responses.
+#' @param number_of_trials An optional integer value given the
+#'   total number of trials. When supplied, allows an edge
+#'   correction to be implemented if the proportion correct
+#'   is 0, 0.5, or 1 (parameters cannot be estimated in those cases
+#'   without an edge correction).
+#' @param within_trial_variability A numeric value governing the
+#'   within-trial variability for the evidence accumulation
+#'   process. If set to 0.1, assumes the mean and variance for
+#'   response times are in seconds.
+#' @param suppress_warnings Logical; if \code{TRUE} suppresses
+#'   warnings of when an edge correction was necessary.
 #'
-#' @return ...
+#' @return A vector with the estimates for the drift rate,
+#'   bias (assumed fixed to 0.5), boundary separation, and
+#'   non-decision time.
+#'
+#' @references
+#' Wagenmakers, E.-J., van der Mass, H. L. J., & Grasman,
+#' R. P. P. P. (2007). An EZ-diffusion model for response
+#' time and accuracy. Psychonomic Bulletin & Review, 14 (1),
+#' 3 - 22.
+#' DOI: 10.3758/BF03194023
 #'
 #' @examples
-#' # Forthcoming
+#' # Vector with mean RT, RT variance, P(Correct)
+#' # using values from web app
+#' x <- c( 0.723, 0.112, 0.802 )
+#' round( EZ_diffusion( x ), 3 )
+#'
+#' # Edge correction for 100% accuracy
+#' x <- c( 0.723, 0.112, 1.00 )
+#' round( EZ_diffusion( x, number_of_trials = 100 ), 3 )
 #'
 #' @export
 
-EZ_diffusion <- function(dat, s = 1) {
+EZ_diffusion <- function(
+    x,
+    number_of_trials = NA,
+    within_trial_variability = 0.1,
+    suppress_warnings = FALSE) {
 
   # Initialize output
-  out <- c(
+  output <- c(
     drift_rate = NA,
     bias = NA,
     boundary_sep = NA,
@@ -244,83 +321,98 @@ EZ_diffusion <- function(dat, s = 1) {
   )
 
   # Extract data
-  Trials <- dat[1]
-  Correct <- dat[2]
-  MRT <- dat[3]
-  VRT <- dat[4]
+  MRT <- x[1]
+  VRT <- x[2]
+  PC <- x[3]
 
-  # Check for invalid inputs
+
   invalid_inputs <- c(
     # Missing data
-    any(is.na(dat)),
-    # Non-positive mean response time
+    any( is.na(x) ),
+    # Non-positive mean
     MRT <= 0,
     # Non-positive variance
     VRT <= 0,
-    # Number of trials is not an integer
-    Trials %% 1 != 0,
-    # Number of correct responses is not an integer
-    Correct %% 1 != 0,
-    # Number of correct responses exceeds number of trials
-    Correct > Trials
+    # Not proportion
+    PC < 0 | PC > 1
   )
 
-  invalid_inputs_warning <- c(
-    "NA values",
-    "Non-positive mean response time",
-    "Non-positive variance for response time",
-    "Non-integer value for trials",
-    "Non-interger value for frequency correct",
-    "Frequency correct exceeds number of trials"
+  invalid_input_warnings <- c(
+    "  NA values",
+    "  Non-positive mean response time",
+    "  Non-positive variance for response time",
+    "  Total correct not given as a proportion"
   )
 
   # Return NA for invalid inputs
   if (any(invalid_inputs)) {
-    string <- paste(
+
+    chr_error <- paste0(
       "Invalid inputs:\n",
-      paste(invalid_inputs_warning[invalid_inputs], collapse = "\n"),
-      sep = ""
+      paste(invalid_inputs_warning[invalid_inputs], collapse = "\n")
     )
-    warning(string, call. = F)
-    return(out)
+    warning(chr_error)
+
+    return(output)
+
+    # Close 'Return NA for invalid inputs'
   }
 
-  # Proportion of correct responses
-  Pc <- Correct / Trials
+  # No information if P(Correct) = {0, 0.5, 1}
+  if ( PC %in% c( 0, 0.5, 1.0) ) {
 
-  # Scaling parameter
-  s2 <- pow(s, 2)
+    # If no trials provided
+    if ( is.na(number_of_trials) ) {
 
-  # No information if P( Correct ) = 0, 0.5, or 1
-  if (Pc %in% c(0, .5, 1)) {
-    warning(paste(
-      "Insufficient information for estimation",
-      " - an edge correction will be applied"
-    ),
-    call. = FALSE
-    )
+      chr_error <- paste0(
+        "P(Correct) = ", round(PC, 1),
+        "; parameters cannot be estimated ",
+        "without an edge correction - provide ",
+        "argument 'number_of_trials' to do so"
+      )
 
-    # For the edge correction, adjust results
-    # by one half of an error:
-    if (Pc == 1) {
-      Pc <- 1 - 1 / (2 * Trials)
+      stop( chr_error )
+
+      # Close 'If no trials provided'
     }
-    if (Pc == 0) {
-      Pc <- 1 + 1 / (2 * Trials)
+
+    # Warn if not enough information
+    if (!suppress_warnings) {
+
+      chr_warning <- paste0(
+        "Insufficient information for estimation",
+        " - an edge correction will be applied"
+      )
+
+      # Close 'Warn if not enough information'
     }
-    if (Pc == .5) {
-      Pc <- .5 + 1 / (2 * Trials)
+
+    if ( PC == 1) {
+      PC <- (number_of_trials + .5) / (number_of_trials + 1)
     }
+    if ( PC == 0) {
+      PC <- .5 / (number_of_trials + 1)
+    }
+    if ( PC == 0.5 ) {
+      (number_of_trials/2 + .5) / (number_of_trials + 1)
+    }
+
+    # Close 'No information if P(Correct) = {0, 0.5, 1}'
   }
 
-  # Compute the log odds for P( Correct )
-  L <- qlogis(Pc)
-  x <- L * (L * pow(Pc, 2) - L * Pc + Pc - .5) / VRT
+  # Scaling
+  s <- within_trial_variability
+  s2 <- s^2
+
+  # Compute intermediary terms
+  lC <- qlogis(PC)
+  PC2 <- PC^2
+  intrm = lC*(lC*PC2 - lC*PC + PC - .5)/VRT
 
   # Estimate drift and boundary separation
-  # from P( Correct ) and the variance of correct RT
-  drift_rate <- sign(Pc - .5) * s * pow(x, 1 / 4)
-  boundary_sep <- s2 * L / drift_rate
+  # from P(Correct) and the variance for response times
+  drift_rate <- sign(PC - 0.5)*s*pow(intrm, 1/4)
+  boundary_sep <- s2 * lC / drift_rate
 
   # Estimate the non-decision time
   y <- -drift_rate * boundary_sep / s2
@@ -330,10 +422,10 @@ EZ_diffusion <- function(dat, s = 1) {
 
   # Return estimates of parameters
   # if ( Correct / Trials == .5 ) drift_rate = 0
-  out[1] <- drift_rate
-  out[2] <- 0.5
-  out[3] <- boundary_sep
-  out[4] <- non_decision_time
+  output[1] <- drift_rate
+  output[2] <- 0.5
+  output[3] <- boundary_sep
+  output[4] <- non_decision_time
 
-  return(out)
+  return(output)
 }

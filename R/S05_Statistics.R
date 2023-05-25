@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-01-21
+# Last updated 2023-05-24
 
 # Table of contents
 # 1) sem
@@ -15,6 +15,8 @@
 # 7) bounds
 # 8) standardize
 # 9) density_points
+# 10) yeo_johnson
+# 11) yeo_johnson_transform
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
@@ -1272,3 +1274,188 @@ density_points <- function (x, ...) {
 
   return( list(x = sort(x), y = y) )
 }
+
+#' 10) Yeo-Johnson Transform
+#'
+#' Transforms a numeric vector of values using
+#' the Yeo-Johnson (2000) power transformation
+#' family.
+#'
+#' @param y A numeric vector (values can be
+#'   positive, negative, or zero).
+#' @param lambda A numeric value specifying
+#'   the transformation to apply.
+#'
+#' @references
+#' Yeo, I. K., & Johnson, R. A. (2000). A new family of power
+#' transformations to improve normality or symmetry. Biometrika,
+#' 87 (4), 954-959. https://doi.org/10.1093/biomet/87.4.954
+#'
+#' @return A numeric vector.
+#'
+#' @examples
+#' # Example from page 958 of Yeo & Johnson (2000)
+#' y <- c(
+#'   6.1, -8.4, 1.0, 2.0, 0.7, 2.9, 3.5,
+#'   5.1, 1.8, 3.6, 7.0, 3.0, 9.3, 7.5, -6.0
+#' )
+#' shapiro.test( y ) # Test of normality
+#' y_transformed <- yeo_johnson(y, 1.305)
+#' shapiro.test( y_transformed ) # Test of normality shows improvement
+#'
+#' @export
+
+yeo_johnson <- function(y, lambda) {
+
+  if ( !is.numeric(y) ) {
+    stop(
+      "Argument 'y' must be a numeric vector"
+    )
+  }
+
+  if ( !is.numeric(lambda) | length( lambda ) != 1 ) {
+    stop(
+      "Argument 'lambda' must be a numeric value"
+    )
+  }
+
+  y_transformed <- y
+
+  # Remove missing values
+  lgc_no_NA <- !is.na(y)
+
+  # Identify negative values
+  lgc_negative <- lgc_no_NA & y < 0
+
+  # Apply transformation
+  if ( lambda != 1 ) {
+
+    lgc_subset <-
+      lgc_no_NA & !lgc_negative
+
+    if ( lambda != 0 ) {
+
+      y_transformed[lgc_subset] <-
+        ( (y[lgc_subset] + 1)^lambda - 1 )/lambda
+
+    }
+
+    if ( lambda == 0 ) {
+
+      y_transformed[no_NA] <-
+        log( y[no_NA] + 1)
+
+    }
+
+    lgc_subset <-
+      lgc_no_NA & lgc_negative
+
+    if ( lambda != 2 ) {
+
+      y_transformed[lgc_subset] <-
+        -( (-y[lgc_subset] + 1)^(2 - lambda) - 1 )/(2 - lambda)
+
+    }
+
+    if ( lambda == 2 ) {
+
+      y_transformed[lgc_subset] <-
+        log( -y[lgc_subset] + 1)
+
+    }
+
+    # Close 'Apply transformation'
+  }
+
+  return(y_transformed)
+}
+
+#' 11) Determine Best Parameter for Yeo-Johnson Transform
+#'
+#' Estimates and applies best-fitting Yeo-Johnson
+#' transformation parameter via maximum likelihood
+#' for a vector of numeric values.
+#'
+#' @param x A numeric vector (values can be
+#'   positive, negative, or zero).
+#' @param lower The smallest value for the transformation
+#'   parameter to consider.
+#' @param upper The highest value for the transformation
+#'   parameter to consider.
+#'
+#' @details
+#' The transformation parameter to use is estimated via
+#' maximum likelihood using the [base:optimize] and
+#' [stats:dnorm] functions.
+#'
+#' @references
+#' Yeo, I. K., & Johnson, R. A. (2000). A new family of power
+#' transformations to improve normality or symmetry. Biometrika,
+#' 87 (4), 954-959. https://doi.org/10.1093/biomet/87.4.954
+#'
+#' @return A numeric vector, the transformed values of x.
+#'
+#' @examples
+#' # Example from page 958 of Yeo & Johnson (2000)
+#' x <- c(
+#'   6.1, -8.4, 1.0, 2.0, 0.7, 2.9, 3.5,
+#'   5.1, 1.8, 3.6, 7.0, 3.0, 9.3, 7.5, -6.0
+#' )
+#' shapiro.test( x ) # Test of normality
+#' x_transformed <- yeo_johnson_transform(x)
+#' # Extract results of maximum likelihood estimation
+#' attributes(x_transformed)$mle_for_yeo_johnson
+#' shapiro.test( x_transformed ) # Test of normaliy shows improvement
+#'
+#' @export
+
+yeo_johnson_transform <- function(
+    x,
+    lower = -100,
+    upper = 100 ) {
+
+  y <- x[ !is.na(x) ]
+
+  fun_sum_of_log_likelihood <- function(lambda, y) {
+
+    n <- length(y)
+    yt <- yeo_johnson(y, lambda)
+    mu <- mean(yt)
+    sigma_sq <- var(yt)*( length(yt)-1 )/length(yt)
+
+    sll_part_1 <- -(n/2)*log(2*pi)
+    sll_part_2 <- -(n/2)*log(sigma_sq)
+    sll_part_3 <- ( -1/(2*sigma_sq) )*sum( (yt - mu)^2 )
+    sll_part_4 <- (lambda-1) * sum( sign(y) * log( abs(y) + 1) )
+
+    sum_of_log_likelihood <-
+      sll_part_1 + sll_part_2 + sll_part_3 + sll_part_4
+
+    return(sum_of_log_likelihood)
+  }
+
+  mle = optimize(
+    fun_sum_of_log_likelihood,
+    lower = lower, upper = upper,
+    maximum = TRUE,
+    y = y
+  )
+
+  x_transformed <- yeo_johnson(
+    x, mle$maximum
+  )
+  lst_attr <- attributes(x_transformed)
+  if ( is.null( lst_attr ) ) {
+    lst_attr <- list(
+      mle_for_yeo_johnson = mle
+    )
+  } else {
+    lst_attr$mle_for_yeo_johnson <- mle
+  }
+  attributes( x_transformed ) <- lst_attr
+
+  return( x_transformed )
+}
+
+
+

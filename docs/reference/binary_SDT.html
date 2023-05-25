@@ -21,7 +21,7 @@ computes alternative metrics, including A', B, and B”
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.9</span>
       </span>
     </div>
 
@@ -74,19 +74,17 @@ are equidistant from zero.</p></dd>
 
 
 <dt>correct</dt>
-<dd><p>Type of correction to apply, either...</p><ul><li><p>'0', '', 'None', 'none', 'No', or 'no' = No
-correction applied;</p></li>
-<li><p>'1', 'log-linear', 'H', or 'hautus' = The log-linear
+<dd><p>Type of correction to apply, either...</p><ul><li><p>'none': No correction applied.</p></li>
+<li><p>'log-linear': The log-linear
 approach, adds <code>0.5</code> to the hits and false alarm
 frequencies, then adds <code>1</code> to the total number of
 observations for the signal and noise items respectively
-(Hautus, 1995);</p></li>
-<li><p>'2', 'conditional', 'MK', or 'macmillan' =
-The conditional approach, where proportions equal
-to 0 or 1 are adjusted by <code>0.5/N</code> or <code>(N-0.5)/N</code>
-respectively, with <code>N</code> referring the associated number
-of total observations for the given proportion
-(Macmillan &amp; Kaplan, 1985).</p></li>
+(Hautus, 1995).</p></li>
+<li><p>'conditional':  The conditional approach, where
+proportions equal to 0 or 1 are adjusted by <code>0.5/N</code>
+or <code>(N-0.5)/N</code> respectively, with <code>N</code> referring
+the associated number of total observations for the given
+proportion (Macmillan &amp; Kaplan, 1985).</p></li>
 </ul></dd>
 
 </dl></div>
@@ -94,20 +92,48 @@ of total observations for the given proportion
     <h2>Value</h2>
     
 
-<p>A named vector with five values:</p><ol><li><p><code>d'} - The estimate of separation between the noise
-and signal distributions;
-\item \code{c} - The estimate of response bias (the cut-off
-determining whether a response is 'signal' versus 'noise');
-\item \code{A'</code> - A non-parametric estimate of discrimination
-(however see Pastore, Crawley, Berens, &amp; Skelly, 2003);</p></li>
-<li><p><code>B</code> - The ratio of whether people favor responding
-'signal' over whether they favor responding 'noise';</p></li>
-<li><p><code>B”</code> - A non-parametric estimate of B (however see
+<p>A named vector with five values:</p><ol><li><p>d': The estimate of separation between the noise
+and signal distributions.</p></li>
+<li><p>c: The estimate of response bias (the cut-off
+determining whether a response is 'signal' versus 'noise').</p></li>
+<li><p>A': A non-parametric estimate of discrimination
+(however see Pastore, Crawley, Berens, &amp; Skelly, 2003).</p></li>
+<li><p>B: The ratio of whether people favor responding
+'signal' over whether they favor responding 'noise'.</p></li>
+<li><p>B'': A non-parametric estimate of B (however see
 Pastore et al., 2003).</p></li>
 </ol></div>
     <div id="details">
     <h2>Details</h2>
-    <p>Forthcoming</p>
+    <p>The basic binary signal detection model assumes responses
+(correct identification of a signal during 'signal' trials and
+incorrect identification of a signal - a false alarm - during
+'noise' trials) arise by classifying a latent continuous value
+sampled either from a 'signal' or 'noise' distribution. If the
+value is above a threshold, participants indicates there is
+a 'signal', otherwise they indicate it is 'noise'. Because the
+'signal' and 'noise' distribution overlap, sometimes a
+value sampled from the 'noise' distribution will fall above the
+threshold and classified as a 'signal', and sometime a value
+sampled from the 'signal' distribution will fall below the
+threshold and be classified as 'noise'.</p>
+<p>Assuming the distributions of evidence for 'signal' and 'noise'
+are Gaussian with their variances fixed to 1, their means
+fixed to 0.5(δ) and -0.5(δ) respectively,
+and a threshold parameter κ, one can solve for the
+parameters δ and κ given the proportion of
+hits H and false alarms FA:</p>
+<p>κ = -0.5( Φ⁻¹(H) +
+Φ⁻¹(FA) ) and
+δ = 2( Φ⁻¹(H) + κ), where
+Φ⁻¹ is the inverse of the
+standard normal cumulative distribution function
+(see <a href="https://rdrr.io/r/stats/Normal.html" class="external-link">stats::qnorm</a>).</p>
+<p>Other parameterizations exist, but the benefit of this one
+is easier interpretation of κ, as a value of 0
+indicates no bias in responding, values above zero
+indicate bias against responding 'noise' and
+values below zero indicate bias against responding 'signal'.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -132,9 +158,29 @@ DOI: 10.3758/BF03207704</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Forthcoming</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Proportion of hits and false alarms</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.8</span>, <span class="fl">.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="fu">binary_SDT</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span>, <span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    d'     c    A'     B   B'' </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.683 0.000 0.375 1.000 0.000 </span>
+<span class="r-in"><span><span class="co"># Frequency of hits, false alarms, signal trials, noise trials</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">2</span>, <span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="fu">binary_SDT</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span>, <span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    d'     c    A'     B   B'' </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.956 0.304 0.397 1.811 0.351 </span>
+<span class="r-in"><span><span class="co"># Cannot compute d' if 100% or 0% for hits or false alarms</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">0</span>, <span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">binary_SDT</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  d'   c  A'   B B'' </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NaN NaN 0.5 NaN NaN </span>
+<span class="r-in"><span><span class="co"># Corrections allow computation</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="fu">binary_SDT</span><span class="op">(</span> <span class="va">x</span>, correct <span class="op">=</span> <span class="st">'log-linear'</span> <span class="op">)</span>, <span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    d'     c    A'     B   B'' </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3.962 0.000 0.488 1.000 0.000 </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="fu">binary_SDT</span><span class="op">(</span> <span class="va">x</span>, correct <span class="op">=</span> <span class="st">'conditional'</span> <span class="op">)</span>, <span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    d'     c    A'     B   B'' </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3.920 0.000 0.487 1.000 0.000 </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>

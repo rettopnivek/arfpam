@@ -51,12 +51,16 @@ reference:
   - load_package
   - new_limits
   - duplicate_wide_to_long
+  - vector_elements
   - create_analysis_project
   - strip_value
   - percent_that_sums_to_100
   - replace_string
   - replace_cases
   - match_and_reorder
+  - match_rows
+  - assign_by_interval
+  - not_NA
 - title: "Plotting"
   desc: >
 
@@ -88,6 +92,9 @@ reference:
   - bounds
   - standardize
   - density_points
+  - yeo_johnson
+  - yeo_johnson_transform
+
 - title: "Modeling"
   desc: >
 

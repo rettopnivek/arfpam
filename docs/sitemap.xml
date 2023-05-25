@@ -252,4 +252,22 @@
   <url>
     <loc>/reference/match_and_reorder.html</loc>
   </url>
+  <url>
+    <loc>/reference/vector_elements.html</loc>
+  </url>
+  <url>
+    <loc>/reference/match_rows.html</loc>
+  </url>
+  <url>
+    <loc>/reference/assign_by_interval.html</loc>
+  </url>
+  <url>
+    <loc>/reference/not_NA.html</loc>
+  </url>
+  <url>
+    <loc>/reference/yeo_johnson.html</loc>
+  </url>
+  <url>
+    <loc>/reference/yeo_johnson_transform.html</loc>
+  </url>
 </urlset>
