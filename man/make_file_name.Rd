@@ -7,73 +7,60 @@
 make_file_name(
   description,
   extension,
-  tag = NULL,
-  number = NULL,
-  file_date = NULL,
-  additional = NULL,
-  date_format = "\%m_\%d_\%Y",
-  exclude = "",
-  remove = FALSE
+  project = NULL,
+  script = NULL,
+  date_time = NULL,
+  remove = FALSE,
+  path = ".",
+  env_variables = c("ABBR_PROJECT", "ABBR_SCRIPT")
 )
 }
 \arguments{
-\item{description}{A human-readable label, with
-words preferably separated by underscores.}
+\item{description}{A character string, a human-readable
+description of the file (with words typically separated
+by \code{'_'}).}
 
-\item{extension}{A file extension, such as
-'RData', 'R', 'txt', 'pdf'.}
+\item{extension}{A character string, the file extension
+(e.g., \code{'R'}, \code{'RData'}) - the period is
+added automatically.}
 
-\item{tag}{A leading tag; If no value is provided,
-automatically set based on the file extension.
-Automatic assignments are...
-\itemize{
-\item 'S' for extension \code{R};
-\item 'D' for extensions \code{RData} and \code{csv};
-\item 'T' for extension \code{txt};
-\item 'W' for extension \code{docx};
-\item 'P' for extension \code{pptx};
-\item 'F' for extensions \code{pdf}, \code{jpg},
-\code{jpeg}, and \code{png}.
-}}
+\item{project}{A character string, the abbreviation for the
+project name (can be inferred from environmental variables).}
 
-\item{number}{A file number. If no value is provided,
-automatically set based on number of files in current
-folder with matching tags.}
+\item{script}{A character string, typically a one-letter
+abbreviation followed by a two-digit number indicating
+the script or analysis index.}
 
-\item{file_date}{The date to include. If no value is
-provided, the current date is used.}
+\item{date_time}{A character string giving the date and time
+(usually in the format \code{'YYYY_MM_DD-HH_MM'}) - if
+not provided uses the current date and time instead.}
 
-\item{additional}{Additional text to include following
-the date. If provided, is preceded by a '-'.}
+\item{remove}{Logical; if \code{TRUE} removes any existing
+files in the working directory with the same
+project, script, description, and extension values.}
 
-\item{date_format}{The format to use for the current
-date, defaults to 'MM_DD_YYYY'.}
+\item{path}{A character string specifying the subfolder(s)
+for the file.}
 
-\item{exclude}{A vector of file names to exclude when}
-
-\item{remove}{Logical; if TRUE, attempts to locate
-previous versions of the outputted file name
-(i.e., same name but earlier dates) and remove
-them from the current folder.}
+\item{env_variables}{A character vector specifying the
+name of the environmental variables with the
+project and script abbreviations.}
 }
 \value{
 A character string.
 }
 \description{
-Create a standardized file name of the
-form: TXX-Description-MM_DD_YYYY.ext where 'T'
-is a leading tag, 'XX' is a file number,
-'Description' is a human-readable
-label, and 'ext' is a file extension.
+Creates a file name using the standardized
+format 'PROJECT-SXX-Description-YYYY_MM_DD-HH_MM.ext'
+where 'PROJECT' is a abbreviation for a project name,
+and 'SXX' is a letter followed by a number indicating
+the script or analysis index. Both variables can
+be automatically specified from existing
+environmental variables.
 }
 \examples{
-# Different file types
-make_file_name("Example", "RData")
-make_file_name("Example", "pdf")
-make_file_name("Example", "docx")
 
-# User-specified tags and numbers
-make_file_name("Example", "RData", tag = "R", number = "02")
-# Additional text
-make_file_name("Example", "RData", additional = "v.1.0.0")
+make_file_name( 'Example', 'R' )
+make_file_name( 'Example_2', 'RData', project = 'EX', script = 'S01' )
+
 }

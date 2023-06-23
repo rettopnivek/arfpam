@@ -105,15 +105,15 @@ blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
 #' Returns a vector of hex color values
 #' for a specified color palette.
 #'
+#' @param index An optional vector of integers or color
+#'   names to extract a subset of colors from the
+#'   specified palette.
 #' @param type The color palette to return. Options
 #'   include...
 #'   \itemize{
 #'     \item 'Colorblind' (a colorblind-friendly palette);
 #'     \item 'Grayscale' (4-bit grayscale palette).
 #'   }
-#' @param index An optional vector of integers or color
-#'   names to extract a subset of colors from the
-#'   specified palette.
 #' @param plot Logical; if \code{TRUE}, generates
 #'   a plot showcasing the specified color palette.
 #'
@@ -133,8 +133,9 @@ blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
 #' palettes("Colorblind", 1:2)
 #' @export
 
-palettes <- function(type = "colorblind",
-                     index = NULL, plot = FALSE) {
+palettes <- function(index = NULL,
+                     type = "colorblind",
+                     plot = FALSE) {
   types <- list(
     colorblind = c(
       "Colorblind", "colorblind",
@@ -812,216 +813,7 @@ error_bars <- function(pos, limits = NULL,
   }
 }
 
-#### 1.8) apply_f_to_plot ####
-#' Applies a Function to Add Elements to a Plot
-#'
-#' Given a data frame of values to plot,
-#' applies a plotting function (optionally
-#' based on a grouping factor) to add
-#' elements to an existing plot.
-#'
-#' @param dtf A data frame with the data to plot.
-#' @param entries List of logical vectors, each
-#'   matching in length to the number of rows in
-#'   \code{dtf}.
-#' @param f A plotting function. If \code{NULL}
-#'   defaults to a function that draws
-#'   connected lines with points based on
-#'   the groupings defined by \code{entries}.
-#' @param ... Additional arguments to be passed
-#'   to the plotting function \code{f}.
-#'
-#' @examples
-#' # Use longitudinal data set on chick weights
-#' data( "ChickWeight" )
-#' # Average over different chicks by
-#' # time point and diet
-#' dtf <- aggregate(
-#'   ChickWeight$weight,
-#'   list( Time = ChickWeight$Time, Diet = ChickWeight$Diet ),
-#'   mean
-#' )
-#'
-#' # Specify grouping factor
-#' diet <- list_of_matches( dtf, 1:4, 'Diet' )
-#'
-#' # Specify aesthetics for points and lines
-#' dtf$col.p <- assign_by_match( palettes('colorblind')[1:4], diet )
-#' dtf$col.l <- dtf$col.p
-#'
-#' # Create base figure
-#' xl = c(-1, 23); yl = c(20, 300)
-#' par(mar = c(3, 3, .5, 4 )); blank_plot(xl, yl)
-#'
-#' # Axis lines
-#' xl[2] <- 21; hv_line(h = yl[1], l = xl, lwd = 2)
-#' hv_line(v = xl[1], l = yl, lwd = 2)
-#' # Grid lines
-#' hv_line(h = seq( 40, 280, 40), l = xl, lwd = 1, col = 'grey80' )
-#'
-#' # Axis labels and ticks
-#' add_axes( c( 0, 7, 14, 21 ), side = 1, line = -1 )
-#' mtext( 'Average weight', side = 2, line = 1.5, cex = 1.2 )
-#' add_axes( seq( 40, 280, 40 ), side = 2, line = -1 )
-#' mtext( 'Time', side = 1, line = 1.5, cex = 1.2 )
-#'
-#' # Legend
-#' day_21 <- dtf$Time == 21
-#' text( rep( 21.5, 4 ), dtf$x[day_21], 'Protein diet ' %p% 1:4,
-#'       pos = 4, col = dtf$col.p[day_21], xpd = NA )
-#'
-#' # Plot separate lines per diet
-#' apply_f_to_plot( dtf, entries = diet, vrb = c( 'Time', 'x' ) )
-#'
-#' # Demonstration of how to set options for default function
-#' obs <- data.frame(
-#'   x = c( 1:3, 1:3, 1:3 ),
-#'   y = rep( 1:3, each = 3 ),
-#'   group = rep( 1:3, each = 3 ),
-#'   # Set line colors
-#'   col.l = rep( palettes( index = 1:3 ), each = 3 ),
-#'   # Set line widths
-#'   lwd = rep( 1:3, each = 3 ),
-#'   # Set line type
-#'   lty = rep( 1:3, each = 3 ),
-#'   # Set point type
-#'   pch = rep( c(21,22,24), 3 ),
-#'   # Set point color
-#'   col.p = 'black',
-#'   # Set background point color
-#'   bg = 'grey',
-#'   # Point size
-#'   cex = rep( c( 1, 2, 3 ), 3 )
-#' )
-#'
-#' blank_plot( c(.5,3.5), c(.5,3.5) )
-#' apply_f_to_plot( obs, list_of_matches( obs$group, 1:3 ) )
-#'
-#' @export
-
-apply_f_to_plot <- function(dtf,
-                            entries = NULL,
-                            f = NULL,
-                            ...) {
-
-  if ( is.null( dtf ) ) {
-
-    func_template <- '
-    f <- function(dtf,
-                  vrb = NULL,
-                  col.l = "black",
-                  lwd = 1,
-                  lty = 1,
-                  bg = "white",
-                  col.p = "black",
-                  pch = 19,
-                  cex = 1.2,
-                  which_type = "both") {
-
-      if ( is.null( vrb ) ) {
-        vrb <- c( "x", "y" )
-      }
-
-      if ("col.l" %in% colnames(dtf)) {
-        col.l <- dtf[["col.l"]]
-      }
-      if ("lwd" %in% colnames(dtf)) {
-        lwd <- dtf[["lwd"]]
-      }
-      if ("lty" %in% colnames(dtf)) {
-        lty <- dtf[["lty"]]
-      }
-      if ("bg" %in% colnames(dtf)) {
-        bg <- dtf[["bg"]]
-      }
-      if ("col.p" %in% colnames(dtf)) {
-        col.p <- dtf[["col.p"]]
-      }
-      if ("pch" %in% colnames(dtf)) {
-        pch <- dtf[["pch"]]
-      }
-      if ("cex" %in% colnames(dtf)) {
-        cex <- dtf[["cex"]]
-      }
-
-      if (which_type %in% c("lines", "l", "both", "b", "0", "1")) {
-        lines(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
-              col = col.l, lwd = lwd, lty = lty
-        )
-      }
-      if (which_type %in% c("points", "p", "both", "b", "0", "2")) {
-        points(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
-               col = col.p, bg = bg, pch = pch, cex = cex
-        )
-      }
-    }'
-    cat( func_template )
-    return( invisible(NULL) )
-  }
-
-  if (is.null(f)) {
-    f <- function(dtf,
-                  vrb = NULL,
-                  col.l = "black",
-                  lwd = 1,
-                  lty = 1,
-                  bg = "white",
-                  col.p = "black",
-                  pch = 19,
-                  cex = 1.2,
-                  which_type = "both") {
-
-      if ( is.null( vrb ) ) {
-        vrb <- c( 'x', 'y' )
-      }
-
-      if ("col.l" %in% colnames(dtf)) {
-        col.l <- dtf[["col.l"]]
-      }
-      if ("lwd" %in% colnames(dtf)) {
-        lwd <- dtf[["lwd"]]
-      }
-      if ("lty" %in% colnames(dtf)) {
-        lty <- dtf[["lty"]]
-      }
-      if ("bg" %in% colnames(dtf)) {
-        bg <- dtf[["bg"]]
-      }
-      if ("col.p" %in% colnames(dtf)) {
-        col.p <- dtf[["col.p"]]
-      }
-      if ("pch" %in% colnames(dtf)) {
-        pch <- dtf[["pch"]]
-      }
-      if ("cex" %in% colnames(dtf)) {
-        cex <- dtf[["cex"]]
-      }
-
-      if (which_type %in% c("lines", "l", "both", "b", "0", "1")) {
-        lines(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
-              col = col.l, lwd = lwd, lty = lty
-        )
-      }
-      if (which_type %in% c("points", "p", "both", "b", "0", "2")) {
-        points(dtf[[ vrb[1] ]], dtf[[ vrb[2] ]],
-               col = col.p, bg = bg, pch = pch, cex = cex
-        )
-      }
-    }
-  }
-
-  if (is.null(entries)) {
-    f(dtf, ...)
-  } else {
-    n <- length(entries)
-
-    for (i in 1:n) {
-      f(dtf[entries[[i]], ], ...)
-    }
-  }
-}
-
-#### 1.9) draw_by_group ####
+#### 1.8) draw_by_group ####
 #' Add Elements to Existing Figure by Groups
 #'
 #' Function that will add elements to an existing
@@ -1471,7 +1263,7 @@ draw_lines <- function( x, y = NULL,
   # Add error bars to figure
   if ( !is.null(lb) & !is.null(ub) ) {
 
-    error_bars(
+    arfpam::error_bars(
       x, lb = lb, ub = ub,
       lwd = lwd, length = length,
       col = col.eb, arrow = arrow,
@@ -1713,7 +1505,7 @@ draw_boxplots <- function( x, y = NULL,
 
 plot_histogram <- function( x,
                             breaks = 'FD',
-                            border = 'white',
+                            border = 'grey',
                             col = 'grey',
                             main = '',
                             plot = TRUE,
@@ -2094,12 +1886,12 @@ plot_correlation_heatmap <- function( x,
 
           # Add black border
           cur_brd = "black"
-            draw_box(
-              pos, ri, ci, clr = cur_clr,
-              brd = cur_brd, slash = T
-            )
+          draw_box(
+            pos, ri, ci, clr = cur_clr,
+            brd = cur_brd, slash = T
+          )
 
-            # Close 'If part of upper triangle'
+          # Close 'If part of upper triangle'
         }
 
         # Close 'If non-significant draw a slash'
@@ -2205,3 +1997,285 @@ plot_correlation_heatmap <- function( x,
   mtext("R", side = 1, line = 1, cex = txtSz[1])
 
 }
+
+#### 3.3) plot_forest ####
+#' Create a Forest Plot
+#'
+#' Generates a simple forest plot (defined here as
+#' a plot of multiple estimates and their associated
+#' error bars).
+#'
+#' @param values Either a vector of estimates or
+#'   a data.frame/matrix with three columns
+#'   consisting of the estimates, the lower limits
+#'   the for error bars, and the upper limits for
+#'   the error bars).
+#' @param lower A vector matching in length to
+#'   \code{values} with the lower limits for
+#'   the error bars.
+#' @param upper A vector matching in length to
+#'   \code{values} with the upper limits for
+#'   the error bars.
+#' @param point_type An integer vector specifying the
+#'   type of point to draw (see [graphics::points]).
+#' @param point_color A character vector specifying
+#'   the color(s) for the points.
+#' @param point_background A character vector specifying
+#'   the color(s) for the point backgrounds.
+#' @param text_size A numeric vector of three elements
+#'   specifying the size of the points to draw, the
+#'   size of the x and y-axis labels, and the size
+#'   of the x-axis title, respectively. If less than
+#'   three elements are given, elements are recycled
+#'   to produce the necessary length.
+#' @param line_width A numeric vector of three elements,
+#'   the line widths for the error bars, the horizontal
+#'   grid lines, and the vertical grid lines, respectively.
+#' @param line_color A character vector specifying
+#'   the color(s) for the error bars.
+#' @param margin A numeric vector specifying the margin
+#'   sizes for the bottom, left, top, and right-hand sides
+#'   of the figure.
+#' @param labels_y A character vector matching in length
+#'   to \code{values}, the labels for the estimates.
+#' @param labels_x A numeric vector giving the x-axis
+#'   labels. If \code{NULL} the function attempts to
+#'   automatically create the labels.
+#' @param labels_position A numeric vector of three
+#'   elements, the position at which to draw the
+#'   y-axis labels, the x-axis labels, and the x-axis
+#'   title, respectively.
+#' @param title_x A character string, the x-axis title.
+#' @param xlim A numeric vector with the lower and
+#'   upper limits for the x-axis plotting boundary.
+#'   If \code{NULL} the function computes it using
+#'   [base::range].
+#' @param vert_grid A numeric vector giving the x-axis
+#'   positions for vertical grid lines. If \code{NULL}
+#'   no grid lines are drawn.
+#' @param vert_color A character vector specifying
+#'   the color(s) for the vertical grid lines.
+#' @param horiz_grid Logical; if \code{TRUE} horizontal
+#'   grid lines are added to separate the different
+#'   estimates visually.
+#' @param horiz_color  A character vector specifying
+#'   the color for the horizontal grid lines.
+#' @param new Logical; if \code{TRUE} a new plotting window
+#'   is generated.
+#'
+#' @returns A forest plot.
+#'
+#' @examples
+#' # Example estimates and error bar limits
+#'   means <- runif( 5, -.5, .5 )
+#'   mat <- sapply( means, function(m) { rnorm( 100, m, 1 ) } )
+#'   values <- sapply(
+#'     1:ncol(mat), function(i) {
+#'       x <- mat[, i]
+#'       return( c( mean(x), mean(x) + sem(x)*qnorm( c(.025, .975) ) ) )
+#'     }
+#'   ) |> t()
+#'
+#' # Example forest plot
+#' plot_forest(
+#'   values, labels_y = 'Column ' %p% 1:5,
+#'   title_x = 'Estimated mean'
+#' )
+#'
+#' @export
+
+plot_forest <- function(values,
+                        lower = NULL,
+                        upper = NULL,
+                        point_type = 19,
+                        point_color = 'black',
+                        point_background = 'white',
+                        text_size = 1,
+                        line_width = 2,
+                        line_color = 'black',
+                        margin = c( 3.5, 10, 2, .5 ),
+                        labels_y = NULL,
+                        labels_x = NULL,
+                        labels_position = -1,
+                        title_x = NULL,
+                        xlim = NULL,
+                        vert_grid = 0,
+                        vert_color = 'black',
+                        vert_type = 1,
+                        horiz_grid = FALSE,
+                        horiz_color = 'grey80',
+                        new = FALSE) {
+
+  # Check inputs
+  if ( !is.data.frame(values) & !is.matrix(values) ) {
+
+    # If lower and upper limits not provided
+    if ( is.null(lower) | is.null(upper) ) {
+
+      stop(
+        paste0(
+          "Must specify arguments for 'lower' and 'upper' ",
+          "or pass a data frame or matrix to 'values' with ",
+          "a column for the values, lower limits, and upper ",
+          "limits respectively"
+        )
+      )
+
+      # Close 'If lower and upper limits not provided'
+    }
+
+    # Close 'Check inputs'
+  } else {
+
+    lower <- values[, 2]
+    upper <- values[, 3]
+    values <- values[, 1]
+
+    # Close else for 'Check inputs'
+  }
+
+  # Create new plotting window
+  if ( new ) {
+
+    x11()
+
+    # Close 'Create new plotting window'
+  }
+
+  # Number of data points
+  n <- length(values)
+  y <- n:1 # 1st data point starts at top
+
+  # Figure limits
+  ylim <- c( .5, n + .5 )
+
+  # If no limits for x-axis
+  if ( is.null(xlim) ) {
+
+    xlim <- range( c(lower, upper) )
+    xlim <- xlim + c( -.05, .05)*diff(xlim)
+
+    # Close 'If no limits for x-axis'
+  }
+
+  # Ensure indexing for aesthetics works
+  line_width <- rep_len( line_width, 3 )
+  text_size <- rep_len( text_size, 3 )
+  labels_position <- rep_len( labels_position, 3 )
+
+  # Create blank plot
+  par( mar = margin )
+  blank_plot( xlim, ylim )
+
+  # Add vertical grid lines
+  if ( !is.null( vert_grid ) ) {
+
+    hv_line(
+      v = vert_grid, l = ylim,
+      lwd = line_width[2],
+      col = vert_color,
+      lty = vert_type
+    )
+
+    # Close 'Add vertical grid lines'
+  }
+
+  # Add horizontal grid lines
+  if ( horiz_grid ) {
+
+    hv_line(
+      h = seq( ylim[1], ylim[2], 1 ), l = xlim,
+      lwd = line_width[2],
+      col = col_horiz
+    )
+
+    # Close 'Add vertical grid lines'
+  }
+
+  # Add estimates
+  points(
+    values, y,
+    pch = point_type,
+    col = point_color,
+    bg = point_background,
+    cex = text_size[1]
+  )
+
+  # Add error bars
+  segments(
+    lower, y,
+    upper, y,
+    lwd = line_width[1],
+    col = line_color
+  )
+
+  hv_line( h = ylim[1], l = xlim, lwd = line_width[3] )
+  hv_line( v = xlim[1], l = ylim, lwd = line_width[3] )
+
+  # If y-axis labels provided
+  if ( !is.null(labels_y) ) {
+
+    add_axes(
+      y, labels_y,
+      side = 2, line = labels_position[1],
+      xpd = NA, las = 1, cex = text_size[2]
+    )
+
+    # Close 'If y-axis labels provided'
+  }
+
+  # If no values provided for x-axis ticks
+  if ( is.null(labels_x) ) {
+
+    b10 <- round( log( diff(xlim)/6, base = 10 ) )
+
+    inc <- diff(xlim)/6
+
+    at <- seq( xlim[1], xlim[2], length.out = 6 )
+
+    # If decimals
+    if ( b10 < 0 ) {
+
+      at_parts <- round( c( xlim[1], xlim[2], inc ), abs(b10))
+
+      # Close 'If decimals'
+    }
+
+    # Whole numbers
+    if ( b10 == 0 ) {
+
+      at_parts <- round( c( xlim[1], xlim[2], inc ) )
+
+      # Close 'Whole numbers'
+    }
+
+    # If 10^x
+    if ( b10 > 0 ) {
+
+      at_parts <- round( c( xlim[1], xlim[2], inc )/( 10^b10) )*(10^b10)
+
+      # Close 'If 10^x'
+    }
+
+    labels_x <- seq( at_parts[1], at_parts[2], at_parts[3] )
+
+    # Close 'If no values provided for x-axis ticks'
+  }
+
+  add_axes(
+    labels_x, side = 1, line = labels_position[2], cex = text_size[2]
+  )
+
+  # If x-axis label overlaps with ticks
+  if ( labels_position[3] == labels_position[2] ) {
+
+    labels_position[3] <- labels_position[2] + 1.25
+
+    # Close 'If x-axis label overlaps with ticks'
+  }
+  mtext(
+    title_x, side = 1, line = labels_position[3], cex = text_size[3]
+  )
+
+}
+

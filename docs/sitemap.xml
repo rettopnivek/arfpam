@@ -270,4 +270,16 @@
   <url>
     <loc>/reference/yeo_johnson_transform.html</loc>
   </url>
+  <url>
+    <loc>/reference/column_by_other.html</loc>
+  </url>
+  <url>
+    <loc>/reference/find_increment.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_vector.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_forest.html</loc>
+  </url>
 </urlset>

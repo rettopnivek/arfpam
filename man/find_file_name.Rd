@@ -4,7 +4,7 @@
 \alias{find_file_name}
 \title{Check if a File Name can be Found}
 \usage{
-find_file_name(string, output = "logical", ...)
+find_file_name(string, output = "name", full = FALSE, ...)
 }
 \arguments{
 \item{string}{A character string, used
@@ -13,11 +13,14 @@ for partial string matching.}
 \item{output}{The type of output to return.
 Options include...
 \itemize{
-\item \code{'logical'};
-\item \code{'vector'};
 \item \code{'index'};
-\item \code{'name'}.
+\item \code{'name'};
+\item \code{'logical'};
+\item \code{'vector'}.
 }}
+
+\item{full}{Logical; if \code{TRUE} returns the
+full path.}
 
 \item{...}{Additional arguments to the
 \code{\link[base:list.files]{dir}} function.}
@@ -51,7 +54,8 @@ setwd("html")
 
 # Find help page for function 'every'
 find_file_name("every")
-find_file_name("every", output = "vector")
 find_file_name("every", output = "index")
-find_file_name("every", output = "name")
+find_file_name("every", output = "logical")
+find_file_name("every", output = "vector")
+
 }

@@ -4,19 +4,19 @@
 \alias{palettes}
 \title{Various Color Palettes}
 \usage{
-palettes(type = "colorblind", index = NULL, plot = FALSE)
+palettes(index = NULL, type = "colorblind", plot = FALSE)
 }
 \arguments{
+\item{index}{An optional vector of integers or color
+names to extract a subset of colors from the
+specified palette.}
+
 \item{type}{The color palette to return. Options
 include...
 \itemize{
 \item 'Colorblind' (a colorblind-friendly palette);
 \item 'Grayscale' (4-bit grayscale palette).
 }}
-
-\item{index}{An optional vector of integers or color
-names to extract a subset of colors from the
-specified palette.}
 
 \item{plot}{Logical; if \code{TRUE}, generates
 a plot showcasing the specified color palette.}

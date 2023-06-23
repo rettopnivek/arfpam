@@ -18,7 +18,7 @@ for a specified color palette."><!-- mathjax --><script src="https://cdnjs.cloud
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
@@ -46,22 +46,22 @@ for a specified color palette.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">palettes</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"colorblind"</span>, index <span class="op">=</span> <span class="cn">NULL</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">palettes</span><span class="op">(</span>index <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"colorblind"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>type</dt>
+    <dl><dt>index</dt>
+<dd><p>An optional vector of integers or color
+names to extract a subset of colors from the
+specified palette.</p></dd>
+
+
+<dt>type</dt>
 <dd><p>The color palette to return. Options
 include...</p><ul><li><p>'Colorblind' (a colorblind-friendly palette);</p></li>
 <li><p>'Grayscale' (4-bit grayscale palette).</p></li>
 </ul></dd>
-
-
-<dt>index</dt>
-<dd><p>An optional vector of integers or color
-names to extract a subset of colors from the
-specified palette.</p></dd>
 
 
 <dt>plot</dt>
@@ -87,22 +87,16 @@ for the specified palette.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot of colors in each palette</span></span></span>
 <span class="r-in"><span><span class="fu">palettes</span><span class="op">(</span><span class="st">"Colorblind"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="palettes-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     orange light blue        red      green     yellow       blue       pink </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  "#E69F00"  "#56B4E9"  "#D55E00"  "#009E73"  "#F0E442"  "#0072B2"  "#CC79A7" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;NA&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   NA </span>
 <span class="r-in"><span><span class="fu">palettes</span><span class="op">(</span><span class="st">"Grayscale"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="palettes-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       black      gray01      gray02      gray03      gray04      gray05 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "#000000FF" "#111111FF" "#222222FF" "#333333FF" "#444444FF" "#555555FF" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      gray06      gray07      gray08      gray09      gray10      gray11 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "#666666FF" "#777777FF" "#888888FF" "#999999FF" "#AAAAAAFF" "#BBBBBBFF" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      gray12      gray13      gray14       white </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "#CCCCCCFF" "#DDDDDDFF" "#EEEEEEFF" "#FFFFFFFF" </span>
+<span class="r-plt img"><img src="palettes-1.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;NA&gt; </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   NA </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example of taking subset of colors</span></span></span>
 <span class="r-in"><span><span class="fu">palettes</span><span class="op">(</span><span class="st">"Colorblind"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     orange light blue </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  "#E69F00"  "#56B4E9" </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in if (type %in% types$colorblind) {    list_of_colors &lt;- c(orange = "#E69F00", `light blue` = "#56B4E9",         red = "#D55E00", green = "#009E73", yellow = "#F0E442",         blue = "#0072B2", pink = "#CC79A7")}:</span> the condition has length &gt; 1</span>
 </code></pre></div>
     </div>
   </div>

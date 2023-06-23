@@ -27,10 +27,10 @@ x <- c( "A", "BB", "CCC" )
 
 # Left-aligned
 s <- align_strings( x )
-message( paste0( s, '\n' ) )
+message( paste0( '|', s, '|\n' ) )
 
 # Right-aligned
 s <- align_strings( x, FALSE )
-message( paste0( s, '\n' ) )
+message( paste0( '|', s, '|\n' ) )
 
 }

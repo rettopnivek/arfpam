@@ -7,7 +7,7 @@
 plot_histogram(
   x,
   breaks = "FD",
-  border = "white",
+  border = "grey",
   col = "grey",
   main = "",
   plot = TRUE,

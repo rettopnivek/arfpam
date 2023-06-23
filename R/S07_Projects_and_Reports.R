@@ -1,3 +1,12 @@
+# Modeling
+# Written by Kevin Potter
+# email: kevin.w.potter@gmail.com
+# Please email me directly if you
+# have any questions or comments
+# Last updated 2023-05-24
+
+# Table of contents
+# 1) create_analysis_project
 
 #### 1) create_analysis_project ####
 #' Create Files and Folders for Analysis Project
@@ -303,27 +312,6 @@ create_analysis_project <- function( initial = TRUE,
 
     # Close else for 'Initialize folders and files'
   }
-
-}
-
-# report_initialize <-
-
-
-
-
-report_add_conditional_statement <- function( conditional,
-                                              statement = NULL ) {
-
-  if ( is.null( statement ) ) {
-
-    statement <- c(
-      'statistically significant',
-      'not statistically significant'
-    )
-
-  }
-
-
 
 }
 
