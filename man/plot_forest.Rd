@@ -17,7 +17,7 @@ plot_forest(
   margin = c(3.5, 10, 2, 0.5),
   labels_y = NULL,
   labels_x = NULL,
-  labels_position = -1,
+  labels_position = -1.25,
   title_x = NULL,
   xlim = NULL,
   vert_grid = 0,
@@ -116,14 +116,14 @@ error bars).
 }
 \examples{
 # Example estimates and error bar limits
-  means <- runif( 5, -.5, .5 )
-  mat <- sapply( means, function(m) { rnorm( 100, m, 1 ) } )
-  values <- sapply(
-    1:ncol(mat), function(i) {
-      x <- mat[, i]
-      return( c( mean(x), mean(x) + sem(x)*qnorm( c(.025, .975) ) ) )
-    }
-  ) |> t()
+means <- runif( 5, -.5, .5 )
+mat <- sapply( means, function(m) { rnorm( 100, m, 1 ) } )
+values <- sapply(
+  1:ncol(mat), function(i) {
+    x <- mat[, i]
+    return( c( mean(x), mean(x) + sem(x)*qnorm( c(.025, .975) ) ) )
+  }
+) |> t()
 
 # Example forest plot
 plot_forest(

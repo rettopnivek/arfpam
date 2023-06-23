@@ -15,6 +15,7 @@ plot_histogram(
   new = TRUE,
   w = 5,
   h = 5,
+  raw_points = TRUE,
   ...
 )
 }
@@ -46,6 +47,9 @@ window.}
 
 \item{h}{The height (in inches) of the new plotting
 window.}
+
+\item{raw_points}{Logical; if \code{TRUE} adds a bar for
+individual data points at the bottom of the figure.}
 
 \item{...}{Additional arguments to pass to the
 \code{\link[graphics]{hist}} function.}

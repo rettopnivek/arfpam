@@ -1,0 +1,241 @@
+---
+title: "Plotting"
+output: rmarkdown::html_vignette
+fig_height: 5
+fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Plotting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(arfpam)
+```
+
+## Table of contents {#TOC}
+
+0. [Preamble](#section0)
+1. [Example histogram](#section1)
+2. [Example dot plot](#section2)
+3. [Example forest plot](#section3)
+4. [Example line plot](#section4)
+5. [Plotting over groups](#section5)
+6. [Example correlation heatmap](#section6)
+
+## 0) Preamble {#section0}
+
+Before providing examples of the various plotting functions, we define two useful functions to quickly create descriptive summaries of our data of interest:
+```{r}
+quick_mean_and_ci <- function(x) {
+  n <- length(x)
+  m <- mean(x)
+  s <- sd(x)
+  se <- s/sqrt(n)
+  
+  out <- c( m, m + se*qt( c( .025, .975 ), n - 1  ) )
+  names(out) <- c( 'M', 'LB', 'UB' )
+  
+  return(out)
+}
+
+summary_by_groups <- function(dtf, x, groupings) {
+  
+  lst_groups <- dtf[, groupings]
+  if (length(groupings) == 1) lst_groups <- list(lst_groups)
+  names(lst_groups) <- groupings
+  
+  sm <- aggregate(
+    dtf[[x]],
+    lst_groups,
+    quick_mean_and_ci
+  )
+  sm <- cbind(
+      sm[, seq_along(groupings)],
+      sm$x
+    )
+  
+  if ( length(groupings) == 1 ) {
+    colnames(sm)[1] <- groupings
+  }
+  if ( is.matrix(sm) ) sm <- data.frame(sm)
+  
+  return(sm)
+}
+```
+
+## 1) Example histogram {#section1}
+
+One can quickly plot a histogram for a set of values via the 'plot_histogram' function, which uses by default the Freedman-Diaconis rule for determining bin size (which works somewhat better then base R's default using Sturge's rule):
+
+```{r}
+# Simulate data from normal distribution
+x <- rnorm(100)
+plot_histogram(x, main = 'Normal distribution', new = FALSE )
+
+# Simulate data from log-normal distribution
+y <- exp( rnorm(100) )
+plot_histogram(y, main = 'Log-normal distribution', new = FALSE )
+```
+
+[Table of contents](#TOC)
+
+## 2) Example dot plot {#section2}
+
+A common figure type in psychology is a plot of a measure central tendency and its variation (e.g., means and 95% confidence intervals), shown over a grouping factor. Such a figure can be created quickly using the 'draw_dots' function:
+
+```{r}
+# Example data examining effect of diet on early growth of chicks
+data("ChickWeight")
+
+# Create descriptive summary by Diet for final day
+lgc_final <- ChickWeight$Time == 21
+dtf_obs <- summary_by_groups( ChickWeight[lgc_final, ], 'weight', 'Diet' )
+dtf_obs$X <- 1:nrow( dtf_obs )
+# See the package 'dplyr' for a concise way to create these summaries
+
+# Plot means and 95% confidence intervals for weight
+
+# First create blank plot
+xl <- c( .5, 4.5 )
+yl <- c( 120, 340 )
+blank_plot( xl, yl )
+
+# Add estimates and error bars
+draw_dots( dtf_obs, columns = c( 'X', 'M', 'LB', 'UB' ) )
+
+# Add borders, labels, and axes
+draw_borders_and_labels(
+  xl, yl, labels = c( 'Diet', 'Weight at 21 days (gm)' )
+)
+add_axes( seq( yl[1], yl[2], 40 ), side = 2, line = -1.25, cex = 1 )
+add_axes( 1:4, 'Diet ' %p% 1:4, side = 1, line = -1.25, cex = 1 )
+```
+
+[Table of contents](#TOC)
+
+## 3) Example forest plot {#section3}
+
+A useful variant of figures summarizing estimates and error bars is the forest plot, used commonly to summarize the results of a meta-analysis. In its most basic form, a forest plot reports a set of estimates and associated error bars for different variables:
+
+```{r}
+generating_means <- runif( 6, -1, 1 )
+x <- MASS::mvrnorm( 100, generating_means, diag(6) )
+dtf <- apply( x, 2, quick_mean_and_ci ) |> t()
+dtf <- data.frame(dtf)
+
+plot_forest(
+  dtf, xlim = c(-1.5, 1.5), 
+  labels_y = 'Column ' %p% 1:6, 
+  labels_x = seq( -1.5, 1.5, .5 ), 
+  title_x = 'Estimated mean', 
+  new = FALSE
+)
+points( generating_means, 6:1, pch = 21, bg = 'white', cex = 1.25 )
+
+legend(
+  -1.5, 7, 'Generating mean', pch = 21, bty = 'n', horiz = TRUE, xpd = NA
+)
+```
+
+[Table of contents](#TOC)
+
+## 4) Example line plot {#section4}
+
+Another common figure in psychology is a line plot displaying change in a variable over time. We can quickly create such a figure using the 'draw_line' function:
+
+```{r}
+# Create descriptive summary by time collapsing over diet
+dtf_obs <- summary_by_groups(
+  ChickWeight, 'weight', 'Time'
+)
+
+# Plot means and 95% confidence intervals for weight
+
+# First create blank plot
+xl <- c( -.5, 21.5 )
+yl <- c( 0, 250 )
+blank_plot( xl, yl )
+
+# Add estimates and error bars
+draw_lines( dtf_obs, columns = c( 'Time', 'M', 'LB', 'UB' ), col.eb = 'grey' )
+
+# Add borders, labels, and axes
+draw_borders_and_labels(
+  xl, yl, labels = c( 'Day', 'Weight (gm)' )
+)
+add_axes( seq( yl[1], yl[2], 50 ), side = 2, line = -1.25, cex = 1 )
+add_axes( seq( 0, 20, 5 ), side = 1, line = -1.25, cex = 1 )
+```
+
+[Table of contents](#TOC)
+
+## 5) Plotting over groups {#section5}
+
+Often we will need to plot multiple trajectories over time for separate groups. The 'draw_by_groups' function streamlines the process of plotting separate lines by different groups.
+
+```{r}
+# Create descriptive summary across both time and diet
+dtf_obs <- summary_by_groups(ChickWeight, 'weight', c( 'Diet', 'Time' ) )
+dtf_obs$X <- dtf_obs$Time + 
+  replace_cases( dtf_obs$Diet, 1:4, c( -.6, -.2, .2, .6 ) )
+dtf_obs$col <- 
+  replace_cases( dtf_obs$Diet, 1:4, palettes( index = 1:4 ) )
+# See the package 'dplyr' for a concise way to create these summaries
+
+# Plot means and 95% confidence intervals for weight
+
+# First create blank plot
+xl <- c( -1, 22 )
+yl <- c( 0, 350 )
+blank_plot( xl, yl )
+
+draw_by_group(
+  dtf_obs, 'Diet', 1:4,
+  draw_fun = draw_lines,
+  columns = c( 'X', 'M', 'LB', 'UB' ),
+  arrow = TRUE,
+  pch = 21, 
+  aes = c( col = 'col', col.eb = 'col', bg = 'col' )
+)
+
+# Add borders, labels, and axes
+draw_borders_and_labels(
+  xl, yl, labels = c( 'Day', 'Weight (gm)' )
+)
+add_axes( seq( yl[1], yl[2], 50 ), side = 2, line = -1.25, cex = 1 )
+add_axes( seq( 0, 20, 5 ), side = 1, line = -1.25, cex = 1 )
+legend(
+  'topleft', 'Diet ' %p% 1:4, fill = palettes( 1:4 ), bty = 'n'
+)
+```
+
+[Table of contents](#TOC)
+
+## 6) Example correlation heatmap {#section6}
+
+The function 'plot_correlation_heatmap' is a quick way to create a figure summarizing the set of correlations over multiple variables along with useful information on the magnitude and statistical significant of each relationship:
+
+```{r}
+# Simulate data from a multivariate normal with correlated values
+Sigma <- rbind(
+  c( 1.0, 0.2, 0.5 ),
+  c( 0.2, 1.0, 0.1 ),
+  c( 0.5, 0.1, 1.0 )
+)
+x <- MASS::mvrnorm( 100, rep( 0, 3 ), Sigma = Sigma )
+colnames(x) <- 'V' %p% 1:3
+x <- data.frame(x)
+
+plot_correlation_heatmap(x, new = FALSE)
+```
+
+[Table of contents](#TOC)
+

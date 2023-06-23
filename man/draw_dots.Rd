@@ -16,7 +16,8 @@ draw_dots(
   length = 0.05,
   col = "black",
   bg = "white",
-  col.eb = "black"
+  col.eb = "black",
+  aes = NULL
 )
 }
 \arguments{
@@ -52,6 +53,11 @@ column names for the lower and upper bounds of the error bars.}
 (see \code{\link[graphics]{par}}).}
 
 \item{col.eb}{The color of the error bars.}
+
+\item{aes}{An optional named character vector specifying
+column names (if \code{x} is a data frame) with
+values for \code{pch}, \code{cex}, \code{lwd},
+\code{col}, \code{bg}, and \code{col.eb}.}
 }
 \value{
 Adds points and error bars to an existing plot.

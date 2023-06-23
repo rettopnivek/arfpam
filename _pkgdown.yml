@@ -74,6 +74,7 @@ reference:
   - draw_dots
   - draw_lines
   - draw_boxplots
+  - draw_borders_and_labels
   - plot_histogram
   - plot_correlation_heatmap
   - plot_forest

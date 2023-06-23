@@ -20,6 +20,7 @@
 #   2.1) draw_dots
 #   2.2) draw_lines
 #   2.3) draw_boxplots
+#   2.4)
 # 3) Functions to plot specific types of plots
 #   3.1) plot_histogram
 #   3.2) plot_correlation_heatmap
@@ -661,7 +662,9 @@ col_to_hex <- function(col, alpha = 1) {
 #'   of the line for the call to \code{\link[graphics]{arrows}}.
 #' @param angle The angle of the lines creating the arrowhead
 #'   for the call to \code{\link[graphics]{arrows}}. Using
-#'   90 degrees results in a flat bar per standard error bars,
+#'   90 degrees results in a flat bar per standard error bars.
+#' @param border The color to draw the border for
+#'   \code{\link[graphics]{polygon}}.
 #' @param ... Additional plotting parameters for
 #'   the \code{\link[graphics]{arrows}} function,
 #'   or if \code{arrow} is \code{FALSE},
@@ -718,7 +721,7 @@ error_bars <- function(pos, limits = NULL,
                        lb = NULL, ub = NULL,
                        arrow = TRUE, flip = FALSE,
                        length = .05, code = 3,
-                       angle = 90, ...) {
+                       angle = 90, border = NULL, ...) {
 
   # If a vector/matrix of lower and upper boundaries is
   # not provided
@@ -765,6 +768,7 @@ error_bars <- function(pos, limits = NULL,
         polygon(
           c(limits[1, ], rev(limits[2, ])),
           c(pos, rev(pos)),
+          border = border,
           ...
         )
       }
@@ -798,6 +802,7 @@ error_bars <- function(pos, limits = NULL,
         polygon(
           c(pos, rev(pos)),
           c(limits[1, ], rev(limits[2, ])),
+          border = border,
           ...
         )
       }
@@ -932,6 +937,10 @@ draw_by_group <- function( dtf, variable, groups, draw_fun, ... ) {
 #' @param bg The background color of the points
 #'   (see \code{\link[graphics]{par}}).
 #' @param col.eb The color of the error bars.
+#' @param aes An optional named character vector specifying
+#'   column names (if \code{x} is a data frame) with
+#'   values for \code{pch}, \code{cex}, \code{lwd},
+#'   \code{col}, \code{bg}, and \code{col.eb}.
 #'
 #' @returns Adds points and error bars to an existing plot.
 #'
@@ -981,7 +990,8 @@ draw_dots <- function( x, y = NULL,
                        lwd = 2, length = .05,
                        col = 'black',
                        bg = 'white',
-                       col.eb = 'black' ) {
+                       col.eb = 'black',
+                       aes = NULL ) {
 
   # Check use cases
   current_use <- "Incorrect input"
@@ -1034,6 +1044,36 @@ draw_dots <- function( x, y = NULL,
         ub <- dtf[[ columns[4] ]]
 
         # Close 'Lower and upper bounds provided'
+      }
+
+      # If columns for aesthetic variables provided
+      if ( !is.null( aes ) ) {
+
+        if ( 'pch' %in% names(aes) ) {
+          pch <- dtf[[ aes['pch'] ]]
+        }
+
+        if ( 'cex' %in% names(aes) ) {
+          cex <- dtf[[ aes['cex'] ]]
+        }
+
+        if ( 'lwd' %in% names(aes) ) {
+          lwd <- dtf[[ aes['lwd'] ]]
+        }
+
+        if ( 'col' %in% names(aes) ) {
+          col <- dtf[[ aes['col'] ]]
+        }
+
+        if ( 'bg' %in% names(aes) ) {
+          bg <- dtf[[ aes['bg'] ]]
+        }
+
+        if ( 'col.eb' %in% names(aes) ) {
+          col.eb <- dtf[[ aes['col.eb'] ]]
+        }
+
+        # Close 'If columns for aesthetic variables provided'
       }
 
       # Close 'Column names are provided'
@@ -1111,6 +1151,11 @@ draw_dots <- function( x, y = NULL,
 #' @param col.eb The color of the error bars.
 #' @param border The color for the border of a single
 #'   filled error bar.
+#' @param aes An optional named character vector specifying
+#'   column names (if \code{x} is a data frame) with
+#'   values for \code{pch}, \code{cex}, \code{lwd},
+#'   \code{lty}, \code{col}, \code{col.p}, \code{col.eb},
+#'   and \code{bg}.
 #'
 #' @returns Adds lines and error bars to an existing plot.
 #'
@@ -1178,9 +1223,10 @@ draw_lines <- function( x, y = NULL,
                         arrow = FALSE, length = .05,
                         col = 'black',
                         col.p = 'black',
-                        col.eb = col_to_hex( 'grey', .3 ),
+                        col.eb = col_to_hex( 'grey', .5 ),
                         bg = 'white',
-                        border = NA ) {
+                        border = NA,
+                        aes = NULL ) {
 
   # Check use cases
   current_use <- "Incorrect input"
@@ -1233,6 +1279,45 @@ draw_lines <- function( x, y = NULL,
         ub <- dtf[[ columns[4] ]]
 
         # Close 'Lower and upper bounds provided'
+      }
+
+
+      # If columns for aesthetic variables provided
+      if ( !is.null( aes ) ) {
+
+        if ( 'pch' %in% names(aes) ) {
+          pch <- dtf[[ aes['pch'] ]]
+        }
+
+        if ( 'cex' %in% names(aes) ) {
+          cex <- dtf[[ aes['cex'] ]]
+        }
+
+        if ( 'lwd' %in% names(aes) ) {
+          lwd <- dtf[[ aes['lwd'] ]]
+        }
+
+        if ( 'lty' %in% names(aes) ) {
+          lty <- dtf[[ aes['lty'] ]]
+        }
+
+        if ( 'col' %in% names(aes) ) {
+          col <- dtf[[ aes['col'] ]]
+        }
+
+        if ( 'col.p' %in% names(aes) ) {
+          col.p <- dtf[[ aes['col.p'] ]]
+        }
+
+        if ( 'col.eb' %in% names(aes) ) {
+          col.eb <- dtf[[ aes['col.eb'] ]]
+        }
+
+        if ( 'bg' %in% names(aes) ) {
+          bg <- dtf[[ aes['bg'] ]]
+        }
+
+        # Close 'If columns for aesthetic variables provided'
       }
 
       # Close 'Column names are provided'
@@ -1460,6 +1545,94 @@ draw_boxplots <- function( x, y = NULL,
 
 }
 
+#### 2.4) draw_borders_and_labels ####
+#' Add Borders and Labels to an Existing Plot
+#'
+#' Function to add borders and labels to an existing figure.
+#'
+#' @param xl The lower and upper boundaries for the
+#'   x-axis.
+#' @param yl The lower and upper boundaries for the
+#'   y-axis.
+#' @param labels A character vector of up to 4 elements, the
+#'   labels for the bottom, left, top, and right sides,
+#'   respectively. If fewer than 4 elements are given, the
+#'   corresponding labels are set to the empty character string.
+#' @param sides An integer vector of up to four values ranging
+#'   from 1 to 4, specifying the sides at which to draw a border.
+#'   The values 1, 2, 3, and 4 indicate the bottom, left, top,
+#'   and right sides, respectively.
+#' @param lwd A numeric vector of up to 4 values, the width of the
+#'   lines (see \code{\link[graphics]{par}}). Values are recycled
+#'   if the length is less than 4.
+#' @param cex A numeric vector of up to 4 values, the size of the
+#'   text for the labels (see \code{\link[graphics]{par}}). Values
+#'   are recycled if the length is less than 4.
+#'
+#' @returns Adds borders and labels to an existing figure.
+#'
+#' @examples
+#' # Create a blank plot
+#' xl <- 0:1; yl <- 0:1
+#' blank_plot( xl, yl )
+#'
+#' # Add borders and labels
+#' draw_borders_and_labels( xl, yl )
+#'
+#' @export
+
+draw_borders_and_labels <- function( xl, yl,
+                                     labels =
+                                       c( 'X-axis', 'Y-axis', 'Title', '' ),
+                                     sides = 1:2,
+                                     lwd = 2,
+                                     lines = 1.5,
+                                     cex = 1.15 ) {
+
+  lines <- rep_len( lines, 4 )
+  cex = rep_len( cex, 4 )
+  if ( length( labels ) < 4 ) {
+    labels <- c(
+      labels,
+      rep( '', 4 - length(labels) )
+    )
+  }
+
+  if ( 1 %in% sides ) {
+    arfpam::hv_line( v = xl[1], l = yl, lwd = lwd  )
+  }
+  if ( 2 %in% sides ) {
+    arfpam::hv_line( h = yl[1], l = xl, lwd = lwd  )
+  }
+  if ( 3 %in% sides ) {
+    arfpam::hv_line( v = xl[2], l = yl, lwd = lwd  )
+  }
+  if ( 4 %in% sides ) {
+    arfpam::hv_line( h = yl[2], l = xl, lwd = lwd  )
+  }
+
+  arfpam::add_axes(
+    xl[1] + diff(xl)*.5, labels[1],
+    line = lines[1], cex = cex[1], side = 1
+  )
+
+  arfpam::add_axes(
+    yl[1] + diff(yl)*.5, labels[2],
+    line = lines[2], cex = cex[2], side = 2
+  )
+
+  arfpam::add_axes(
+    xl[1] + diff(xl)*.5, labels[3],
+    line = lines[3], cex = cex[3], side = 3
+  )
+
+  arfpam::add_axes(
+    yl[1] + diff(yl)*.5, labels[4],
+    line = lines[4], cex = cex[4], side = 4
+  )
+
+}
+
 #### 3) Functions to plot specific types of plots ####
 
 #### 3.1) plot_histogram ####
@@ -1488,6 +1661,8 @@ draw_boxplots <- function( x, y = NULL,
 #'   window.
 #' @param h The height (in inches) of the new plotting
 #'   window.
+#' @param raw_points Logical; if \code{TRUE} adds a bar for
+#'   individual data points at the bottom of the figure.
 #' @param ... Additional arguments to pass to the
 #'   \code{\link[graphics]{hist}} function.
 #'
@@ -1512,20 +1687,29 @@ plot_histogram <- function( x,
                             output = FALSE,
                             new = TRUE,
                             w = 5, h = 5,
+                            raw_points = TRUE,
                             ... ) {
 
   if ( new & plot ) x11( width = w, height = h )
 
-  out<- hist(
+  out <- hist(
     x, breaks = breaks, main = main,
     col = col, border = border,
     plot = plot, ...
   )
+
+  if (plot & raw_points) {
+    text( x, rep( 0, length(x) ),
+          labels = rep( '|', length(x) ),
+          xpd = NA, pos = 1, col = 'grey60' )
+  }
+
   if ( !plot ) output <- TRUE
 
   if ( output ) {
     return( out )
   }
+
 }
 
 #### 3.2) plot_correlation_heatmap ####
@@ -2067,14 +2251,14 @@ plot_correlation_heatmap <- function( x,
 #'
 #' @examples
 #' # Example estimates and error bar limits
-#'   means <- runif( 5, -.5, .5 )
-#'   mat <- sapply( means, function(m) { rnorm( 100, m, 1 ) } )
-#'   values <- sapply(
-#'     1:ncol(mat), function(i) {
-#'       x <- mat[, i]
-#'       return( c( mean(x), mean(x) + sem(x)*qnorm( c(.025, .975) ) ) )
-#'     }
-#'   ) |> t()
+#' means <- runif( 5, -.5, .5 )
+#' mat <- sapply( means, function(m) { rnorm( 100, m, 1 ) } )
+#' values <- sapply(
+#'   1:ncol(mat), function(i) {
+#'     x <- mat[, i]
+#'     return( c( mean(x), mean(x) + sem(x)*qnorm( c(.025, .975) ) ) )
+#'   }
+#' ) |> t()
 #'
 #' # Example forest plot
 #' plot_forest(
@@ -2096,7 +2280,7 @@ plot_forest <- function(values,
                         margin = c( 3.5, 10, 2, .5 ),
                         labels_y = NULL,
                         labels_x = NULL,
-                        labels_position = -1,
+                        labels_position = -1.25,
                         title_x = NULL,
                         xlim = NULL,
                         vert_grid = 0,
@@ -2227,37 +2411,11 @@ plot_forest <- function(values,
   # If no values provided for x-axis ticks
   if ( is.null(labels_x) ) {
 
-    b10 <- round( log( diff(xlim)/6, base = 10 ) )
+    labels_x <- arfpam::lin( xlim[1], xlim[2], 6 )
 
-    inc <- diff(xlim)/6
-
-    at <- seq( xlim[1], xlim[2], length.out = 6 )
-
-    # If decimals
-    if ( b10 < 0 ) {
-
-      at_parts <- round( c( xlim[1], xlim[2], inc ), abs(b10))
-
-      # Close 'If decimals'
-    }
-
-    # Whole numbers
-    if ( b10 == 0 ) {
-
-      at_parts <- round( c( xlim[1], xlim[2], inc ) )
-
-      # Close 'Whole numbers'
-    }
-
-    # If 10^x
-    if ( b10 > 0 ) {
-
-      at_parts <- round( c( xlim[1], xlim[2], inc )/( 10^b10) )*(10^b10)
-
-      # Close 'If 10^x'
-    }
-
-    labels_x <- seq( at_parts[1], at_parts[2], at_parts[3] )
+    d <- which( sapply( 0:5, function(d)
+      length( unique( round( labels_x, d ) ) ) ) == 6 ) |> min()
+    labels_x <- round( labels_x, d )
 
     # Close 'If no values provided for x-axis ticks'
   }
@@ -2269,12 +2427,13 @@ plot_forest <- function(values,
   # If x-axis label overlaps with ticks
   if ( labels_position[3] == labels_position[2] ) {
 
-    labels_position[3] <- labels_position[2] + 1.25
+    labels_position[3] <- labels_position[2] + 2.25
 
     # Close 'If x-axis label overlaps with ticks'
   }
   mtext(
-    title_x, side = 1, line = labels_position[3], cex = text_size[3]
+    title_x, side = 1, line = labels_position[3], cex = text_size[3],
+    xpd = NA
   )
 
 }

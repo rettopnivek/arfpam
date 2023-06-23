@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-12-21
+# Last updated 2022-06-23
 
 # Package development
 # - To test functions
@@ -12,6 +12,8 @@
 #   devtools::document()
 # - To update website
 #   pkgdown::build_site()
+# - To add vignette
+#   usethis::use_vignette("Title")
 
 #' Assorted R Functions for Processing, Analysis, and Modeling
 #'

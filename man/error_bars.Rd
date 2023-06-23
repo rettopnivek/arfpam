@@ -14,6 +14,7 @@ error_bars(
   length = 0.05,
   code = 3,
   angle = 90,
+  border = NULL,
   ...
 )
 }
@@ -55,7 +56,10 @@ of the line for the call to \code{\link[graphics]{arrows}}.}
 
 \item{angle}{The angle of the lines creating the arrowhead
 for the call to \code{\link[graphics]{arrows}}. Using
-90 degrees results in a flat bar per standard error bars,}
+90 degrees results in a flat bar per standard error bars.}
+
+\item{border}{The color to draw the border for
+\code{\link[graphics]{polygon}}.}
 
 \item{...}{Additional plotting parameters for
 the \code{\link[graphics]{arrows}} function,

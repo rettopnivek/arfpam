@@ -18,9 +18,10 @@ draw_lines(
   length = 0.05,
   col = "black",
   col.p = "black",
-  col.eb = col_to_hex("grey", 0.3),
+  col.eb = col_to_hex("grey", 0.5),
   bg = "white",
-  border = NA
+  border = NA,
+  aes = NULL
 )
 }
 \arguments{
@@ -68,6 +69,12 @@ while if \code{FALSE} draws a single filled bar.}
 
 \item{border}{The color for the border of a single
 filled error bar.}
+
+\item{aes}{An optional named character vector specifying
+column names (if \code{x} is a data frame) with
+values for \code{pch}, \code{cex}, \code{lwd},
+\code{lty}, \code{col}, \code{col.p}, \code{col.eb},
+and \code{bg}.}
 }
 \value{
 Adds lines and error bars to an existing plot.
