@@ -2376,6 +2376,14 @@ plot_forest <- function(values,
     # Close 'Add vertical grid lines'
   }
 
+  # Add error bars
+  segments(
+    lower, y,
+    upper, y,
+    lwd = line_width[1],
+    col = line_color
+  )
+
   # Add estimates
   points(
     values, y,
@@ -2383,14 +2391,6 @@ plot_forest <- function(values,
     col = point_color,
     bg = point_background,
     cex = text_size[1]
-  )
-
-  # Add error bars
-  segments(
-    lower, y,
-    upper, y,
-    lwd = line_width[1],
-    col = line_color
   )
 
   hv_line( h = ylim[1], l = xlim, lwd = line_width[3] )
