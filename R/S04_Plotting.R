@@ -1721,7 +1721,9 @@ plot_histogram <- function( x,
 #' @param x A data frame (all variables will be used
 #'   when generating the correlation matrix).
 #' @param ttl An optional title for the figure.
-#' @param labels The labels for the rows/columns.
+#' @param labels The labels for the rows/columns. Users
+#'   can pass a list with two character vectors of matching
+#'   length to provide separate labels for rows and columns.
 #' @param lyt An optional matrix specifying the layout
 #'   of the main panel (1) versus the side panel
 #'   (2) with the color gradient.
@@ -2102,8 +2104,21 @@ plot_correlation_heatmap <- function( x,
     labels = colnames(omega)
   }
 
+  # Check if a list was provided for separate row/columns
+  if ( is.list(labels) ) {
+
+    labels_row <- labels[[1]]
+    labels_col <- labels[[2]]
+
+  } else {
+
+    # Same labels for rows and columns
+    labels_row <- labels
+    labels_col <- labels
+  }
+
   if ( abbr_labels[1] ) {
-    labels <- abbreviate( labels, minlength = 4 )
+    labels_row <- abbreviate( labels_row, minlength = 4 )
   }
 
   # Add labels to figures
@@ -2111,7 +2126,7 @@ plot_correlation_heatmap <- function( x,
 
     text(
       NV - (ri - 1), ri - 0.5,
-      rev(labels)[ri], pos = 2,
+      rev(labels_row)[ri], pos = 2,
       xpd = NA, cex = txtSz[2]
     )
 
@@ -2119,10 +2134,10 @@ plot_correlation_heatmap <- function( x,
   }
 
   if ( abbr_labels[2] ) {
-    labels <- abbreviate( labels, minlength = 4 )
+    labels_col <- abbreviate( labels_col, minlength = 4 )
   }
 
-  axis( 3, 2:NV - .5, labels[-1], cex.axis = txtSz[2],
+  axis( 3, 2:NV - .5, labels_col[-1], cex.axis = txtSz[2],
         line = -1.5, tick = FALSE )
 
   # Title for correlation heatmap

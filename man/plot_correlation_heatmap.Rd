@@ -26,7 +26,9 @@ when generating the correlation matrix).}
 
 \item{ttl}{An optional title for the figure.}
 
-\item{labels}{The labels for the rows/columns.}
+\item{labels}{The labels for the rows/columns. Users
+can pass a list with two character vectors of matching
+length to provide separate labels for rows and columns.}
 
 \item{lyt}{An optional matrix specifying the layout
 of the main panel (1) versus the side panel
