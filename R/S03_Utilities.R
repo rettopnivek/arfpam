@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-06-23
+# Last updated 2023-11-15
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -21,6 +21,7 @@
 #   2.5) load_R_object
 #   2.6) path_to_file
 #   2.7) source_R_scripts
+#   2.8) copy_from_source
 # 3) Functions for matching and assignment
 #   3.1) assign_by_interval
 #   3.2) match_and_reorder
@@ -1118,6 +1119,96 @@ source_R_scripts = function( files_to_include = NULL,
     } )
   } else {
     stop( 'No files found matching given criteria' )
+  }
+
+}
+
+#### 2.8) copy_from_source ####
+#' Copy Files From Source Folder
+#'
+#' Function to copy files from a subfolder
+#' in a source folder to a new subfolder in
+#' a user-defined source folder in the current
+#' directory.
+#'
+#' @param path_to_folder A character string,
+#'   the absolute path to the source folder.
+#' @param renviron An optional character
+#'   string, the environmental variable with
+#'   the path to the source folder.
+#' @param match_subfolder An optional character
+#'   string, a pattern to match against for selecting
+#'   a desired subfolder. Otherwise, function takes
+#'   most recent subfolder.
+#' @param new_folder A character string, the
+#'   name of the folder in which to store the
+#'   copied files for the current directory.
+#'
+#' @returns As a side effect copies files to a
+#' new subfolder in the current directory.
+#'
+#' @export
+
+copy_from_source <- function( path_to_source = '',
+                              renviron = 'FOLDER_SOURCE',
+                              match_subfolder = '',
+                              new_folder = 'Source' ) {
+
+  # Path to source folder from .renviron file
+  if ( path_to_source == '' ) {
+
+    path_to_source <- Sys.getenv(
+      renviron
+    )
+
+    # Close 'Path to source folder from .renviron file'
+  }
+
+  # Subfolders
+  chr_subfolders <- dir(
+    path = path_to_source
+  )
+
+  # Select specific subfolder
+  if ( chr_match_subfolder != '' ) {
+
+    chr_subfolder <- chr_subfolders[
+      grepl(
+        match_subfolder,
+        chr_subfolders,
+        fixed = TRUE
+      )
+    ][1]
+
+    # Close 'Select specific subfolder'
+  } else {
+
+    # Take most recent subfolder
+    chr_subfolder <- tail( sort( chr_subfolders ), n = 1 )
+
+    # Close else for 'Select specific subfolder'
+  }
+
+  # Paths to original files
+  chr_path_to_files <- paste0(
+    chr_path_to_source, '/', chr_subfolder, '/',
+    dir( path = paste0( chr_path_to_source, '/', chr_subfolder ) )
+  )
+  # Paths for copied files
+  chr_path_to_copies <- paste0(
+    getwd(), '/',
+    new_folder, '/',
+    dir( path = paste0( chr_path_to_source, '/', chr_subfolder ) )
+  )
+
+  # Copy files to local machine
+  lgc_success <- file.copy(
+    from = chr_path_to_files, to = chr_path_to_copies
+  )
+
+  # Error message
+  if ( !lgc_success ) {
+    stop( 'Failed to copy files' )
   }
 
 }
@@ -2634,7 +2725,7 @@ templates <- function(type = NULL, val = NULL) {
       "# \n",
       "# @details ... \n",
       "# \n",
-      "# @return ... \n",
+      "# @returns ... \n",
       "# \n",
       "# @examples \n",
       "# Forthcoming \n"
@@ -2724,7 +2815,7 @@ templates <- function(type = NULL, val = NULL) {
       "#' \n",
       "#' @details\n",
       "#' \n",
-      "#' @return Output.\n",
+      "#' @returns Output.\n",
       "#' \n",
       "#' @examples\n",
       "#' # Examples\n",
