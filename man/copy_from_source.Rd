@@ -7,7 +7,7 @@
 copy_from_source(
   path_to_source = "",
   renviron = "FOLDER_SOURCE",
-  match_subfolder = "",
+  subfolder = "",
   new_folder = "Source"
 )
 }
@@ -16,21 +16,21 @@ copy_from_source(
 string, the environmental variable with
 the path to the source folder.}
 
-\item{match_subfolder}{An optional character
-string, a pattern to match against for selecting
-a desired subfolder. Otherwise, function takes
-most recent subfolder.}
+\item{subfolder}{An optional character
+string, a subfolder to copy files from.
+Partial matching of subfolder names is possible.}
 
-\item{new_folder}{A character string, the
-name of the folder in which to store the
-copied files for the current directory.}
+\item{new_folder}{An optional character string,
+the name of a subfolder to copy files to -
+if it does not exist, the function will
+create the subfolder.}
 
 \item{path_to_folder}{A character string,
 the absolute path to the source folder.}
 }
 \value{
-As a side effect copies files to a
-new subfolder in the current directory.
+As a side effect copies files and
+folders.
 }
 \description{
 Function to copy files from a subfolder

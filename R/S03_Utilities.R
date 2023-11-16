@@ -1136,22 +1136,22 @@ source_R_scripts = function( files_to_include = NULL,
 #' @param renviron An optional character
 #'   string, the environmental variable with
 #'   the path to the source folder.
-#' @param match_subfolder An optional character
-#'   string, a pattern to match against for selecting
-#'   a desired subfolder. Otherwise, function takes
-#'   most recent subfolder.
-#' @param new_folder A character string, the
-#'   name of the folder in which to store the
-#'   copied files for the current directory.
+#' @param subfolder An optional character
+#'   string, a subfolder to copy files from.
+#'   Partial matching of subfolder names is possible.
+#' @param new_folder An optional character string,
+#'   the name of a subfolder to copy files to -
+#'   if it does not exist, the function will
+#'   create the subfolder.
 #'
-#' @returns As a side effect copies files to a
-#' new subfolder in the current directory.
+#' @returns As a side effect copies files and
+#' folders.
 #'
 #' @export
 
 copy_from_source <- function( path_to_source = '',
                               renviron = 'FOLDER_SOURCE',
-                              match_subfolder = '',
+                              subfolder = '',
                               new_folder = 'Source' ) {
 
   # Path to source folder from .renviron file
@@ -1164,51 +1164,93 @@ copy_from_source <- function( path_to_source = '',
     # Close 'Path to source folder from .renviron file'
   }
 
-  # Subfolders
-  chr_subfolders <- dir(
-    path = path_to_source
-  )
+  # If a subfolder is specified
+  if ( subfolder != '' ) {
 
-  # Select specific subfolder
-  if ( match_subfolder != '' ) {
-
-    chr_subfolder <- chr_subfolders[
+    subfolders <- dir(
+      path = path_to_source
+    )
+    subfolder <- subfolders[
       grepl(
-        match_subfolder,
-        chr_subfolders,
+        subfolder,
+        subfolders,
         fixed = TRUE
       )
     ][1]
 
-    # Close 'Select specific subfolder'
-  } else {
+    path_to_source <- paste0(
+      path_to_source, '/', subfolder
+    )
 
-    # Take most recent subfolder
-    chr_subfolder <- tail( sort( chr_subfolders ), n = 1 )
-
-    # Close else for 'Select specific subfolder'
+    # Close 'If a subfolder is specified'
   }
 
-  # Paths to original files
-  chr_path_to_files <- paste0(
-    path_to_source, '/', chr_subfolder, '/',
-    dir( path = paste0( path_to_source, '/', chr_subfolder ) )
+  # List files in source folder
+  files_and_folders_to_copy <- list.files(
+    path = path_to_source,
+    recursive = TRUE,
+    include.dirs = TRUE
   )
-  # Paths for copied files
-  chr_path_to_copies <- paste0(
-    getwd(), '/',
-    new_folder, '/',
-    dir( path = paste0( path_to_source, '/', chr_subfolder ) )
+
+  # If files being copied into new folder
+  if ( new_folder != '' ) {
+
+    # Check if folder exists
+    if ( !new_folder %in% dir() ) {
+
+      # Create folder
+      dir.create( new_folder )
+
+      # Close 'Check if folder exists'
+    }
+
+    new_folder <- paste0( new_folder, '/' )
+
+    # Close 'If files being copied into new folder'
+  }
+
+  new_path_for_copied_files_and_folders <- paste0(
+    new_folder, files_and_folders_to_copy
   )
+
+  # Check if a subfolder is present
+  lgc_is_directory <- !grepl(
+    '.', files_and_folders_to_copy, fixed = TRUE
+  )
+
+  # If subfolder is present
+  if ( any( lgc_is_directory ) ) {
+
+    # Create subfolder in new location
+    dir.create(
+      new_path_for_copied_files_and_folders[lgc_is_directory]
+    )
+
+    # Close 'If subfolder is present'
+  }
 
   # Copy files to local machine
   lgc_success <- file.copy(
-    from = chr_path_to_files, to = chr_path_to_copies
+    from = paste0(
+      path_to_source, '/',
+      files_and_folders_to_copy[!lgc_is_directory]
+    ),
+    to = new_path_for_copied_files_and_folders[!lgc_is_directory]
   )
 
-  # Error message
-  if ( !lgc_success ) {
+  # Error and warning messages
+  if ( any(lgc_success) ) {
+
+    if ( !all(lgc_success) ) {
+      warning( 'Some files or folders were not copied' )
+    }
+
+    # Close 'Error and warning messages'
+  } else {
+
     stop( 'Failed to copy files' )
+
+    # Close else for 'Error and warning messages'
   }
 
 }
