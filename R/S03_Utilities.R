@@ -1170,7 +1170,7 @@ copy_from_source <- function( path_to_source = '',
   )
 
   # Select specific subfolder
-  if ( chr_match_subfolder != '' ) {
+  if ( match_subfolder != '' ) {
 
     chr_subfolder <- chr_subfolders[
       grepl(
