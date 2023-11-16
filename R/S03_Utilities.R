@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-11-15
+# Last updated 2023-11-16
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -50,9 +50,8 @@
 # 7) Functions for writing code
 #   7.1) create_table_of_contents
 #   7.2) create_vector
-#   7.3) dnr
-#   7.4) section
-#   7.5) templates
+#   7.3) section
+#   7.4) templates
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -1126,60 +1125,60 @@ source_R_scripts = function( files_to_include = NULL,
 #### 2.8) copy_from_source ####
 #' Copy Files From Source Folder
 #'
-#' Function to copy files from a subfolder
-#' in a source folder to a new subfolder in
-#' a user-defined source folder in the current
-#' directory.
+#' Function to copy files from a subfolder in a
+#' source folder to a new subfolder in a user-defined
+#' source folder in the current directory.
 #'
-#' @param path_to_folder A character string,
-#'   the absolute path to the source folder.
-#' @param renviron An optional character
-#'   string, the environmental variable with
-#'   the path to the source folder.
-#' @param subfolder An optional character
-#'   string, a subfolder to copy files from.
-#'   Partial matching of subfolder names is possible.
-#' @param new_folder An optional character string,
-#'   the name of a subfolder to copy files to -
-#'   if it does not exist, the function will
-#'   create the subfolder.
+#' @param source_path A character string, the
+#'   absolute path to the source folder.
+#' @param destination_path A character string,
+#'   the path to the folder to which files should
+#'   be copied - if blank, uses the current
+#'   working directory.
+#' @param source_subfolder An optional character
+#'   string, the full or partial name of a
+#'   subfolder in source location with the files
+#'   to copy.
+#' @param environment_var An optional character
+#'   string, the environmental variable with the
+#'   path to the source folder.
 #'
-#' @returns As a side effect copies files and
-#' folders.
+#' @returns As a side effect copies files to a to
+#' the specified destination folder.
 #'
 #' @export
 
-copy_from_source <- function( path_to_source = '',
-                              renviron = 'FOLDER_SOURCE',
-                              subfolder = '',
-                              new_folder = 'Source' ) {
+copy_from_source <- function( source_path = '',
+                              destination_path = '',
+                              source_subfolder = '',
+                              environment_var = 'FOLDER_SOURCE' ) {
 
-  # Path to source folder from .renviron file
-  if ( path_to_source == '' ) {
+  # Path to source folder from environmental variable
+  if ( source_path == '' ) {
 
-    path_to_source <- Sys.getenv(
-      renviron
+    source_path <- Sys.getenv(
+      environment_var
     )
 
-    # Close 'Path to source folder from .renviron file'
+    # Close 'Path to source folder from environmental variable'
   }
 
   # If a subfolder is specified
-  if ( subfolder != '' ) {
+  if ( source_subfolder != '' ) {
 
     subfolders <- dir(
-      path = path_to_source
+      path = source_path
     )
-    subfolder <- subfolders[
+    source_subfolder <- subfolders[
       grepl(
-        subfolder,
+        source_subfolder,
         subfolders,
         fixed = TRUE
       )
     ][1]
 
-    path_to_source <- paste0(
-      path_to_source, '/', subfolder
+    source_path <- paste0(
+      source_path, '/', source_subfolder
     )
 
     # Close 'If a subfolder is specified'
@@ -1187,30 +1186,21 @@ copy_from_source <- function( path_to_source = '',
 
   # List files in source folder
   files_and_folders_to_copy <- list.files(
-    path = path_to_source,
+    path = source_path,
     recursive = TRUE,
     include.dirs = TRUE
   )
 
-  # If files being copied into new folder
-  if ( new_folder != '' ) {
+  # By default use current working directory
+  if ( destination_path == '' ) {
 
-    # Check if folder exists
-    if ( !new_folder %in% dir() ) {
+    destination_path <- getwd()
 
-      # Create folder
-      dir.create( new_folder )
-
-      # Close 'Check if folder exists'
-    }
-
-    new_folder <- paste0( new_folder, '/' )
-
-    # Close 'If files being copied into new folder'
+    # Close 'By default use current working directory'
   }
 
   new_path_for_copied_files_and_folders <- paste0(
-    new_folder, files_and_folders_to_copy
+    destination_path, '/', files_and_folders_to_copy
   )
 
   # Check if a subfolder is present
@@ -1222,8 +1212,14 @@ copy_from_source <- function( path_to_source = '',
   if ( any( lgc_is_directory ) ) {
 
     # Create subfolder in new location
-    dir.create(
-      new_path_for_copied_files_and_folders[lgc_is_directory]
+    lgc_success <- sapply(
+      new_path_for_copied_files_and_folders[lgc_is_directory],
+      function( chr_folder ) {
+        dir.create(
+          chr_folder,
+          recursive = TRUE
+        )
+      }
     )
 
     # Close 'If subfolder is present'
@@ -1232,7 +1228,7 @@ copy_from_source <- function( path_to_source = '',
   # Copy files to local machine
   lgc_success <- file.copy(
     from = paste0(
-      path_to_source, '/',
+      source_path, '/',
       files_and_folders_to_copy[!lgc_is_directory]
     ),
     to = new_path_for_copied_files_and_folders[!lgc_is_directory]
@@ -2554,38 +2550,7 @@ create_vector <- function( x,
   cat( c( outer[1], out, outer[2] ) )
 }
 
-
-#### 7.3) dnr ####
-#' Do Not Run Multi-Line Code Segments
-#'
-#' Allows a user to write out multiple
-#' lines of R code that will not be run.
-#'
-#' @param x Any syntactically valid \code{R} expression.
-#'
-#' @examples
-#' # Will not run
-#' dnr({
-#'   print('Hello')
-#'   print('world')
-#' })
-#'
-#' # Can be used to also create
-#' # multi-line commments
-#' dnr("
-#' Here are multiple
-#' lines of text
-#' ")
-#'
-#' @export
-
-dnr <- function(x) {
-  if ( FALSE ) {
-    substitute(x)
-  }
-}
-
-#### 7.4) section ####
+#### 7.3) section ####
 #' Section Numbers for Tracking Progress
 #'
 #' Output section numbers to the console via
@@ -2637,7 +2602,7 @@ section <- function(x, run = TRUE,
   }
 }
 
-#### 7.5) templates ####
+#### 7.4) templates ####
 #' Create Templates for Annotations and Code
 #'
 #' Outputs a template of common annotations
@@ -2763,9 +2728,11 @@ templates <- function(type = NULL, val = NULL) {
       "# \n",
       "# ... \n",
       "# \n",
-      "# @param 'x' ... \n",
+      "# @param 'obj_x' An R object. \n",
       "# \n",
-      "# @details ... \n",
+      "# @details \n",
+      "# Prerequisites: \n",
+      "#   * The R package '?' (version ?) \n",
       "# \n",
       "# @returns ... \n",
       "# \n",

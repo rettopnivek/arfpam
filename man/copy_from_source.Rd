@@ -5,36 +5,36 @@
 \title{Copy Files From Source Folder}
 \usage{
 copy_from_source(
-  path_to_source = "",
-  renviron = "FOLDER_SOURCE",
-  subfolder = "",
-  new_folder = "Source"
+  source_path = "",
+  destination_path = "",
+  source_subfolder = "",
+  environment_var = "FOLDER_SOURCE"
 )
 }
 \arguments{
-\item{renviron}{An optional character
-string, the environmental variable with
-the path to the source folder.}
+\item{source_path}{A character string, the
+absolute path to the source folder.}
 
-\item{subfolder}{An optional character
-string, a subfolder to copy files from.
-Partial matching of subfolder names is possible.}
+\item{destination_path}{A character string,
+the path to the folder to which files should
+be copied - if blank, uses the current
+working directory.}
 
-\item{new_folder}{An optional character string,
-the name of a subfolder to copy files to -
-if it does not exist, the function will
-create the subfolder.}
+\item{source_subfolder}{An optional character
+string, the full or partial name of a
+subfolder in source location with the files
+to copy.}
 
-\item{path_to_folder}{A character string,
-the absolute path to the source folder.}
+\item{environment_var}{An optional character
+string, the environmental variable with the
+path to the source folder.}
 }
 \value{
-As a side effect copies files and
-folders.
+As a side effect copies files to a to
+the specified destination folder.
 }
 \description{
-Function to copy files from a subfolder
-in a source folder to a new subfolder in
-a user-defined source folder in the current
-directory.
+Function to copy files from a subfolder in a
+source folder to a new subfolder in a user-defined
+source folder in the current directory.
 }
