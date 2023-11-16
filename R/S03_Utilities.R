@@ -1191,14 +1191,14 @@ copy_from_source <- function( path_to_source = '',
 
   # Paths to original files
   chr_path_to_files <- paste0(
-    chr_path_to_source, '/', chr_subfolder, '/',
-    dir( path = paste0( chr_path_to_source, '/', chr_subfolder ) )
+    path_to_source, '/', chr_subfolder, '/',
+    dir( path = paste0( path_to_source, '/', chr_subfolder ) )
   )
   # Paths for copied files
   chr_path_to_copies <- paste0(
     getwd(), '/',
     new_folder, '/',
-    dir( path = paste0( chr_path_to_source, '/', chr_subfolder ) )
+    dir( path = paste0( path_to_source, '/', chr_subfolder ) )
   )
 
   # Copy files to local machine
