@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-11-16
+# Last updated 2023-11-29
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -38,6 +38,7 @@
 #   4.6) over
 #   4.7) print_table
 #   4.8) runs_in_sequence
+#   4.9) data_first
 # 5) Functions for strings
 #   5.1) align_strings
 #   5.2) format_numbers
@@ -1936,6 +1937,54 @@ print_table <- function(tbl, return = F) {
   # Initialize output
   out <- matrix(" ", nrow(tbl) + 1, ncol(tbl))
 
+  column_names <- colnames(tbl)
+
+  to_remove <- c(
+    'PRD',
+    'OUT',
+    'COL'
+  )
+
+  # Loop over elements to remove
+  for ( i in seq_along( to_remove ) ) {
+
+    column_names <- gsub(
+      to_remove[i], '', column_names
+    )
+
+    # Close 'Loop over elements to remove'
+  }
+
+  mat_find_replace <- rbind(
+    c( 'OPP', '(' ), # 1
+    c( 'CLP', ')' ), # 2
+    c( 'OPB', '[' ), # 3
+    c( 'CLB', ']' ), # 4
+    c( 'HPH', '-' ), # 5
+    c( 'CLN', ':' ), # 6
+    c( 'SMC', ';' ), # 7
+    c( 'PPE', '|' ), # 8
+    c( 'PLS', '+' ), # 9
+    c( 'EQL', '=' ), # 10
+    c( 'SLS', '/' ), # 11
+    c( 'HSH', '#' ), # 12
+    c( 'PRC', '%' ), # 13
+    c( 'AMP', '&' ), # 14
+    c( 'LSS', '<' ), # 15
+    c( 'GRT', '>' ), # 16
+    c( 'LTE', '\U2264' ), # 17
+    c( 'GTE', '\U2265' ), # 18
+    c( 'SP2', '\U00B2' ), # 19
+    c( 'ZZ', ' ' ) # 20
+  )
+
+  for ( i in 1:nrow( mat_find_replace ) ) {
+    column_names <- gsub(
+      mat_find_replace[i, 1], mat_find_replace[i, 2],
+      column_names, fixed = TRUE
+    )
+  }
+
   #< Loop over columns
   for (i in 1:ncol(tbl)) {
 
@@ -1943,7 +1992,7 @@ print_table <- function(tbl, return = F) {
     # in the table's column (including the column name)
     nc <- max(c(
       sapply(as.character(tbl[[i]]), nchar),
-      nchar(colnames(tbl)[i])
+      nchar(column_names[i])
     ))
 
     #<| Loop over rows
@@ -1954,7 +2003,7 @@ print_table <- function(tbl, return = F) {
         val <- as.character(tbl[[i]])[j - 1]
       } else {
         # Column name
-        val <- colnames(tbl)[i]
+        val <- column_names[i]
       }
 
       # Current number of characters
@@ -2087,6 +2136,37 @@ runs_in_sequence <- function( x, codes_for_hit = 1 ) {
   )
 
   return( out )
+}
+
+#### 4.9) data_first ####
+#' Adapt Functions to Take Data Argument First
+#'
+#' A function that ensures the first argument is
+#' always for 'data' - allows greater compatibility
+#' with the pipe operator.
+#'
+#' @param data_ob An R object to pass to a given
+#'   function's \code{data} argument.
+#' @param fun_to_apply An R function that has a
+#'   \code{data} argument (e.g., [stats::lm]).
+#' @param ... Additional arguments for the given function.
+#'
+#' @returns The associated output for the \code{fun_to_apply}
+#' function.
+#'
+#' @examples
+#' data( 'mtcars' )
+#' lm_fit <- data_first( mtcars, lm, formula = mpg ~ cyl )
+#' print( lm_fit )
+#'
+#' @export
+
+data_first <- function( data_obj, fun_to_apply, ... ) {
+
+  return(
+    fun_to_apply( ..., data = data_obj )
+  )
+
 }
 
 #### 5) Functions for strings ####
