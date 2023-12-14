@@ -4,29 +4,44 @@
 \alias{standardize}
 \title{Standardize Columns in a Data Frame or Matrix}
 \usage{
-standardize(x, y = NULL, columns = NULL, raw = FALSE, scaling = FALSE)
+standardize(
+  x,
+  y = NULL,
+  mean_sd = NULL,
+  raw = FALSE,
+  as_list = FALSE,
+  labels = c("X", "Y")
+)
 }
 \arguments{
 \item{x}{A data frame or matrix of numeric values.}
 
 \item{y}{A data frame or matrix of numeric values
-(must have the same column names as \code{x}).}
+(must have the same column names in same order
+as \code{x}).}
 
-\item{columns}{A character vector of column names,
-the subset of columns in \code{x} to standardize.}
+\item{mean_sd}{A list of two numeric vectors equal in
+length to the number of columns with the means and
+standard deviations, respectively, to use for scaling.}
 
-\item{raw}{Logical; if \code{TRUE}, uses the means and
-standard deviations stored in each column's
-attributes to restore scaled values to their
-original raw values.}
+\item{raw}{Logical; if \code{TRUE}, uses the means
+and standard deviations given in \code{mean_sd}
+to return the original raw values of \code{x}.}
 
-\item{scaling}{Logical; if \code{TRUE} returns
-the means and standard deviations for columns
-stored in their attributes.}
+\item{as_list}{Logical; if \code{TRUE} returns
+a named list with the scaled values of \code{x}
+(and \code{y} if provided) along with the means and
+standard deviations used for scaling. Automatically
+set to \code{TRUE} when \code{y} is provided.}
+
+\item{labels}{A character vector with the labels for
+the \code{x} and \code{y} data sets if returning a
+list.}
 }
 \value{
-A data frame or matrix with standardized
-columns.
+Either a scaled data frame or matrix or a list
+with the scaled values and the means and standard deviations
+used for scaling.
 }
 \description{
 Function to standardize (mean-center and scale
@@ -36,24 +51,27 @@ matrix or data frame.
 }
 \examples{
 # Create data frame
-x_raw <- matrix( rnorm( 1000, 100, 15 ), 100, 10 )
-colnames(x_raw) <- paste0( 'X', 1:10 )
-x_raw <- data.frame( x_raw )
+x_raw <- round( matrix( rnorm( 9, 100, 15 ), 3, 3 ) )
+colnames(x_raw) <- paste0( 'X', 1:3 )
+print(x_raw)
 
 # Standardize columns
 x <- standardize( x_raw )
+print(x)
 
 # Create second data frame with same
 # variables but new values
-y <- matrix( rnorm( 50*10, 50, 15 ), 50, 10 )
-colnames(y) <- paste0( 'X', 1:10 )
-y <- data.frame( y )
+y_raw <- round( matrix( rnorm( 9, 50, 15 ), 3, 3 ) )
+colnames(y_raw) <- paste0( 'X', 1:3 )
+print(y_raw)
 
-# Scale columns of y based on means and
-# standard deviations from x
-y <- standardize( x, y )
+# Scale columns of y_raw based on means and
+# standard deviations from x_raw
+lst <- standardize( x_raw, y_raw, labels = c('x', 'y') )
+y <- lst$Data$y
+print( y )
 
 # Undo scaling
-all( round( x_raw, 4 ) == round( standardize( x, raw = TRUE ), 4 ) )
+standardize( y, mean_sd = lst$Scaling, raw = TRUE )
 
 }

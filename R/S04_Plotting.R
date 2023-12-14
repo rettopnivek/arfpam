@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-01-13
+# Last updated 2023-12-14
 
 # Table of contents
 # 1) Utility functions for plotting
@@ -20,7 +20,7 @@
 #   2.1) draw_dots
 #   2.2) draw_lines
 #   2.3) draw_boxplots
-#   2.4)
+#   2.4) draw_borders_and_labels
 # 3) Functions to plot specific types of plots
 #   3.1) plot_histogram
 #   3.2) plot_correlation_heatmap
@@ -29,6 +29,8 @@
 #       3.2.2.1) draw_box
 #     3.2.3) Create figure
 #     3.2.4) Legends
+#   3.3) plot_forest
+#   3.4) plot_correlations
 
 #### 1) Utility functions for plotting ####
 
@@ -2450,6 +2452,428 @@ plot_forest <- function(values,
     title_x, side = 1, line = labels_position[3], cex = text_size[3],
     xpd = NA
   )
+
+}
+
+#### 3.4) plot_correlations ####
+#' General-purpose Function to Plot Correlations
+#'
+#' Function to plot either a) the upper triangle
+#' component of a correlation matrix, or b)
+#' a panel of correlations (e.g., between raw and
+#' component scores from a PCA, between predictors
+#' and different outcomes, etc.).
+#'
+#' @param dtf A data frame, a set of variables to
+#'   compute a correlation matrix over.
+#' @param R A matrix of correlations (must be supplied
+#'   if \code{dtf} is not provided, otherwise computed
+#'   automatically).
+#' @param n An integer, the sample size for the correlations
+#'   (computed automatically if \code{dtf} is provided).
+#' @param labels Either a character vector with the
+#'   labels for the rows of the correlation matrix, or a
+#'   list of character vectors with the labels for the
+#'   rows and columns, respectively, for the correlation
+#'   matrix.
+#' @param label_pos A numeric vector the x-axis adjustment
+#'   for row labels and the y-axis adjustment for column
+#'   labels, respectively.
+#' @param only_upper_tri A logical value, \code{TRUE} if
+#'   only the upper triangle of the correlation matrix
+#'   should be plotted.
+#' @param new A logical value; if \code{TRUE} a new plotting
+#'   window is created.
+#' @param width An integer value, the width in inches of the plot.
+#' @param height An integer value, the height in inches of the plot.
+#' @param margin A numeric vector, four values specifying the margins
+#'   of the plot in inches, giving the spacing for the bottom, left,
+#'   top, and right sides respectively.
+#' @param fill A character vector, the colors for negative and
+#'   positive correlations respectively.
+#' @param opaque A numeric value ranging from 0 to 1, with lower
+#'   values indicating greater translucency of the fill color.
+#' @param cex A numeric vector of two values, the text size for
+#'   the row/column labels and correlation values, respectively.
+#' @param digits An integer value, the number of digits to
+#'   round correlation values to.
+#' @param method A character string, the method to use for
+#'   multiple comparison adjustment (see [stats::p.adjust]).
+#' @param alpha A numeric value between 0 and 1, the cut-off
+#'   for statistical significance (default is 0.05).
+#' @param legend_pos A numeric vector of 3 values governing
+#'   the y-axis position and x-axis positions, respectively,
+#'   for the legend.
+#'
+#' @returns A plot of the correlations.
+#'
+#' @examples
+#' # Correlation matrix
+#' data(mtcars)
+#' plot_correlations( dtf = mtcars, new = FALSE )
+#'
+#' # Example based on PCA
+#'
+#' # Loading matrix
+#' lambda <- cbind(
+#'   c( runif( 4, .3, .9 ), rep( 0, 4 ) ),
+#'   c( rep( 0, 4 ), runif( 4, .3, .9 ) )
+#' )
+#' # Communalities
+#' D_tau <- diag( runif( 8, .5, 1.5 ) )
+#'
+#' cov_mat <- lambda %*% t( lambda ) + D_tau
+#' cor_mat <- cov2cor( cov_mat )
+#'
+#' set.seed( 341 ) # For reproducibility
+#' x <- MASS::mvrnorm( n = 200, mu = rep( 0, 8 ), Sigma = cor_mat )
+#' colnames(x) <- paste0( 'C', 1:8 )
+#' PCA <- principal_components_analysis( x )
+#'
+#' # Correlations between raw variables
+#' # and component scores from PCA
+#' plot_correlations(
+#'   R = PCA$Correlations$Train[, 1:2], n = 200,
+#'   labels = list(
+#'     paste0( 'Variable ', 1:8 ),
+#'     paste0( 'Comp. ', 1:2 )
+#'   ),
+#'   only_upper_tri = F, margin = c( .25, 2, .25, .25 ),
+#'   legend_pos = c( 0, 0, -.25 ),
+#'   new = FALSE
+#' )
+#'
+#' @export
+
+plot_correlations <- function( dtf = NULL,
+                               R = NULL,
+                               n = NULL,
+                               labels = NULL,
+                               label_pos = c( .2, .25 ),
+                               only_upper_tri = TRUE,
+                               new = TRUE,
+                               width = 5,
+                               height = 5,
+                               margin = NULL,
+                               fill = c( "#E69F00", "#56B4E9" ),
+                               opaque = .4,
+                               cex = c( .8, .8 ),
+                               value = TRUE,
+                               digits = 2,
+                               method = 'BH',
+                               alpha = .05,
+                               legend_pos = c( 0, .5, 0 ) ) {
+
+  # If data frame is provided
+  if ( !is.null( dtf ) ) {
+
+    is_na <- apply(
+      dtf, 1, function(x) any( is.na(x) )
+    )
+    dtf <- dtf[!is_na, ]
+
+    if ( any( is_na ) ) {
+      warning(
+        paste0( 'Excluded ', sum(is_na), ' rows due to NA values' )
+      )
+    }
+
+    R <- cor( dtf )
+    n <- nrow( dtf )
+
+    # Close 'If data frame is provided'
+  }
+
+  # Variable labels
+  if ( is.null( labels ) ) {
+
+    lst_labels <- list(
+      rows = paste0( 1:nrow(R), ') ', rownames( R ) ),
+      cols = 1:ncol( R )
+    )
+
+    # Close 'Variable labels'
+  } else {
+
+    # If list is provided
+    if ( is.list( labels ) ) {
+
+      lst_labels <- list(
+        rows = labels[[1]],
+        cols = labels[[2]]
+      )
+
+      # Close 'If list is provided'
+    } else {
+
+      lst_labels <- list(
+        rows = labels,
+        cols = 1:ncol( R )
+      )
+
+      # Close else for 'If list is provided'
+    }
+
+    # Close else 'Variable labels'
+  }
+
+  # Check if correlation matrix exists
+  if ( is.null(R) ) {
+
+    stop( "Must provide data frame 'dtf' or correlation matrix 'R'" )
+
+    # Close 'Check if correlation matrix exists'
+  }
+
+  int_rows <- nrow( R )
+  int_cols <- ncol( R )
+
+  # Plot upper triangle
+  if ( only_upper_tri ) {
+
+    int_row_index <- 1:( int_rows - 1 )
+
+    lst_col_index <- lapply(
+      int_row_index, function(j) {
+        return( (j+1):int_cols )
+      }
+    )
+
+    lst_labels[[2]][1] <- ''
+
+    # Close 'Plot upper triangle'
+  } else {
+
+    int_row_index <- 1:int_rows
+
+    lst_col_index <- lapply(
+      int_row_index, function(j) {
+        return( 1:int_cols )
+      }
+    )
+
+    # Close else for 'Plot upper triangle'
+  }
+
+  # Initialize matrix of p-values
+  mat_p <- matrix( NA, nrow(R), ncol(R) )
+
+  # If sample size is provided
+  if ( !is.null(n) ) {
+
+    # Loop over rows
+    for ( j in seq_along( int_row_index ) ) {
+
+      # Loop over columns
+      for ( k in seq_along( lst_col_index[[j]] ) ) {
+
+        cr <- int_row_index[j]
+        cc <- lst_col_index[[j]][k]
+
+        r <- R[ cr, cc ]
+
+        z <- atanh(r)
+        z.se <- 1/sqrt( n - 3 )
+
+        mat_p[ cr, cc ] <- pt(
+          abs( z/z.se ), df = n - 1, lower.tail = F
+        )*2
+
+        # Close 'Loop over columns'
+      }
+
+      # Close 'Loop over rows'
+    }
+
+    # Adjust for multiple comparisons
+    if ( method != '' ) {
+      mat_p[ upper.tri(mat_p) ] <- p.adjust(
+        mat_p[ upper.tri(mat_p) ],
+        method = method
+      )
+
+      # Close 'Adjust for multiple comparisons'
+    }
+
+    # Close 'If sample size is provided'
+  }
+
+  # Function to add square with correlation magnitude
+  draw_square <- function( r,
+                           j,
+                           k,
+                           value,
+                           p ) {
+
+    fill_col <- fill[1]
+    if ( r > 0 ) fill_col <- fill[2]
+
+    r <- abs(r)
+
+    x <- c( -1, -1, 0, 0 )
+    y <- c( -1, -1 + r, -1 + r, -1 )
+
+    polygon(
+      x + k, y + j,
+      col = arfpam::col_to_hex( fill_col, opaque ), border = NA
+    )
+
+    polygon(
+      x + k, c( -1, 0, 0, -1 ) + j, col = NA, border = 'black'
+    )
+
+    # If p-value provided
+    if ( !is.na(p) ) {
+
+      # If non-significant
+      if ( p > alpha ) {
+
+        segments(
+          -1 + k,
+          -1 + j,
+          k,
+          j,
+          col = 'grey40'
+        )
+
+        # Close 'If non-significant'
+      }
+
+      # Close 'If p-value provided'
+    }
+
+    # If correlation value should be displayed
+    if ( value ) {
+
+      text(
+        -1 + k + .5, -1 + j + .5,
+        round( r, digits ) |> format( nsmall = digits ),
+        cex = cex[2]
+      )
+
+      # Close 'If correlation value should be displayed'
+    }
+
+  }
+
+  # New plotting window
+  if ( new ) {
+
+    x11( width = width, height = height )
+
+    # Close 'New plotting window'
+  }
+
+  # Default margin
+  if ( is.null(margin) ) {
+
+    num_spacing <- c(
+      (height * .1)/2, # Bottom/Top
+      width - height*.9 - (height * .1)/2  # Left
+    )
+
+    margin <- num_spacing[ c( 1, 2, 1, 1 ) ]
+
+    # Close 'Default margin'
+  }
+
+  # Plotting dimensions
+  xl <- c( 0, int_cols )
+  yl <- c( 0, int_rows )
+
+  par( mai = margin )
+
+  # Create a blank plot
+  plot(
+    xl, yl, type = 'n',
+    xaxt = 'n', yaxt = 'n',
+    xlab = '', ylab = '',
+    bty = 'n'
+  )
+
+  # Loop over rows
+  for ( j in seq_along( int_row_index ) ) {
+
+    # Loop over columns
+    for ( k in seq_along( lst_col_index[[j]] ) ) {
+
+      draw_square(
+        R[ int_row_index[j], lst_col_index[[j]][k] ],
+        rev( 1:int_rows )[ int_row_index[j] ],
+        lst_col_index[[j]][k],
+        value,
+        mat_p[ int_row_index[j], lst_col_index[[j]][k] ]
+      )
+
+      # Close 'Loop over columns'
+    }
+
+    # Add labels for rows
+    text(
+      lst_col_index[[j]][1] - 1 - label_pos[1],
+      rev( 1:int_rows )[ int_row_index[j] ] - .5,
+      lst_labels[[1]][j],
+      cex = cex[1],
+      xpd = NA,
+      pos = 2
+    )
+
+    # Close 'Loop over rows'
+  }
+
+  # Add final label for rows
+  if ( only_upper_tri ) {
+
+    text(
+      int_cols - .5,
+      1 - .5,
+      lst_labels[[1]][int_rows],
+      cex = cex[1]
+    )
+
+    # Close 'Add final label for rows'
+  }
+
+  # Add labels for columns
+  for ( k in 1:ncol( R ) ) {
+
+    text(
+      k - .5,
+      int_rows + label_pos[2],
+      lst_labels[[2]][k],
+      cex = cex[1],
+      xpd = NA
+    )
+
+    # Close 'Add labels for columns'
+  }
+
+  legend(
+    int_rows*legend_pos[2], int_cols*legend_pos[1],
+    c( 'Negative', 'Positive' ),
+    fill = c(
+      arfpam::col_to_hex( fill[1], opaque ),
+      arfpam::col_to_hex( fill[2], opaque )
+    ),
+    horiz = TRUE,
+    cex = cex[1],
+    bty = 'n',
+    xpd = NA
+  )
+
+  # If p-values provided
+  if ( any( !is.na( mat_p ) ) ) {
+
+    legend(
+      int_rows*legend_pos[3], int_cols*legend_pos[1],
+      paste0( '\U2215', ' p > ', alpha ),
+      cex = cex[1],
+      bty = 'n',
+      xpd = NA
+    )
+
+    # Close 'If p-values provided'
+  }
 
 }
 

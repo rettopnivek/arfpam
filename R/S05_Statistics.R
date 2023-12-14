@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-05-24
+# Last updated 2023-12-14
 
 # Table of contents
 # 1) sem
@@ -47,13 +47,14 @@
 #' sem(x)
 #' @export
 
-sem <- function(x, na.rm = TRUE) {
+sem <- function( x,
+                 na.rm = TRUE) {
 
-  #< Remove missing values
+  # Remove missing values
   if (na.rm) {
     x <- x[!is.na(x)]
 
-    # > Close conditional
+    # Close 'Remove missing values'
   }
 
   return(sd(x) / sqrt(length(x)))
@@ -112,48 +113,58 @@ sem <- function(x, na.rm = TRUE) {
 #' statistic(iris$wrong_name, default = 0)
 #' @export
 
-statistic <- function(x,
-                      f = length,
-                      include = NULL,
-                      exclude = NULL,
-                      na.rm = T,
-                      default = NA,
-                      ...) {
+statistic <- function( x,
+                       f = length,
+                       include = NULL,
+                       exclude = NULL,
+                       na.rm = T,
+                       default = NA,
+                       ... ) {
 
   # Initialize output
   out <- default
 
-  #< If there is any data
+  # If there is any data
   if (length(x) > 0) {
 
-    #<| If no logical vector is provided
+    # If no logical vector is provided
     if (is.null(include)) {
+
       include <- rep(T, length(x))
-      #|> Close conditional
+
+      # Close 'If no logical vector is provided'
     }
 
-    #|< If categories to exclude are included
+    # If categories to exclude are included
     if (!is.null(exclude)) {
+
       include <- include & !(x %in% exclude)
-      #|> Close conditional
+
+      # Close 'If categories to exclude are included'
     }
 
-    #|< If NA values should be removed
+    # If NA values should be removed
     if (na.rm) {
+
       include <- include & !is.na(x)
-      #|> Close conditional
+
+      # Close 'If NA values should be removed'
     } else {
+
       include <- include | is.na(x)
-      #|> Close conditional
+
+      # Close 'If NA values should be removed'
     }
 
-    #<| If any data remains, apply function
+    # If any data remains apply function
     if (any(include)) {
+
       out <- f(x[include], ...)
-      #|> Close conditional
+
+      # Close 'If any data remains apply function'
     }
 
-    # > Close conditional
+    # Close 'If there is any data'
   }
 
   return(out)
@@ -212,23 +223,29 @@ statistic <- function(x,
 #' hist(z)
 #' @export
 
-boxcox_transform <- function(x,
-                             outcome = NULL,
-                             parameter_grid = seq(-3, 3, .01),
-                             output = TRUE) {
+boxcox_transform <- function( x,
+                              outcome = NULL,
+                              parameter_grid = seq(-3, 3, .01),
+                              output = TRUE ) {
 
-  #< If data frame with predictors is provided
+  # If data frame with predictors is provided
   if (is.data.frame(x)) {
 
-    # Prep output and formula for 'lm' call
+    # Prep output and formula for lm call
     if (is.null(outcome)) {
+
       frm <- paste0(
         colnames(x)[1], " ~ ."
       )
       transformed_x <- x[[colnames(x)[1]]]
+
+      # Close 'Prep output and formula for lm call'
     } else {
+
       frm <- paste0(outcome, "~ .")
       transformed_x <- x[[outcome]]
+
+      # Close else for 'Prep output and formula for lm call'
     }
 
     # Maximum likelihood estimation via grid search
@@ -242,7 +259,7 @@ boxcox_transform <- function(x,
     # Extract maximum likelihood estimate
     param <- xy$x[which.max(xy$y)]
 
-    # > Close conditional
+    # Close 'If data frame with predictors is provided'
   } else {
 
     # Convert to data frame to avoid scoping issues
@@ -262,41 +279,42 @@ boxcox_transform <- function(x,
     # Extract maximum likelihood estimate
     param <- xy$x[which.max(xy$y)]
 
-    # > Close conditional
+    # Close else for 'If data frame with predictors is provided'
   }
 
 
-  #< ...
+  # If returning transformed values
   if (output) {
 
-    #<|
+    # If power transformation
     if (param != 0) {
 
       # Power transformation
       transformed_x <- (transformed_x^param - 1) / param
 
-      #|> Close conditional
+      # Close 'If power transformation'
     } else {
 
       # Log-transform
       transformed_x <- log(transformed_x)
 
-      #|> Close conditional
+      # Close else for 'If power transformation'
     }
 
+    # Add maximum likelihood estimate as attribute
     attributes(transformed_x) <- list(
       boxcox_parameter = param
     )
 
     out <- transformed_x
 
-    # > Close conditional
+    # Close 'If returning transformed values'
   } else {
 
     # Return maximum likelihood estimate
     out <- param
 
-    # > Close conditional
+    # Close else for 'If returning transformed values'
   }
 
   return(out)
@@ -390,12 +408,12 @@ boxcox_transform <- function(x,
 #' pvalues(x, alternative = "greater")
 #' @export
 
-pvalues <- function(x,
-                    comparison = 0,
-                    alternative = "two-sided",
-                    digits = 3,
-                    string = FALSE,
-                    pad = FALSE) {
+pvalues <- function( x,
+                     comparison = 0,
+                     alternative = "two-sided",
+                     digits = 3,
+                     string = FALSE,
+                     pad = FALSE ) {
 
   # Initialize output
   out <- NULL
@@ -403,81 +421,114 @@ pvalues <- function(x,
   # Assume if size of x equals 1 that
   # it is a numeric p-value
 
-  #< Check length
+  # Check length
   if (length(x) == 1) {
 
-    #<| Check if valid p-value
+    # Check if valid p-value
     if (x >= 0 &
       x <= 1) {
 
       # Force argument 'string' to be TRUE
       string <- TRUE
 
-      #|> Close conditional 'Check if valid p-value'
+      # Close 'Check if valid p-value'
     } else {
+
       stop("p-values must be between 0 and 1",
         call. = FALSE
       )
 
-      #|> Close else for 'Check if valid p-value'
+      # Close else for 'Check if valid p-value'
     }
 
-    # > Close conditional 'Check length'
+    # Close 'Check length'
   }
 
-  #< Estimate p-value from Monte Carlo samples
+  # Estimate p-value from Monte Carlo samples
   if (!string) {
+
     check <- FALSE
 
     # Two-sided test
     if (alternative == "two-sided") {
+
       check <- TRUE
 
+      # Lower tail
       if (median(x) > comparison) {
+
         out <- mean(x < comparison)
+
+        # Close 'Lower tail'
       } else {
+
         out <- mean(x > comparison)
+
+        # Close 'Lower tail'
       }
+
       out <- out * 2
+
+      # Close 'Two-sided test'
     }
 
     # Test if greater than comparison
     if (alternative == "greater") {
+
       check <- TRUE
 
       out <- mean(x < comparison)
+
+      # Close 'Test if greater than comparison'
     }
 
     # Test if less than comparison
     if (alternative == "less") {
+
       check <- TRUE
 
       out <- mean(x > comparison)
+
+      # Close 'Test if less than comparison'
     }
 
-    # Informative error message if
-    # 'alternative' mis-specified
+    # If alternative argument misspecified
     if (!check) {
+
       err_msg <- paste(
         "Please specify 'alternative' as",
         "either 'two-sided', 'greater', or",
         "'less'."
       )
+
       stop(err_msg)
+
+      # Close 'If alternative argument misspecified'
     }
 
-    # > Close conditional 'Estimate p-value from Monte Carlo samples'
+    # Close 'Estimate p-value from Monte Carlo samples'
   }
 
-  #< Convert to formatted string
+  # Convert to formatted string
   if (string) {
+
+    # Pad end
     if (pad) {
+
       p <- format(round(x, digits = digits), nsmall = digits)
+
+      # Close 'Pad end'
     } else {
+
       p <- format(round(x, digits = digits))
+
+      # Close else for 'Pad end'
     }
 
-    if (round(x, digits) == 0) {
+    # If rounds to zero
+    if ( round(x, digits) == 0 ) {
+
+      # Specify as less than next smallest value
       nd <- digits - 1
       nd <- paste(
         "0.",
@@ -486,11 +537,16 @@ pvalues <- function(x,
         sep = ""
       )
       out <- paste("p < ", nd, sep = "")
+
+      # Close 'If rounds to zero'
     } else {
+
       out <- paste0("p = ", p)
+
+      # Close else for 'If rounds to zero'
     }
 
-    # > Close conditional 'Convert to formatted string'
+    # Close 'Convert to formatted string'
   }
 
   return(out)
@@ -730,17 +786,17 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
   # Initialize output
   out <- syntax
 
-  #< Sample size
+  # Sample size
   if (grepl("[[N]]", syntax, fixed = TRUE)) {
     n <- length(x)
     if (na.rm) length(x[!is.na(x)])
 
     out <- gsub("[[N]]", n, out, fixed = TRUE)
 
-    #> Close conditional 'Sample size'
+    # Close 'Sample size'
   }
 
-  #< Mean
+  # Mean
   if (grepl("[[M]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -757,10 +813,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[M]]", m, out, fixed = TRUE)
 
-    #> Close conditional 'Mean'
+    # Close 'Mean'
   }
 
-  #< Standard deviation
+  # Standard deviation
   if (grepl("[[SD]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -777,11 +833,11 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[SD]]", s, out, fixed = TRUE)
 
-    #> Close conditional 'Standard deviation'
+    # Close 'Standard deviation'
   }
 
 
-  #< Standard error
+  # Standard error
   if (grepl("[[SE]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -800,10 +856,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[SE]]", se, out, fixed = TRUE)
 
-    #> Close conditional 'Standard error'
+    # Close 'Standard error'
   }
 
-  #< Minimum
+  # Minimum
   if (grepl("[[Mn]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -820,11 +876,12 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[Mn]]", mn, out, fixed = TRUE)
 
-    #> Close conditional 'Minimum'
+    # Close 'Minimum'
   }
 
-  #< 1st quartile
-  if (grepl("[[Q1]]", syntax, fixed = TRUE)) {
+
+  # 1st quartile
+  if ( grepl("[[Q1]]", syntax, fixed = TRUE) ) {
 
     # Default number of digits to round to
     if (is.null(digits)) {
@@ -840,10 +897,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[Q1]]", q1, out, fixed = TRUE)
 
-    #> Close conditional '1st quartile'
+    # Close '1st quartile'
   }
 
-  #< Median
+  # Median
   if (grepl("[[Md]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -860,10 +917,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[Md]]", md, out, fixed = TRUE)
 
-    #> Close conditional 'Median'
+    # Close 'Median'
   }
 
-  #< 3rd quartile
+  # 3rd quartile
   if (grepl("[[Q3]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -880,10 +937,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[Q3]]", q3, out, fixed = TRUE)
 
-    #> Close conditional '3rd quartile'
+    # Close '3rd quartile'
   }
 
-  #< Maximum
+  # Maximum
   if (grepl("[[Mx]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -900,11 +957,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[Mx]]", mx, out, fixed = TRUE)
 
-    #> Close conditional 'Maximum'
+    # Close 'Maximum'
   }
 
-
-  #< Inter-quartile range
+  # Inter-quartile range
   if (grepl("[[IQR]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -923,10 +979,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[IQR]]", iqr, out, fixed = TRUE)
 
-    #> Close conditional 'Inter-quartile range'
+    # Close 'Inter-quartile range'
   }
 
-  #< Counts/frequencies
+  #<Counts/frequencies
   if (grepl("[[C]]", syntax, fixed = TRUE)) {
     if (is.null(categories)) {
       categories <- TRUE
@@ -936,10 +992,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[C]]", cnt, out, fixed = TRUE)
 
-    #> Close conditional 'Counts/frequencies'
+    # Close 'Counts/frequencies'
   }
 
-  #< Percent
+  # Percent
   if (grepl("[[P]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -961,10 +1017,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[P]]", per, out, fixed = TRUE)
 
-    #> Close conditional 'Percent'
+    # Close 'Percent'
   }
 
-  #< Proportion
+  # Proportion
   if (grepl("[[Pr]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
@@ -985,10 +1041,10 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
 
     out <- gsub("[[Pr]]", prp, out, fixed = TRUE)
 
-    #> Close conditional 'Proportion'
+    # Close 'Proportion'
   }
 
-  #< Custom function
+  # Custom function
   if (!is.null(f)) {
     val <- f(x, ...)
 
@@ -1010,7 +1066,7 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
       )
     }
 
-    #> Close conditional 'Custom function'
+    # Close conditional 'Custom function'
   }
 
   return(out)
@@ -1061,185 +1117,183 @@ bounds <- function( width ) {
 #'
 #' @param x A data frame or matrix of numeric values.
 #' @param y A data frame or matrix of numeric values
-#'   (must have the same column names as \code{x}).
-#' @param columns A character vector of column names,
-#'   the subset of columns in \code{x} to standardize.
-#' @param raw Logical; if \code{TRUE}, uses the means and
-#'   standard deviations stored in each column's
-#'   attributes to restore scaled values to their
-#'   original raw values.
-#' @param scaling Logical; if \code{TRUE} returns
-#'   the means and standard deviations for columns
-#'   stored in their attributes.
+#'   (must have the same column names in same order
+#'   as \code{x}).
+#' @param mean_sd A list of two numeric vectors equal in
+#'   length to the number of columns with the means and
+#'   standard deviations, respectively, to use for scaling.
+#' @param raw Logical; if \code{TRUE}, uses the means
+#'   and standard deviations given in \code{mean_sd}
+#'   to return the original raw values of \code{x}.
+#' @param as_list Logical; if \code{TRUE} returns
+#'   a named list with the scaled values of \code{x}
+#'   (and \code{y} if provided) along with the means and
+#'   standard deviations used for scaling. Automatically
+#'   set to \code{TRUE} when \code{y} is provided.
+#' @param labels A character vector with the labels for
+#'   the \code{x} and \code{y} data sets if returning a
+#'   list.
 #'
-#' @return A data frame or matrix with standardized
-#' columns.
+#' @returns Either a scaled data frame or matrix or a list
+#' with the scaled values and the means and standard deviations
+#' used for scaling.
 #'
 #' @examples
 #' # Create data frame
-#' x_raw <- matrix( rnorm( 1000, 100, 15 ), 100, 10 )
-#' colnames(x_raw) <- paste0( 'X', 1:10 )
-#' x_raw <- data.frame( x_raw )
+#' x_raw <- round( matrix( rnorm( 9, 100, 15 ), 3, 3 ) )
+#' colnames(x_raw) <- paste0( 'X', 1:3 )
+#' print(x_raw)
 #'
 #' # Standardize columns
 #' x <- standardize( x_raw )
+#' print(x)
 #'
 #' # Create second data frame with same
 #' # variables but new values
-#' y <- matrix( rnorm( 50*10, 50, 15 ), 50, 10 )
-#' colnames(y) <- paste0( 'X', 1:10 )
-#' y <- data.frame( y )
+#' y_raw <- round( matrix( rnorm( 9, 50, 15 ), 3, 3 ) )
+#' colnames(y_raw) <- paste0( 'X', 1:3 )
+#' print(y_raw)
 #'
-#' # Scale columns of y based on means and
-#' # standard deviations from x
-#' y <- standardize( x, y )
+#' # Scale columns of y_raw based on means and
+#' # standard deviations from x_raw
+#' lst <- standardize( x_raw, y_raw, labels = c('x', 'y') )
+#' y <- lst$Data$y
+#' print( y )
 #'
 #' # Undo scaling
-#' all( round( x_raw, 4 ) == round( standardize( x, raw = TRUE ), 4 ) )
+#' standardize( y, mean_sd = lst$Scaling, raw = TRUE )
 #'
 #' @export
 
-standardize <- function( x, y = NULL,
-                         columns = NULL,
+standardize <- function( x,
+                         y = NULL,
+                         mean_sd = NULL,
                          raw = FALSE,
-                         scaling = FALSE ) {
+                         as_list = FALSE,
+                         labels = c( 'X', 'Y' ) ) {
 
-  # If no column names are given
-  if ( is.null( columns ) ) {
-    columns <- colnames( x )
+  # If scaling not provided
+  if ( is.null( mean_sd ) ) {
+
+    M <- apply(
+      x, 2, mean, na.rm = T
+    )
+    SD <- apply(
+      x, 2, sd, na.rm = T
+    )
+
+    # Close 'If scaling not provided'
+  } else {
+
+    M <- mean_sd[[1]]
+    SD <- mean_sd[[2]]
+
+    # Close else for 'If scaling not provided'
   }
 
-  # Number of columns
-  K <- length( columns )
+  # If scaling should be undone
+  if ( raw ) {
 
-  # Vectors for mean and standard deviation
-  m <- rep( NA, K )
-  s <- rep( NA, K )
+    # If scaling provided
+    if ( !is.null( mean_sd ) ) {
 
-  # Identify rows with any missing data
-  is_na <- apply( x[,columns], 1, function(x) any( is.na(x) ) )
+      x.raw <- x
 
-  #< Check if data frame
-  if ( is.data.frame( x ) ) {
+      # Loop over columns
+      for ( k in 1:ncol(x) ) {
 
-    #<| Loop over columns
-    for ( k in 1:K ) {
+        x.raw[, k] <- x[, k]*SD[k] + M[k]
 
-      # Extract attributes
-      cur_attr <- attributes( x[[ columns[k] ]] )
-
-      if ( !is.null( cur_attr ) ) {
-
-        if ( 'standardize' %in% names( cur_attr ) ) {
-          m[k] <- cur_attr$standardize$mean
-          s[k] <- cur_attr$standardize$sd
-        }
-
+        # Close 'Loop over columns'
       }
 
-      #|> Close 'Loop over columns'
+      # Close 'If scaling provided'
+    } else {
+
+      stop(
+        paste0(
+          "Must provide list with means and standard deviations ",
+          "in order to compute original raw values"
+        )
+      )
+
+      # Close else for 'If scaling provided'
     }
 
-    #<| Convert back to original scale
-    if ( raw ) {
+    return( x.raw )
 
-      #<|< Loop over columns
-      for ( k in 1:K ) {
-
-        x[, columns[k]] <-
-          x[, columns[k]]*s[k] + m[k]
-
-        #>|> Close 'Loop over columns'
-      }
-
-      return( x )
-
-      #|> Close 'Convert back to original scale'
-    }
-
-    if ( scaling ) {
-
-      return( lapply(
-        columns,
-        function(i) attributes( x[[ i ]] )$standardize
-      ) )
-
-    }
-
-    #> Close 'Check if data frame'
+    # Close 'If scaling should be undone'
   }
 
-  #< Compute means and standard deviations
-  if ( any( is.na( m ) ) ) {
+  # Initialize scaled data sets
+  z.x <- x
+  z.y <- NULL
 
-    #<| Loop over columns
-    for ( k in 1:K ) {
+  # If second data set provided
+  if ( !is.null(y) ) {
 
-      m[k] <- mean( x[ !is_na, columns[k] ] )
-      s[k] <- sd( x[ !is_na, columns[k] ] )
+    # Check if same number of columns
+    if ( ncol(y) != ncol(x) ) {
 
-      # Standardize current column
-      x[, columns[k]] <-
-        as.numeric( ( x[, columns[k]] - m[k] )/ s[k] )
+      stop( "Data set 'y' must have same number of columns as 'x'" )
 
-      #<|< If x is a data frame
-      if ( is.data.frame( x ) ) {
-
-        cur_attr <- attributes( x[[ columns[k] ]] )
-        if ( is.null( cur_attr ) ) {
-          cur_attr <- list(
-            standardize = list( mean = m[k], sd = s[k] )
-          )
-        } else {
-          cur_attr$standardize = list( mean = m[k], sd = s[k] )
-        }
-
-        attributes( x[[ columns[k] ]] ) <- cur_attr
-
-        #>|> Close 'If x is a data frame'
-      }
-
-      #|> Close 'Loop over columns'
+      # Close 'Check if same number of columns'
     }
 
-    #< Close 'Compute means and standard deviations'
-  }
+    # Check if same column names
+    if ( any( colnames(y) != colnames(x) ) ) {
 
-  #< If second matrix or data frame is provided
-  if ( !is.null( y ) ) {
+      stop( "Data set 'y' should have same column names as 'x'" )
 
-    #<| Loop over columns
-    for ( k in 1:K ) {
-
-      y[, columns[k]] <-
-        as.numeric( ( y[, columns[k]] - m[k] ) / s[k] )
-
-      #<|< If y is a data frame
-      if ( is.data.frame( y ) ) {
-
-        cur_attr <- attributes( y[[ columns[k] ]] )
-        if ( is.null( cur_attr ) ) {
-          cur_attr <- list(
-            standardize = list( mean = m[k], sd = s[k] )
-          )
-        } else {
-          cur_attr$standardize = list( mean = m[k], sd = s[k] )
-        }
-
-        attributes( y[[ columns[k] ]] ) <- cur_attr
-
-        #>|> Close 'If y is a data frame'
-      }
-
-      #|> Close 'Loop over columns'
+      # Close 'Check if same column names'
     }
 
-    return( y )
+    z.y <- y
 
-    #> Close 'If second matrix or data frame is provided'
+    # Close 'If second data set provided'
   }
 
-  return( x )
+  # Loop over columns
+  for ( k in 1:ncol(x) ) {
+
+    z.x[, k] <- ( x[, k] - M[k] )/SD[k]
+
+    # If second data set provided
+    if ( !is.null(y) ) {
+
+      z.y[, k] <- ( y[, k] - M[k] )/SD[k]
+
+      # Close 'If second data set provided'
+    }
+
+    # Close 'Loop over columns'
+  }
+
+  # Return list given two data sets
+  if ( !is.null(y) ) as_list <- TRUE
+
+  # Return list of outputs
+  if ( as_list ) {
+
+    lst_output <- list(
+      Data = list(
+        X = z.x,
+        Y = z.y
+      ),
+      Scaling = list(
+        Mean = M,
+        SD = SD
+      )
+    )
+
+    names( lst_output$Data ) <- labels
+
+    return( lst_output )
+
+    # Close 'Return list of outputs'
+  }
+
+  return( z.x )
 }
 
 #### 9) density_points ####
@@ -1275,7 +1329,8 @@ density_points <- function (x, ...) {
   return( list(x = sort(x), y = y) )
 }
 
-#' 10) Yeo-Johnson Transform
+#### 10) yeo_johnson ####
+#' Yeo-Johnson Transform
 #'
 #' Transforms a numeric vector of values using
 #' the Yeo-Johnson (2000) power transformation
@@ -1370,7 +1425,8 @@ yeo_johnson <- function(y, lambda) {
   return(y_transformed)
 }
 
-#' 11) Determine Best Parameter for Yeo-Johnson Transform
+#### 11) yeo_johnson_transform ####
+#' Determine Best Parameter for Yeo-Johnson Transform
 #'
 #' Estimates and applies best-fitting Yeo-Johnson
 #' transformation parameter via maximum likelihood
@@ -1405,7 +1461,7 @@ yeo_johnson <- function(y, lambda) {
 #' x_transformed <- yeo_johnson_transform(x)
 #' # Extract results of maximum likelihood estimation
 #' attributes(x_transformed)$mle_for_yeo_johnson
-#' shapiro.test( x_transformed ) # Test of normaliy shows improvement
+#' shapiro.test( x_transformed ) # Test of normality shows improvement
 #'
 #' @export
 
@@ -1457,5 +1513,251 @@ yeo_johnson_transform <- function(
   return( x_transformed )
 }
 
+#### 12) principal_components_analysis ####
+#' Principal Components Analysis
+#'
+#' Function for running a principal components
+#' analysis (PCA) with training (and test) data.
+#' Expands on the [stats::prcomp] function.
+#'
+#' @param train A data frame or matrix. Assumes all
+#'   columns should be included in the PCA.
+#' @param test An optional data frame or matrix.
+#'   Must have the same number of columns and
+#'   same column names as \code{train}.
+#'
+#' @returns A list with the standardized data, the
+#' results of the call to [stats::prcomp], the rotation
+#' matrix (eigenvectors), the eigenvalues, the
+#' correlations between raw scores and component scores,
+#' and the root-mean square error for the training and
+#' test sets when using a smaller number of components.
+#'
+#' @examples
+#' # Simulate training and test data
+#' train <- MASS::mvrnorm( 100, rep( 0, 8 ), diag(8) )
+#' test <- MASS::mvrnorm( 100, rep( 0, 8 ), diag(8) )
+#'
+#' PCA <- principal_components_analysis(
+#'   train = train, test = test
+#' )
+#'
+#' # Loading matrix
+#' lambda <- cbind(
+#'   c( runif( 4, .3, .9 ), rep( 0, 4 ) ),
+#'   c( rep( 0, 4 ), runif( 4, .3, .9 ) )
+#' )
+#' # Communalities
+#' D_tau <- diag( runif( 8, .5, 1.5 ) )
+#'
+#' cov_mat <- lambda %*% t( lambda ) + D_tau
+#' cor_mat <- cov2cor( cov_mat )
+#'
+#' set.seed( 341 ) # For reproducibility
+#' x <- MASS::mvrnorm( n = 200, mu = rep( 0, 8 ), Sigma = cor_mat )
+#' colnames(x) <- paste0( 'C', 1:8 )
+#'
+#' PCA <- principal_components_analysis(
+#'   train = x
+#' )
+#'
+#' @export
+
+principal_components_analysis <- function( train,
+                                           test = NULL ) {
+
+  is_na <- apply(
+    train, 1, function(x) any( is.na(x) )
+  )
+
+  # If any missing training data
+  if ( any(is_na) ) {
+
+    train <- train[ !is_na, ]
+
+    warning(
+      paste0( "Removed ", sum(is_na),
+              " rows with missing values for 'train' argument" )
+    )
+
+    # Close 'If any missing training data'
+  }
+
+  # If test data provided
+  if ( !is.null(test) ) {
+
+    is_na <- apply(
+      train, 1, function(x) any( is.na(x) )
+    )
+
+    # If any missing test data
+    if ( any(is_na) ) {
+
+      train <- train[ !is_na, ]
+
+      warning(
+        paste0( "Removed ", sum(is_na), " rows with missing values" )
+      )
+
+      # Close 'If any missing test data'
+    }
+
+    # Close 'If test data provided'
+  }
+
+  # Initialize output
+  lst_output <- list(
+    Data = list(
+      Train = NULL,
+      Test = NULL
+    ),
+    Scaling = list(
+      Mean = NA,
+      SD = NA
+    ),
+    Fit = NA,
+    Rotation = NA,
+    Eigenvalues = NA,
+    Proportion = NA,
+    Scores = list(
+      Train = NULL,
+      Test = NULL
+    ),
+    Correlations = list(
+      Train = NULL,
+      Test = NULL
+    ),
+    RMSE = list(
+      Train = NA,
+      Test = NA
+    )
+  )
+
+  # Standardize inputs
+  lst_scaled <- arfpam::standardize(
+    x = train,
+    y = test,
+    as_list = TRUE
+  )
+
+  # Save data
+  lst_output$Data$Train <- lst_scaled$Data$X
+  lst_output$Scaling$Mean <- lst_scaled$Scaling$Mean
+  lst_output$Scaling$SD <- lst_scaled$Scaling$SD
+
+  # Run PCA using training data
+  lst_PCA <- prcomp(
+    lst_scaled$Data$X,
+    retx = TRUE,
+    center = FALSE, scale. = FALSE
+  )
+  # Extract eigenvalues and proportion accounted for
+  importance <- summary( lst_PCA )$importance
+
+  # Save results
+  lst_output$Fit <- lst_PCA
+  lst_output$Rotation <- lst_PCA$rotation
+  lst_output$Eigenvalues <- importance[1, ]^2
+  lst_output$Scores$Train <- lst_PCA$x
+  lst_output$Proportion <- importance[2, ]
+
+  # Compute correlations between components and raw variables
+  lst_output$Correlations$Train <- sapply(
+    1:ncol(train), function(p) {
+      sapply(
+        1:ncol( train ), function(v) {
+          cor( lst_scaled$Data$X[, v], lst_PCA$x[, p] )
+        }
+      )
+    }
+  )
+
+  rmse <- rep( NA, ncol(train) )
+  iR <- solve( lst_output$Rotation )
+
+  # Loop over components
+  for ( p in 1:ncol(train) ) {
+
+    # Reconstruct raw scores from component scores
+
+    # If one component
+    if ( p == 1 ) {
+
+      # Ensure matrix algebra works
+      train.hat <-
+        cbind( lst_output$Scores$Train[, 1] ) %*% rbind( iR[1, ] )
+
+      # Close 'If one component'
+    } else {
+
+      train.hat <-
+        lst_output$Scores$Train[, 1:p] %*% iR[1:p, ]
+
+      # Close else for 'If one component'
+    }
+
+    rmse[p] <-
+      sqrt( mean( (train.hat - lst_scaled$Data$X)^2 ) )
+
+    # Close 'Loop over components'
+  }
+
+  lst_output$RMSE$Train <- rmse
+
+  # If test data provided
+  if ( !is.null(test) ) {
+
+    # Save data
+    lst_output$Data$Test <- lst_scaled$Data$Y
+
+    # Compute component scores
+    lst_output$Scores$Test <-
+      as.matrix( lst_scaled$Data$Y ) %*% lst_PCA$rotation
+
+    # Compute correlations between components and raw variables
+    lst_output$Correlations$Test <- sapply(
+      1:ncol(train), function(p) {
+        sapply(
+          1:ncol( train ), function(v) {
+            cor( lst_scaled$Data$Y[, v], lst_output$Scores$Test )
+          }
+        )
+      }
+    )
+
+    rmse <- rep( NA, ncol(train) )
+
+    # Loop over components
+    for ( p in 1:ncol(train) ) {
+
+      # If one component
+      if ( p == 1 ) {
+
+        # Ensure matrix algebra works
+        test.hat <-
+          cbind( lst_output$Scores$Test[, 1] ) %*% rbind( iR[1, ] )
+
+        # Close 'If one component'
+      } else {
+
+        test.hat <-
+          lst_output$Scores$Test[, 1:p] %*% iR[1:p, ]
+
+        # Close else for 'If one component'
+      }
+
+      rmse[p] <-
+        sqrt( mean( (test.hat - lst_scaled$Data$Y)^2 ) )
+
+      # Close 'Loop over components'
+    }
+
+    lst_output$RMSE$Test <- rmse
+
+    # Close 'If test data provided'
+  }
+
+  return( lst_output )
+}
 
 

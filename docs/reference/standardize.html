@@ -20,7 +20,7 @@ matrix or data frame."><!-- mathjax --><script src="https://cdnjs.cloudflare.com
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.34.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.35.0</span>
       </span>
     </div>
 
@@ -60,7 +60,14 @@ matrix or data frame.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize</span><span class="op">(</span><span class="va">x</span>, y <span class="op">=</span> <span class="cn">NULL</span>, columns <span class="op">=</span> <span class="cn">NULL</span>, raw <span class="op">=</span> <span class="cn">FALSE</span>, scaling <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  mean_sd <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  raw <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  as_list <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -71,58 +78,90 @@ matrix or data frame.</p>
 
 <dt>y</dt>
 <dd><p>A data frame or matrix of numeric values
-(must have the same column names as <code>x</code>).</p></dd>
+(must have the same column names in same order
+as <code>x</code>).</p></dd>
 
 
-<dt>columns</dt>
-<dd><p>A character vector of column names,
-the subset of columns in <code>x</code> to standardize.</p></dd>
+<dt>mean_sd</dt>
+<dd><p>A list of two numeric vectors equal in
+length to the number of columns with the means and
+standard deviations, respectively, to use for scaling.</p></dd>
 
 
 <dt>raw</dt>
-<dd><p>Logical; if <code>TRUE</code>, uses the means and
-standard deviations stored in each column's
-attributes to restore scaled values to their
-original raw values.</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, uses the means
+and standard deviations given in <code>mean_sd</code>
+to return the original raw values of <code>x</code>.</p></dd>
 
 
-<dt>scaling</dt>
+<dt>as_list</dt>
 <dd><p>Logical; if <code>TRUE</code> returns
-the means and standard deviations for columns
-stored in their attributes.</p></dd>
+a named list with the scaled values of <code>x</code>
+(and <code>y</code> if provided) along with the means and
+standard deviations used for scaling. Automatically
+set to <code>TRUE</code> when <code>y</code> is provided.</p></dd>
+
+
+<dt>labels</dt>
+<dd><p>A character vector with the labels for
+the <code>x</code> and <code>y</code> data sets if returning a
+list.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>A data frame or matrix with standardized
-columns.</p>
+<p>Either a scaled data frame or matrix or a list
+with the scaled values and the means and standard deviations
+used for scaling.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create data frame</span></span></span>
-<span class="r-in"><span><span class="va">x_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span> <span class="fl">1000</span>, <span class="fl">100</span>, <span class="fl">15</span> <span class="op">)</span>, <span class="fl">100</span>, <span class="fl">10</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x_raw</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">x_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span> <span class="va">x_raw</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span> <span class="fl">9</span>, <span class="fl">100</span>, <span class="fl">15</span> <span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span> <span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x_raw</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x_raw</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      X1  X2  X3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 97 130 104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 69  65 124</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 96 118 121</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Standardize columns</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">standardize</span><span class="op">(</span> <span class="va">x_raw</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              X1         X2         X3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  0.6085404  0.7420674 -1.1434795</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] -1.1541284 -1.1371942  0.7108116</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]  0.5455880  0.3951268  0.4326679</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create second data frame with same</span></span></span>
 <span class="r-in"><span><span class="co"># variables but new values</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span> <span class="fl">50</span><span class="op">*</span><span class="fl">10</span>, <span class="fl">50</span>, <span class="fl">15</span> <span class="op">)</span>, <span class="fl">50</span>, <span class="fl">10</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span> <span class="va">y</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span> <span class="fl">9</span>, <span class="fl">50</span>, <span class="fl">15</span> <span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span> <span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">y_raw</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">y_raw</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      X1 X2 X3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 52 39 56</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 67 34 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 63 69 65</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Scale columns of y based on means and</span></span></span>
-<span class="r-in"><span><span class="co"># standard deviations from x</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">standardize</span><span class="op">(</span> <span class="va">x</span>, <span class="va">y</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Scale columns of y_raw based on means and</span></span></span>
+<span class="r-in"><span><span class="co"># standard deviations from x_raw</span></span></span>
+<span class="r-in"><span><span class="va">lst</span> <span class="op">&lt;-</span> <span class="fu">standardize</span><span class="op">(</span> <span class="va">x_raw</span>, <span class="va">y_raw</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">lst</span><span class="op">$</span><span class="va">Data</span><span class="op">$</span><span class="va">y</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span> <span class="va">y</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             X1        X2        X3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] -2.224320 -1.888899 -5.593778</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] -1.280033 -2.033457 -7.077211</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] -1.531843 -1.021547 -4.759347</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Undo scaling</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">x_raw</span>, <span class="fl">4</span> <span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="fu">standardize</span><span class="op">(</span> <span class="va">x</span>, raw <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span>, <span class="fl">4</span> <span class="op">)</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="fu">standardize</span><span class="op">(</span> <span class="va">y</span>, mean_sd <span class="op">=</span> <span class="va">lst</span><span class="op">$</span><span class="va">Scaling</span>, raw <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      X1 X2 X3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 52 39 56</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 67 34 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 63 69 65</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

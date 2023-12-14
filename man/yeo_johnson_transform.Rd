@@ -2,9 +2,7 @@
 % Please edit documentation in R/S05_Statistics.R
 \name{yeo_johnson_transform}
 \alias{yeo_johnson_transform}
-\title{\enumerate{
-\item Determine Best Parameter for Yeo-Johnson Transform
-}}
+\title{Determine Best Parameter for Yeo-Johnson Transform}
 \usage{
 yeo_johnson_transform(x, lower = -100, upper = 100)
 }
@@ -41,7 +39,7 @@ shapiro.test( x ) # Test of normality
 x_transformed <- yeo_johnson_transform(x)
 # Extract results of maximum likelihood estimation
 attributes(x_transformed)$mle_for_yeo_johnson
-shapiro.test( x_transformed ) # Test of normaliy shows improvement
+shapiro.test( x_transformed ) # Test of normality shows improvement
 
 }
 \references{

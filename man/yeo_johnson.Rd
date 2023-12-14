@@ -2,9 +2,7 @@
 % Please edit documentation in R/S05_Statistics.R
 \name{yeo_johnson}
 \alias{yeo_johnson}
-\title{\enumerate{
-\item Yeo-Johnson Transform
-}}
+\title{Yeo-Johnson Transform}
 \usage{
 yeo_johnson(y, lambda)
 }

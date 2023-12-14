@@ -15,83 +15,85 @@ reference:
   - erf
   - logit
   - logistic
+  - log_of_sum_of_exp_x
   - pow
   - softmax
-  - log_of_sum_of_exp_x
 - title: "Utilities"
   desc: >
 
 - contents:
+  - align_strings
+  - assign_by_interval
   - column
   - column_by_other
-  - duplicate_wide_to_long
-  - has_NA
-  - pull_id
-  - take_x_by_y
-  - date_and_time
-  - find_file_name
-  - make_file_name
-  - load_package
-  - load_R_object
-  - path_to_file
-  - source_R_scripts
   - copy_from_source
-  - assign_by_interval
-  - match_and_reorder
-  - match_rows
-  - replace_cases
+  - create_table_of_contents
+  - create_vector
+  - data_first
+  - date_and_time
+  - duplicate_wide_to_long
   - empty_list
   - every
   - find_increment
-  - lin
-  - new_limits
-  - over
-  - print_table
-  - runs_in_sequence
-  - data_first
-  - align_strings
+  - find_file_name
   - format_numbers
-  - replace_string
-  - squish
+  - has_NA
+  - lin
+  - load_package
+  - load_R_object
+  - make_file_name
+  - match_and_reorder
+  - match_rows
+  - new_limits
   - not_NA
+  - over
+  - path_to_file
   - percent_that_sums_to_100
-  - strip_value
-  - create_table_of_contents
-  - create_vector
+  - print_table
+  - pull_id
+  - replace_cases
+  - source_R_scripts
+  - take_x_by_y
+  - replace_string
+  - runs_in_sequence
   - section
+  - strip_value
+  - squish
   - templates
 - title: "Plotting"
   desc: >
 
 - contents:
-  - blank_plot
-  - palettes
-  - hv_line
-  - fill_plot
   - add_axes
+  - blank_plot
   - col_to_hex
-  - error_bars
+  - draw_borders_and_labels
+  - draw_boxplots
   - draw_by_group
   - draw_dots
   - draw_lines
-  - draw_boxplots
-  - draw_borders_and_labels
-  - plot_histogram
+  - error_bars
+  - fill_plot
+  - hv_line
+  - palettes
   - plot_correlation_heatmap
+  - plot_correlations
+  - plot_histogram
   - plot_forest
 - title: "Statistics"
   desc: >
 
 - contents:
-  - sem
-  - statistic
-  - boxcox_transform
-  - pvalues
   - bootstrap
-  - summa
   - bounds
-  - standardize
+  - boxcox_transform
   - density_points
+  - principal_components_analysis
+  - pvalues
+  - sem
+  - summa
+  - standardize
+  - statistic
   - yeo_johnson
   - yeo_johnson_transform
 
