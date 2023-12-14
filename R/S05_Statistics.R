@@ -1605,6 +1605,9 @@ principal_components_analysis <- function( train,
     # Close 'If test data provided'
   }
 
+  # Number of columns
+  K <- ncol(train)
+
   # Initialize output
   lst_output <- list(
     Data = list(
@@ -1663,20 +1666,20 @@ principal_components_analysis <- function( train,
 
   # Compute correlations between components and raw variables
   lst_output$Correlations$Train <- sapply(
-    1:ncol(train), function(p) {
+    1:K, function(p) { # Loop over components
       sapply(
-        1:ncol( train ), function(v) {
+        1:K, function(v) { # Loop over raw variables
           cor( lst_scaled$Data$X[, v], lst_PCA$x[, p] )
         }
       )
     }
   )
 
-  rmse <- rep( NA, ncol(train) )
-  iR <- solve( lst_output$Rotation )
+  rmse <- rep( NA, K )
+  iR <- solve( lst_output$Rotation ) # Inverse of rotation matrix
 
   # Loop over components
-  for ( p in 1:ncol(train) ) {
+  for ( p in 1:K ) {
 
     # Reconstruct raw scores from component scores
 
@@ -1691,13 +1694,13 @@ principal_components_analysis <- function( train,
     } else {
 
       train.hat <-
-        lst_output$Scores$Train[, 1:p] %*% iR[1:p, ]
+        as.matrix( lst_output$Scores$Train[, 1:p] ) %*% iR[1:p, ]
 
       # Close else for 'If one component'
     }
 
     rmse[p] <-
-      sqrt( mean( (train.hat - lst_scaled$Data$X)^2 ) )
+      sqrt( mean( (train.hat - as.matrix( lst_scaled$Data$X ) )^2 ) )
 
     # Close 'Loop over components'
   }
@@ -1716,19 +1719,19 @@ principal_components_analysis <- function( train,
 
     # Compute correlations between components and raw variables
     lst_output$Correlations$Test <- sapply(
-      1:ncol(train), function(p) {
+      1:K, function(p) { # Loop over components
         sapply(
-          1:ncol( train ), function(v) {
+          1:K, function(v) { # Loop over raw variables
             cor( lst_scaled$Data$Y[, v], lst_output$Scores$Test )
           }
         )
       }
     )
 
-    rmse <- rep( NA, ncol(train) )
+    rmse <- rep( NA, K )
 
     # Loop over components
-    for ( p in 1:ncol(train) ) {
+    for ( p in 1:K ) {
 
       # If one component
       if ( p == 1 ) {
@@ -1741,13 +1744,13 @@ principal_components_analysis <- function( train,
       } else {
 
         test.hat <-
-          lst_output$Scores$Test[, 1:p] %*% iR[1:p, ]
+          as.matrix( lst_output$Scores$Test[, 1:p] ) %*% iR[1:p, ]
 
         # Close else for 'If one component'
       }
 
       rmse[p] <-
-        sqrt( mean( (test.hat - lst_scaled$Data$Y)^2 ) )
+        sqrt( mean( (test.hat - as.matrix( lst_scaled$Data$Y) )^2 ) )
 
       # Close 'Loop over components'
     }
