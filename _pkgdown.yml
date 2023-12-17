@@ -56,6 +56,7 @@ reference:
   - take_x_by_y
   - replace_string
   - runs_in_sequence
+  - save_png_figure
   - section
   - strip_value
   - squish

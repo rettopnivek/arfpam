@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-11-29
+# Last updated 2023-12-17
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -22,6 +22,7 @@
 #   2.6) path_to_file
 #   2.7) source_R_scripts
 #   2.8) copy_from_source
+#   2.9) save_png_figure
 # 3) Functions for matching and assignment
 #   3.1) assign_by_interval
 #   3.2) match_and_reorder
@@ -1248,6 +1249,60 @@ copy_from_source <- function( source_path = '',
     stop( 'Failed to copy files' )
 
     # Close else for 'Error and warning messages'
+  }
+
+}
+
+#### 2.9) save_png_figure ####
+#' Create and save PNG file
+#'
+#' Function to create and save a PNG file
+#' given a plotting function to run.
+#'
+#' @param plotting_fun A function, with the
+#'   creation of a figure as a side effect.
+#' @param file_name A character string, the
+#'   file name for the PNG file - must end
+#'   in '.png'.
+#' @param figure_dim A numeric vector of two
+#'   values, the width and height of the
+#'   figure in inches.
+#' @param res A integer value, the resolution
+#'   for the PNG file.
+#' @param ... Additional arguments to pass to
+#'   \code{plotting_fun}.
+#'
+#' @returns Output from \code{plotting_fun}, if any.
+#'
+#' @export
+
+save_png_figure <- function(
+    plotting_fun,
+    file_name,
+    figure_dim = c( 5, 5 ),
+    res = 300,
+    ... ) {
+
+  png(
+    filename = file_name,
+    width = figure_dim[1],
+    height = figure_dim[2],
+    units = 'in',
+    res = res
+  )
+
+  obj_output <- plotting_fun(
+    ...
+  )
+
+  dev.off()
+
+  # Pass through output
+  if ( !is.null( obj_output ) ) {
+
+    return( obj_output )
+
+    # Close 'Pass through output'
   }
 
 }
