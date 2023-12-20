@@ -18,7 +18,7 @@ for a specified color palette."><!-- mathjax --><script src="https://cdnjs.cloud
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.36.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.38.0</span>
       </span>
     </div>
 
@@ -92,8 +92,8 @@ for the specified palette.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># List of possible inputs to argument</span></span></span>
 <span class="r-in"><span><span class="co"># 'type' for each palette</span></span></span>
 <span class="r-in"><span><span class="fu">palettes</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     orange light blue        red      green     yellow       blue       pink </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  "#E69F00"  "#56B4E9"  "#D55E00"  "#009E73"  "#F0E442"  "#0072B2"  "#CC79A7" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     orange light blue        red      green       pink       blue     yellow </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  "#E69F00"  "#56B4E9"  "#D55E00"  "#009E73"  "#CC79A7"  "#0072B2"  "#F0E442" </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot of colors in each palette</span></span></span>
 <span class="r-in"><span><span class="fu">palettes</span><span class="op">(</span><span class="st">"Colorblind"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -106,7 +106,7 @@ for the specified palette.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example of taking subset of colors</span></span></span>
 <span class="r-in"><span><span class="fu">palettes</span><span class="op">(</span><span class="st">"Colorblind"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in if (type %in% types$colorblind) {    list_of_colors &lt;- c(orange = "#E69F00", `light blue` = "#56B4E9",         red = "#D55E00", green = "#009E73", yellow = "#F0E442",         blue = "#0072B2", pink = "#CC79A7")}:</span> the condition has length &gt; 1</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in if (type %in% types$colorblind) {    list_of_colors &lt;- c(orange = "#E69F00", `light blue` = "#56B4E9",         red = "#D55E00", green = "#009E73", pink = "#CC79A7",         blue = "#0072B2", yellow = "#F0E442")}:</span> the condition has length &gt; 1</span>
 </code></pre></div>
     </div>
   </div>

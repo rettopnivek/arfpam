@@ -48,7 +48,7 @@ Function to add borders and labels to an existing figure.
 \examples{
 # Create a blank plot
 xl <- 0:1; yl <- 0:1
-blank_plot( xl, yl )
+plot_blank( xl, yl )
 
 # Add borders and labels
 draw_borders_and_labels( xl, yl )

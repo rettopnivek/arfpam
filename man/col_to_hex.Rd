@@ -19,7 +19,7 @@ Convert a color name to a hex color code.
 }
 \examples{
 # Create scatter plot for bivariate normal
-blank_plot(c(-4, 4), c(-4, 4))
+plot_blank(c(-4, 4), c(-4, 4))
 # Draw semi-opaque blue points
 points(rnorm(1000), rnorm(1000),
   pch = 19,

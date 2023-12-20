@@ -5,7 +5,7 @@
 \title{Create a Forest Plot}
 \usage{
 plot_forest(
-  values,
+  x,
   lower = NULL,
   upper = NULL,
   point_type = 19,
@@ -14,9 +14,12 @@ plot_forest(
   text_size = 1,
   line_width = 2,
   line_color = "black",
-  margin = c(3.5, 10, 2, 0.5),
+  margin = NULL,
   labels_y = NULL,
   labels_x = NULL,
+  labels_estimates = NULL,
+  labels_estimates_pos = 4,
+  labels_estimates_limit = NULL,
   labels_position = -1.25,
   title_x = NULL,
   xlim = NULL,
@@ -25,11 +28,13 @@ plot_forest(
   vert_type = 1,
   horiz_grid = FALSE,
   horiz_color = "grey80",
-  new = FALSE
+  new = FALSE,
+  w = 5,
+  h = 5
 )
 }
 \arguments{
-\item{values}{Either a vector of estimates or
+\item{x}{Either a vector of estimates or
 a data.frame/matrix with three columns
 consisting of the estimates, the lower limits
 the for error bars, and the upper limits for
@@ -67,15 +72,25 @@ grid lines, and the vertical grid lines, respectively.}
 the color(s) for the error bars.}
 
 \item{margin}{A numeric vector specifying the margin
-sizes for the bottom, left, top, and right-hand sides
+sizes (in inches) for the bottom, left, top, and right-hand sides
 of the figure.}
 
-\item{labels_y}{A character vector matching in length
-to \code{values}, the labels for the estimates.}
+\item{labels_y}{A character vector, the labels for the y-axis.}
 
 \item{labels_x}{A numeric vector giving the x-axis
 labels. If \code{NULL} the function attempts to
 automatically create the labels.}
+
+\item{labels_estimates}{A character vector, the labels to
+add next to each estimate within the plot.}
+
+\item{labels_estimates_pos}{An integer value indicating
+the side to place labels for estimates, where 1 = bottom,
+2 = left, 3 = top, and 4 = right.}
+
+\item{labels_estimates_limit}{A numeric value specifying
+the highest or lowest value an estimate label can be placed
+when placing to the left or right, respectively.}
 
 \item{labels_position}{A numeric vector of three
 elements, the position at which to draw the
@@ -105,6 +120,10 @@ the color for the horizontal grid lines.}
 
 \item{new}{Logical; if \code{TRUE} a new plotting window
 is generated.}
+
+\item{w}{An integer value, the width of a new plotting window.}
+
+\item{h}{An integer value, the height of a new plotting window.}
 }
 \value{
 A forest plot.
@@ -115,20 +134,39 @@ a plot of multiple estimates and their associated
 error bars).
 }
 \examples{
-# Example estimates and error bar limits
-means <- runif( 5, -.5, .5 )
-mat <- sapply( means, function(m) { rnorm( 100, m, 1 ) } )
-values <- sapply(
-  1:ncol(mat), function(i) {
-    x <- mat[, i]
-    return( c( mean(x), mean(x) + sem(x)*qnorm( c(.025, .975) ) ) )
-  }
-) |> t()
+# Example data set
+data("ChickWeight")
+dtf <- ChickWeight[ ChickWeight$Time == 21, ]
+# Compute uncertainty intervals around means
+x <- stats_by_group( dtf, 'weight', 'Diet', c( 'N', 'M', 'SE', 'UI' ) )
 
-# Example forest plot
+# Basic forest plot
 plot_forest(
-  values, labels_y = 'Column ' \%p\% 1:5,
-  title_x = 'Estimated mean'
+  x[, c( 'M', 'UI_LB', 'UI_UB') ], labels_y = 'Diet ' \%p\% 1:4,
+  new = FALSE
+)
+
+# Nicely formatted forest plot
+
+# T-test against overall mean
+x$P_value <- pt(
+  abs( x$M - mean(x$M) ) / x$SE, x$N - 1, lower.tail = FALSE
+)*2
+signifcant <- x$P_value < .05
+# Summary of results
+results <-
+  round( x$M ) \%p\% ' [' \%p\% round( x$UI_LB ) \%p\% ', ' \%p\%
+  round( x$UI_UB ) \%p\% ']; p = ' \%p\%
+  format( round( x$P_value, 3 ), nsmall = 3 )
+
+plot_forest(
+  x[, c( 'M', 'UI_LB', 'UI_UB') ],
+  xlim = c( 140, 340 ), labels_x = seq( 140, 340, 40 ),
+  labels_y = 'Diet ' \%p\% 1:4, labels_estimates = results,
+  labels_estimates_limit = 230,
+  new = FALSE, horiz_grid = TRUE, vert_grid = mean( x$M ),
+  point_type = replace_cases( signifcant, c( T, F ), c( 21, 19 ) ),
+  margin = c( .5, .5, .2, 1.75 ), text_size = c( 1.25, .8 )
 )
 
 }

@@ -37,6 +37,7 @@ reference:
   - find_increment
   - find_file_name
   - format_numbers
+  - group_index
   - has_NA
   - lin
   - load_package
@@ -65,22 +66,22 @@ reference:
   desc: >
 
 - contents:
-  - add_axes
-  - blank_plot
   - col_to_hex
+  - draw_axes
   - draw_borders_and_labels
   - draw_boxplots
   - draw_by_group
+  - draw_error_bars
   - draw_dots
+  - draw_hv
   - draw_lines
-  - error_bars
-  - fill_plot
-  - hv_line
   - palettes
-  - plot_correlation_heatmap
+  - plot_blank
   - plot_correlations
   - plot_histogram
   - plot_forest
+  - plot_scatter
+  - specify_positions
 - title: "Statistics"
   desc: >
 
@@ -95,6 +96,7 @@ reference:
   - summa
   - standardize
   - statistic
+  - stats_by_group
   - yeo_johnson
   - yeo_johnson_transform
 
@@ -114,3 +116,13 @@ reference:
 
 - contents:
   - arfpam-package
+- title: "Legacy"
+  desc: >
+
+- contents:
+  - add_axes
+  - blank_plot
+  - error_bars
+  - fill_plot
+  - hv_line
+  - plot_correlation_heatmap

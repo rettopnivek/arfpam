@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-12-17
+# Last updated 2023-12-19
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -40,6 +40,7 @@
 #   4.7) print_table
 #   4.8) runs_in_sequence
 #   4.9) data_first
+#   4.10) group_index
 # 5) Functions for strings
 #   5.1) align_strings
 #   5.2) format_numbers
@@ -2220,6 +2221,90 @@ data_first <- function( data_obj, fun_to_apply, ... ) {
 
   return(
     fun_to_apply( ..., data = data_obj )
+  )
+
+}
+
+#### 4.10) group_index ####
+#' Create Index Over Groupings
+#'
+#' Create a numeric index over the unique levels of a
+#' variable or a set of variables.
+#'
+#' @param ... Vectors of equal length.
+#' @param levels A list with the order of the unique levels for
+#'   each input vector (indices assigned from first to last level).
+#'
+#' @returns An integer vector from 1 to the number of unique levels.
+#'
+#' @examples
+#' # Convert to numeric index
+#' group_index( rep( LETTERS[3:1], each = 3 ) )
+#'
+#' # Can control assignment of indices
+#' group_index(
+#'   rep( LETTERS[3:1], each = 3 ), levels = list( c( 'C', 'B', 'A' ) )
+#' )
+#'
+#' # Can create single index over all
+#' # unique combinations of multiple variables
+#' group_index( rep( LETTERS[1:3], each = 3 ), rep( 1:3, 3 ) )
+#'
+#' @export
+
+group_index <- function( ..., levels = NULL ) {
+
+  # Extract inputs
+  lst_arg <- list(...)
+
+  # Number of inputs
+  n_arg <- length( lst_arg )
+
+  # Length of each input
+  l <- sapply(
+    1:n_arg, function(i) length( lst_arg[[i]] )
+  )
+
+  # Lengths must be equal
+  if ( !all( l %in% l[1] ) ) {
+
+    stop( 'Vectors must be of equal length' )
+
+    # Close 'Lengths must be equal'
+  }
+
+  mat_index <- matrix( NA, l[1], n_arg )
+
+  # Loop over inputs
+  for ( i in 1:n_arg ) {
+
+    # If levels not specified
+    if ( is.null(levels) ) {
+
+      mat_index[, i] <- as.numeric( as.factor( lst_arg[[i]] ) )
+
+      # Close 'If levels not specified'
+    } else {
+
+      mat_index[, i] <- as.numeric(
+        factor( lst_arg[[i]], levels = levels[[i]] )
+      )
+
+      # Close else for 'If levels not specified'
+    }
+
+    # Close 'Loop over inputs'
+  }
+
+  # Create one collapsed index over all unique combinations
+  collapsed_index <- apply(
+    mat_index, 1, function(x) {
+      paste( x, collapse = '.' )
+    }
+  )
+
+  return(
+    as.numeric( as.factor( collapsed_index ) )
   )
 
 }

@@ -19,7 +19,7 @@ error bars)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.36.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.38.0</span>
       </span>
     </div>
 
@@ -59,7 +59,7 @@ error bars).</p>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_forest</span><span class="op">(</span></span>
-<span>  <span class="va">values</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  lower <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  point_type <span class="op">=</span> <span class="fl">19</span>,</span>
@@ -68,9 +68,12 @@ error bars).</p>
 <span>  text_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  line_color <span class="op">=</span> <span class="st">"black"</span>,</span>
-<span>  margin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.5</span>, <span class="fl">10</span>, <span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  margin <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  labels_y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  labels_x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labels_estimates <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labels_estimates_pos <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  labels_estimates_limit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  labels_position <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>,</span>
 <span>  title_x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  xlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -79,13 +82,15 @@ error bars).</p>
 <span>  vert_type <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  horiz_grid <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  horiz_color <span class="op">=</span> <span class="st">"grey80"</span>,</span>
-<span>  new <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  new <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  w <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  h <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>values</dt>
+    <dl><dt>x</dt>
 <dd><p>Either a vector of estimates or
 a data.frame/matrix with three columns
 consisting of the estimates, the lower limits
@@ -142,19 +147,35 @@ the color(s) for the error bars.</p></dd>
 
 <dt>margin</dt>
 <dd><p>A numeric vector specifying the margin
-sizes for the bottom, left, top, and right-hand sides
+sizes (in inches) for the bottom, left, top, and right-hand sides
 of the figure.</p></dd>
 
 
 <dt>labels_y</dt>
-<dd><p>A character vector matching in length
-to <code>values</code>, the labels for the estimates.</p></dd>
+<dd><p>A character vector, the labels for the y-axis.</p></dd>
 
 
 <dt>labels_x</dt>
 <dd><p>A numeric vector giving the x-axis
 labels. If <code>NULL</code> the function attempts to
 automatically create the labels.</p></dd>
+
+
+<dt>labels_estimates</dt>
+<dd><p>A character vector, the labels to
+add next to each estimate within the plot.</p></dd>
+
+
+<dt>labels_estimates_pos</dt>
+<dd><p>An integer value indicating
+the side to place labels for estimates, where 1 = bottom,
+2 = left, 3 = top, and 4 = right.</p></dd>
+
+
+<dt>labels_estimates_limit</dt>
+<dd><p>A numeric value specifying
+the highest or lowest value an estimate label can be placed
+when placing to the left or right, respectively.</p></dd>
 
 
 <dt>labels_position</dt>
@@ -201,6 +222,14 @@ the color for the horizontal grid lines.</p></dd>
 <dd><p>Logical; if <code>TRUE</code> a new plotting window
 is generated.</p></dd>
 
+
+<dt>w</dt>
+<dd><p>An integer value, the width of a new plotting window.</p></dd>
+
+
+<dt>h</dt>
+<dd><p>An integer value, the height of a new plotting window.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -211,22 +240,43 @@ is generated.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example estimates and error bar limits</span></span></span>
-<span class="r-in"><span><span class="va">means</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span> <span class="fl">5</span>, <span class="op">-</span><span class="fl">.5</span>, <span class="fl">.5</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span> <span class="va">means</span>, <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">{</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span> <span class="fl">100</span>, <span class="va">m</span>, <span class="fl">1</span> <span class="op">)</span> <span class="op">}</span> <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">mat</span><span class="op">[</span>, <span class="va">i</span><span class="op">]</span></span></span>
-<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="sem.html">sem</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.025</span>, <span class="fl">.975</span><span class="op">)</span> <span class="op">)</span> <span class="op">)</span> <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example data set</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ChickWeight"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dtf</span> <span class="op">&lt;-</span> <span class="va">ChickWeight</span><span class="op">[</span> <span class="va">ChickWeight</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="fl">21</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="co"># Compute uncertainty intervals around means</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="stats_by_group.html">stats_by_group</a></span><span class="op">(</span> <span class="va">dtf</span>, <span class="st">'weight'</span>, <span class="st">'Diet'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'N'</span>, <span class="st">'M'</span>, <span class="st">'SE'</span>, <span class="st">'UI'</span> <span class="op">)</span> <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example forest plot</span></span></span>
+<span class="r-in"><span><span class="co"># Basic forest plot</span></span></span>
 <span class="r-in"><span><span class="fu">plot_forest</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">values</span>, labels_y <span class="op">=</span> <span class="st">'Column '</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  title_x <span class="op">=</span> <span class="st">'Estimated mean'</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'M'</span>, <span class="st">'UI_LB'</span>, <span class="st">'UI_UB'</span><span class="op">)</span> <span class="op">]</span>, labels_y <span class="op">=</span> <span class="st">'Diet '</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span></span>
+<span class="r-in"><span>  new <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot_forest-1.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="plot_forest-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Nicely formatted forest plot</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># T-test against overall mean</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">P_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">pt</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span> <span class="va">x</span><span class="op">$</span><span class="va">M</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">M</span><span class="op">)</span> <span class="op">)</span> <span class="op">/</span> <span class="va">x</span><span class="op">$</span><span class="va">SE</span>, <span class="va">x</span><span class="op">$</span><span class="va">N</span> <span class="op">-</span> <span class="fl">1</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">*</span><span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="va">signifcant</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">P_value</span> <span class="op">&lt;</span> <span class="fl">.05</span></span></span>
+<span class="r-in"><span><span class="co"># Summary of results</span></span></span>
+<span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">x</span><span class="op">$</span><span class="va">M</span> <span class="op">)</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span> <span class="st">' ['</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">x</span><span class="op">$</span><span class="va">UI_LB</span> <span class="op">)</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span> <span class="st">', '</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">x</span><span class="op">$</span><span class="va">UI_UB</span> <span class="op">)</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span> <span class="st">']; p = '</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">x</span><span class="op">$</span><span class="va">P_value</span>, <span class="fl">3</span> <span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">3</span> <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">plot_forest</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'M'</span>, <span class="st">'UI_LB'</span>, <span class="st">'UI_UB'</span><span class="op">)</span> <span class="op">]</span>,</span></span>
+<span class="r-in"><span>  xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">140</span>, <span class="fl">340</span> <span class="op">)</span>, labels_x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">140</span>, <span class="fl">340</span>, <span class="fl">40</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  labels_y <span class="op">=</span> <span class="st">'Diet '</span> <span class="op"><a href="grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, labels_estimates <span class="op">=</span> <span class="va">results</span>,</span></span>
+<span class="r-in"><span>  labels_estimates_limit <span class="op">=</span> <span class="fl">230</span>,</span></span>
+<span class="r-in"><span>  new <span class="op">=</span> <span class="cn">FALSE</span>, horiz_grid <span class="op">=</span> <span class="cn">TRUE</span>, vert_grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span> <span class="va">x</span><span class="op">$</span><span class="va">M</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  point_type <span class="op">=</span> <span class="fu"><a href="replace_cases.html">replace_cases</a></span><span class="op">(</span> <span class="va">signifcant</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="cn">T</span>, <span class="cn">F</span> <span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">21</span>, <span class="fl">19</span> <span class="op">)</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  margin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">.5</span>, <span class="fl">.5</span>, <span class="fl">.2</span>, <span class="fl">1.75</span> <span class="op">)</span>, text_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">1.25</span>, <span class="fl">.8</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="plot_forest-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

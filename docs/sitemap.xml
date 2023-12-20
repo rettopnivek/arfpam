@@ -301,6 +301,30 @@
     <loc>/reference/save_png_figure.html</loc>
   </url>
   <url>
+    <loc>/reference/draw_axes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/draw_error_bars.html</loc>
+  </url>
+  <url>
+    <loc>/reference/draw_hv.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_blank.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stats_by_group.html</loc>
+  </url>
+  <url>
+    <loc>/reference/group_index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/specify_positions.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_scatter.html</loc>
+  </url>
+  <url>
     <loc>/articles/index.html</loc>
   </url>
   <url>

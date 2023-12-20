@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-12-14
+# Last updated 2023-12-18
 
 # Table of contents
 # 1) sem
@@ -17,6 +17,8 @@
 # 9) density_points
 # 10) yeo_johnson
 # 11) yeo_johnson_transform
+# 12) principal_components_analysis
+# 13) stats_by_group
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
@@ -1763,4 +1765,340 @@ principal_components_analysis <- function( train,
   return( lst_output )
 }
 
+#### 13) stats_by_group ####
+#' Compute Statistics by Group
+#'
+#' A function to compute assorted univariate statistics
+#' for a specified variable in a data frame over desired
+#' grouping factors.
+#'
+#' @param dtf A data frame.
+#' @param column A character string, the column in \code{dtf} to
+#'   compute statistics for.
+#' @param groupings A character vector, the columns in \code{dtf}
+#'   to use as grouping factors (it is recommended that they all
+#'   be categorical variables).
+#' @param statistics A character vector, the set of different
+#'   statistics to compute over groups.
+#' @param method A character string, the type of method to use
+#'   when computing uncertainty intervals. Options include:
+#'   \code{"Student's T"} for means or
+#'   \code{"Beta-binomial"} for proportions.
+#' @param categories An optional vector of elements to match over
+#'   when computing frequencies, proportions, or percentages.
+#' @param width A numeric value between 0 and 1, the width for
+#'   uncertainty intervals.
+#' @param na.rm A logical value; if \code{TRUE} removes
+#'   \code{NA} values.
+#'
+#' @details
+#' Possible univariate statistics that can be computed:
+#' \itemize{
+#'   \item \code{'N'} = Sample size;
+#'   \item \code{'M'} = Mean;
+#'   \item \code{'Md'} = Median;
+#'   \item \code{'SD'} = Standard deviation;
+#'   \item \code{'SE'} = Standard error of the mean;
+#'   \item \code{'C'} = Counts/frequencies;
+#'   \item \code{'Pr'} = Proportions;
+#'   \item \code{'P'} = Percentages.
+#' }
+#'
+#' Additionally, specifying \code{'UI'} in combination with the
+#' argument \code{method} will compute the lower and upper limits
+#' of a desired uncertainty interval. The width of the interval
+#' can be controlled by the argument \code{width}.
+#'
+#' @returns A data frame with separate rows for each combination
+#' of grouping factors and separate columns for each statistic
+#' to compute.
+#'
+#' @examples
+#' # Example data set
+#' data(iris)
+#' dtf <- iris
+#'
+#' # Mean/SD for sepal length by species
+#' dtf |> stats_by_group( 'Sepal.Length', 'Species' )
+#'
+#' # Create additional categorical variable
+#' dtf$Long_petal <- c( 'No', 'Yes' )[
+#'   ( dtf$Petal.Length > median( dtf$Petal.Length) ) + 1
+#' ]
+#' # Sample size, mean, and confidence intervals using Student's T
+#' # distribution by species and whether petals are long
+#' dtf |> stats_by_group(
+#'   'Sepal.Length', c( 'Species', 'Long_petal' ), c( 'N', 'M', 'UI' )
+#' )
+#'
+#' # Create additional categorical variable
+#' dtf$Long_sepal <- c( 'No', 'Yes' )[
+#'   ( dtf$Sepal.Length > median( dtf$Sepal.Length) ) + 1
+#' ]
+#' # Proportion and confidence intervals based on beta-binomial
+#' # distribution for long sepals by long petals
+#' dtf |> stats_by_group(
+#'   'Long_sepal', c( 'Long_petal' ), c( 'N', 'Pr', 'UI' ),
+#'   categories = 'Yes', method = 'Beta-binomial'
+#' )
+#'
+#' @export
 
+stats_by_group <- function( dtf,
+                            column,
+                            groupings,
+                            statistics = c( 'M', 'SD' ),
+                            method = "Student's T",
+                            categories = 1,
+                            width = .95,
+                            na.rm = TRUE ) {
+
+
+  distribution_t <- c(
+    "T-distribution",
+    "t-distribution",
+    "T",
+    "t",
+    "Student's T",
+    "Student's t",
+    "Student T",
+    "Student t"
+  )
+
+  distribution_beta_binomial <- c(
+    'Beta-Binomial',
+    'Beta-binomial',
+    'beta-binomial'
+  )
+
+  lst_fun <- list()
+  l <- length( lst_fun )
+
+  # Statistic = sample size
+  if ( 'N' %in% statistics ) {
+
+    f <- function(x) {
+      if (na.rm) n <- sum( !is.na(x) ) else n <- length(x)
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'N'
+    l <- l + 1
+
+    # Close 'Statistic = mean'
+  }
+
+  # Statistic = mean
+  if ( 'M' %in% statistics ) {
+
+    f <- function(x) {
+      mean(x, na.rm = na.rm)
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'M'
+    l <- l + 1
+
+    # Close 'Statistic = mean'
+  }
+
+  # Statistic = median
+  if ( 'Md' %in% statistics ) {
+
+    f <- function(x) {
+      median(x, na.rm = na.rm)
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'Md'
+    l <- l + 1
+
+    # Close 'Statistic = mean'
+  }
+
+  # Statistic = standard deviation
+  if ( 'SD' %in% statistics ) {
+
+    f <- function(x) {
+      sd(x, na.rm = na.rm)
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'SD'
+    l <- l + 1
+
+    # Close 'Statistic = standard deviation'
+  }
+
+  # Statistic = standard error
+  if ( 'SE' %in% statistics ) {
+
+    f <- function(x) {
+      if ( na.rm ) n <- sum( !is.na(x) ) else n <- length(x)
+      sd(x, na.rm = na.rm) / sqrt( n )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'SE'
+    l <- l + 1
+
+    # Close 'Statistic = standard error'
+  }
+
+  # Statistic = count
+  if ( 'C' %in% statistics ) {
+
+    f <- function(x) {
+      sum(x %in% categories, na.rm = na.rm)
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'C'
+    l <- l + 1
+
+    # Close 'Statistic = proportion'
+  }
+
+  # Statistic = proportion
+  if ( 'Pr' %in% statistics ) {
+
+    f <- function(x) {
+      mean(x %in% categories, na.rm = na.rm)
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'Pr'
+    l <- l + 1
+
+    # Close 'Statistic = proportion'
+  }
+
+  # Statistic = percentage
+  if ( 'P' %in% statistics ) {
+
+    f <- function(x) {
+      100*mean(x %in% categories, na.rm = na.rm)
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'P'
+    l <- l + 1
+
+    # Close 'Statistic = percentage'
+  }
+
+  # Statistic = lower limit of 95% UI [T distribution]
+  if ( 'UI' %in% statistics & method %in% distribution_t ) {
+
+    f <- function(x) {
+      m <- mean(x, na.rm = na.rm)
+      s <- sd(x, na.rm = na.rm)
+      if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
+
+      return( m + qt( .5 - width/2, n - 1 )*s/sqrt(n) )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'UI_LB'
+    l <- l + 1
+
+    # Close 'Statistic = lower limit of 95% UI [T distribution]'
+  }
+
+  # Statistic = upper limit of 95% UI [T distribution]
+  if ( 'UI' %in% statistics & method %in% distribution_t ) {
+
+    f <- function(x) {
+      m <- mean(x, na.rm = na.rm)
+      s <- sd(x, na.rm = na.rm)
+      if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
+
+      return( m + qt( .5 + width/2, n - 1 )*s/sqrt(n) )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'UI_UB'
+    l <- l + 1
+
+    # Statistic = upper limit of 95% UI [T distribution]
+  }
+
+  # Statistic = lower limit of 95% UI [Beta-binomial distribution]
+  if ( 'UI' %in% statistics & method %in% distribution_beta_binomial ) {
+
+    f <- function(x) {
+      counts <- sum(x %in% categories, na.rm = na.rm)
+      if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
+
+      return( qbeta( .5 - width/2, .5 + counts, .5 + n - counts ) )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'UI_LB'
+    l <- l + 1
+
+    # Close 'Statistic = lower limit of 95% UI [Beta-binomial distribution]'
+  }
+
+  # Statistic = upper limit of 95% UI [Beta-binomial distribution]
+  if ( 'UI' %in% statistics & method %in% distribution_beta_binomial ) {
+
+    f <- function(x) {
+      counts <- sum(x %in% categories, na.rm = na.rm)
+      if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
+
+      return( qbeta( .5 + width/2, .5 + counts, .5 + n - counts ) )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'UI_UB'
+    l <- l + 1
+
+    # Statistic = upper limit of 95% UI [Beta-binomial distribution]
+  }
+
+  # If only one grouping factor
+  if ( length( groupings ) == 1 ) {
+
+    lst_groups <- list( dtf[[ groupings ]] )
+    names( lst_groups ) <- groupings
+
+    # Close 'If only one grouping factor'
+  } else {
+
+    lst_groups <- dtf[, groupings]
+
+    # Close else for 'If only one grouping factor'
+  }
+
+  dtf_summary <- aggregate(
+    dtf[[ column ]], lst_groups, function(x) {
+      sapply( seq_along(lst_fun), function(i) {
+        return( lst_fun[[i]](x) )
+      } )
+    }
+  )
+
+  mat_summary <- matrix( NA, nrow(dtf_summary), length(lst_fun) )
+  colnames(mat_summary) <- names( lst_fun)
+
+  # If only one statistic
+  if ( ncol(mat_summary) == 1 ) {
+
+    mat_summary[, 1] <- dtf_summary[, colnames(dtf_summary) != groupings]
+
+    dtf_summary <- cbind(
+      dtf_summary[, groupings],
+      as.data.frame( mat_summary )
+    )
+
+    # Close 'If only one statistic'
+  } else {
+
+    # Loop over statistics
+    for ( k in 1:ncol(mat_summary) ) {
+
+      mat_summary[, k] <- dtf_summary$x[, k]
+
+      # Close 'Loop over statistics'
+    }
+
+    dtf_summary <- cbind(
+      dtf_summary[, groupings],
+      as.data.frame( mat_summary )
+    )
+
+  }
+
+  colnames(dtf_summary)[ seq_along(groupings) ] <- groupings
+
+  return( dtf_summary )
+}

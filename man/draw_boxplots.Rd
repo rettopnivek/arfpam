@@ -52,7 +52,7 @@ dtf_data <- data.frame(
 # Create blank plot
 xl <- c( .5, 2.5 )
 yl <- c( 50, 150 )
-blank_plot( xl, yl )
+plot_blank( xl, yl )
 
 # Add boxplots
 
@@ -74,9 +74,9 @@ dtf <- cbind( dtf[,c('Group.1', 'X') ], dtf$x )
 # Create blank plot
 xl <- c( .5, 3.5 )
 yl <- c( 5, 35 )
-blank_plot( xl, yl )
-hv_line( h = yl, l = xl )
-hv_line( v = xl, l = yl )
+plot_blank( xl, yl )
+draw_hv( h = yl, l = xl )
+draw_hv( v = xl, l = yl )
 
 # Add boxplots per cylinder type
 draw_boxplots(
@@ -90,9 +90,9 @@ draw_boxplots(
 )
 
 # Add axes and labels
-add_axes( 1:3, dtf$Group.1 )
+draw_axes( 1:3, dtf$Group.1 )
 mtext( 'Cylinders', side = 1, line = 2, cex = 1.25 )
-add_axes( c( 10, 20, 30 ), side = 2 )
+draw_axes( c( 10, 20, 30 ), side = 2 )
 mtext( 'MPG', side = 2, line = 2, cex = 1.25 )
 
 }

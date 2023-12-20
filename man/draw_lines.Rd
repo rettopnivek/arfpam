@@ -85,7 +85,7 @@ existing plot.
 }
 \examples{
 # Draw a line
-blank_plot()
+plot_blank()
 draw_lines( c( 0, .5, 1 ), c( 0, .5, 1 ) )
 
 # Pass points in via data frame
@@ -106,9 +106,9 @@ dtf$UB <- dtf$x[,1] + dtf$x[,2] * 1.96
 
 # Create blank plot
 xl <- c( .5, 3.5 ); yl <- c( 5, 35 )
-blank_plot( xl, yl )
-hv_line( h = yl, l = xl )
-hv_line( v = xl, l = yl )
+plot_blank( xl, yl )
+draw_hv( h = yl, l = xl )
+draw_hv( v = xl, l = yl )
 
 # Draw lines for automatic transmission
 draw_lines(
@@ -124,9 +124,9 @@ draw_lines(
 )
 
 # Add axes and labels
-add_axes( 1:3, dtf$Group.1[1:3] )
+draw_axes( 1:3, dtf$Group.1[1:3] )
 mtext( 'Cylinders', side = 1, line = 2, cex = 1.25 )
-add_axes( c( 10, 20, 30 ), side = 2 )
+draw_axes( c( 10, 20, 30 ), side = 2 )
 mtext( 'MPG', side = 2, line = 2, cex = 1.25 )
 
 # Add legend

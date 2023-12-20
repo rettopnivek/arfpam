@@ -68,7 +68,7 @@ existing plot.
 }
 \examples{
 # Add three points
-blank_plot()
+plot_blank()
 draw_dots( c( 0, .5, 1 ), c( 0, .5, 1 ) )
 
 # Pass points in via data frame
@@ -88,9 +88,9 @@ dtf$UB <- dtf$x[,1] + dtf$x[,2] * 1.96
 
 # Create blank plot
 xl <- c( .5, 3.5 ); yl <- c( 10, 30 )
-blank_plot( xl, yl )
-hv_line( h = yl, l = xl )
-hv_line( v = xl, l = yl )
+plot_blank( xl, yl )
+draw_hv( h = yl, l = xl )
+draw_hv( v = xl, l = yl )
 
 draw_dots(
   dtf, columns = c( 'X', 'M', 'LB', 'UB' ),
@@ -98,9 +98,9 @@ draw_dots(
 )
 
 # Add axes and labels
-add_axes( 1:3, dtf$Group.1 )
+draw_axes( 1:3, dtf$Group.1 )
 mtext( 'Cylinders', side = 1, line = 2, cex = 1.25 )
-add_axes( c( 10, 20, 30 ), side = 2 )
+draw_axes( c( 10, 20, 30 ), side = 2 )
 mtext( 'MPG', side = 2, line = 2, cex = 1.25 )
 
 }

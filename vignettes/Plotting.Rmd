@@ -22,54 +22,12 @@ library(arfpam)
 
 ## Table of contents {#TOC}
 
-0. [Preamble](#section0)
 1. [Example histogram](#section1)
 2. [Example dot plot](#section2)
 3. [Example forest plot](#section3)
 4. [Example line plot](#section4)
 5. [Plotting over groups](#section5)
 6. [Example correlation heatmap](#section6)
-
-## 0) Preamble {#section0}
-
-Before providing examples of the various plotting functions, we define two useful functions to quickly create descriptive summaries of our data of interest:
-```{r}
-quick_mean_and_ci <- function(x) {
-  n <- length(x)
-  m <- mean(x)
-  s <- sd(x)
-  se <- s/sqrt(n)
-  
-  out <- c( m, m + se*qt( c( .025, .975 ), n - 1  ) )
-  names(out) <- c( 'M', 'LB', 'UB' )
-  
-  return(out)
-}
-
-summary_by_groups <- function(dtf, x, groupings) {
-  
-  lst_groups <- dtf[, groupings]
-  if (length(groupings) == 1) lst_groups <- list(lst_groups)
-  names(lst_groups) <- groupings
-  
-  sm <- aggregate(
-    dtf[[x]],
-    lst_groups,
-    quick_mean_and_ci
-  )
-  sm <- cbind(
-      sm[, seq_along(groupings)],
-      sm$x
-    )
-  
-  if ( length(groupings) == 1 ) {
-    colnames(sm)[1] <- groupings
-  }
-  if ( is.matrix(sm) ) sm <- data.frame(sm)
-  
-  return(sm)
-}
-```
 
 ## 1) Example histogram {#section1}
 
@@ -96,27 +54,31 @@ A common figure type in psychology is a plot of a measure central tendency and i
 data("ChickWeight")
 
 # Create descriptive summary by Diet for final day
-lgc_final <- ChickWeight$Time == 21
-dtf_obs <- summary_by_groups( ChickWeight[lgc_final, ], 'weight', 'Diet' )
+dtf_obs <- stats_by_group( 
+  ChickWeight[ChickWeight$Time == 21, ], 
+  'weight', 'Diet', 
+  # Sample size, mean, standard error of the mean, 
+  # and associated uncertainty intervals
+  statistics = c( 'N', 'M', 'SE', 'UI' )
+)
 dtf_obs$X <- 1:nrow( dtf_obs )
-# See the package 'dplyr' for a concise way to create these summaries
 
 # Plot means and 95% confidence intervals for weight
 
 # First create blank plot
 xl <- c( .5, 4.5 )
 yl <- c( 120, 340 )
-blank_plot( xl, yl )
+plot_blank( xl, yl )
 
 # Add estimates and error bars
-draw_dots( dtf_obs, columns = c( 'X', 'M', 'LB', 'UB' ) )
+draw_dots( dtf_obs, columns = c( 'X', 'M', 'UI_LB', 'UI_UB' ) )
 
 # Add borders, labels, and axes
 draw_borders_and_labels(
   xl, yl, labels = c( 'Diet', 'Weight at 21 days (gm)' )
 )
-add_axes( seq( yl[1], yl[2], 40 ), side = 2, line = -1.25, cex = 1 )
-add_axes( 1:4, 'Diet ' %p% 1:4, side = 1, line = -1.25, cex = 1 )
+draw_axes( seq( yl[1], yl[2], 40 ), side = 2, line = -1.25, cex = 1 )
+draw_axes( 1:4, 'Diet ' %p% 1:4, side = 1, line = -1.25, cex = 1 )
 ```
 
 [Table of contents](#TOC)
@@ -126,22 +88,39 @@ add_axes( 1:4, 'Diet ' %p% 1:4, side = 1, line = -1.25, cex = 1 )
 A useful variant of figures summarizing estimates and error bars is the forest plot, used commonly to summarize the results of a meta-analysis. In its most basic form, a forest plot reports a set of estimates and associated error bars for different variables:
 
 ```{r}
-generating_means <- runif( 6, -1, 1 )
-x <- MASS::mvrnorm( 100, generating_means, diag(6) )
-dtf <- apply( x, 2, quick_mean_and_ci ) |> t()
-dtf <- data.frame(dtf)
+overall_m <- mean( dtf_obs$M )
+# P-value based on two-tailed one-sample t-test
+dtf_obs$P_value <- pt(
+  abs( dtf_obs$M - overall_m ) / dtf_obs$SE, dtf_obs$N - 1, lower.tail = FALSE
+) * 2
+# Identify significant differences
+dtf_obs$Significant <- dtf_obs$P_value < .05
+# Create nicely formatted results
+dtf_obs$Results <- 
+  round( dtf_obs$M ) %p% ' [' %p% 
+  round( dtf_obs$UI_LB ) %p% ', ' %p% round( dtf_obs$UI_UB ) %p% 
+  ']; p = ' %p% format( round( dtf_obs$P_value, 3 ), nsmall = 3 )
 
 plot_forest(
-  dtf, xlim = c(-1.5, 1.5), 
-  labels_y = 'Column ' %p% 1:6, 
-  labels_x = seq( -1.5, 1.5, .5 ), 
+  dtf_obs[, c('M', 'UI_LB', 'UI_UB')], 
+  # X-axis
+  xlim = c(140, 340),
+  labels_x = seq( 140, 340, 40 ), 
   title_x = 'Estimated mean', 
+  # Y-axis
+  labels_y = 'Diet ' %p% 1:4, 
+  # Add results next to each error bar
+  labels_estimates = dtf_obs$Results,
+  labels_estimates_limit = overall_m, 
+  # Show overall mean
+  vert_grid = overall_m, 
+  # Indicate which mean significantly differs
+  point_type = replace_cases( dtf_obs$Significant, c( F, T ), c( 19, 21 ) ),
+  # Size of points, x/y-axis labels, and title
+  text_size = c( 1.25, .8, 1 ), 
+  # Specify margin (in inches) to ensure nice visibility
+  margin = c( .5, .5, .25, 1.5 ),
   new = FALSE
-)
-points( generating_means, 6:1, pch = 21, bg = 'white', cex = 1.25 )
-
-legend(
-  -1.5, 7, 'Generating mean', pch = 21, bty = 'n', horiz = TRUE, xpd = NA
 )
 ```
 
@@ -153,8 +132,9 @@ Another common figure in psychology is a line plot displaying change in a variab
 
 ```{r}
 # Create descriptive summary by time collapsing over diet
-dtf_obs <- summary_by_groups(
-  ChickWeight, 'weight', 'Time'
+dtf_obs <- stats_by_group(
+  ChickWeight, 
+  'weight', 'Time', statistics = c( 'M', 'UI' )
 )
 
 # Plot means and 95% confidence intervals for weight
@@ -162,17 +142,19 @@ dtf_obs <- summary_by_groups(
 # First create blank plot
 xl <- c( -.5, 21.5 )
 yl <- c( 0, 250 )
-blank_plot( xl, yl )
+plot_blank( xl, yl )
 
 # Add estimates and error bars
-draw_lines( dtf_obs, columns = c( 'Time', 'M', 'LB', 'UB' ), col.eb = 'grey' )
+draw_lines( 
+  dtf_obs, columns = c( 'Time', 'M', 'UI_LB', 'UI_UB' ), col.eb = 'grey'
+)
 
 # Add borders, labels, and axes
 draw_borders_and_labels(
   xl, yl, labels = c( 'Day', 'Weight (gm)' )
 )
-add_axes( seq( yl[1], yl[2], 50 ), side = 2, line = -1.25, cex = 1 )
-add_axes( seq( 0, 20, 5 ), side = 1, line = -1.25, cex = 1 )
+draw_axes( seq( yl[1], yl[2], 50 ), side = 2, line = -1.25, cex = 1 )
+draw_axes( seq( 0, 20, 5 ), side = 1, line = -1.25, cex = 1 )
 ```
 
 [Table of contents](#TOC)
@@ -183,7 +165,11 @@ Often we will need to plot multiple trajectories over time for separate groups. 
 
 ```{r}
 # Create descriptive summary across both time and diet
-dtf_obs <- summary_by_groups(ChickWeight, 'weight', c( 'Diet', 'Time' ) )
+dtf_obs <- stats_by_group(
+  ChickWeight, 
+  'weight', c( 'Time', 'Diet' ), 
+  statistics = c( 'M', 'UI' )
+)
 dtf_obs$X <- dtf_obs$Time + 
   replace_cases( dtf_obs$Diet, 1:4, c( -.6, -.2, .2, .6 ) )
 dtf_obs$col <- 
@@ -195,12 +181,12 @@ dtf_obs$col <-
 # First create blank plot
 xl <- c( -1, 22 )
 yl <- c( 0, 350 )
-blank_plot( xl, yl )
+plot_blank( xl, yl )
 
 draw_by_group(
   dtf_obs, 'Diet', 1:4,
   draw_fun = draw_lines,
-  columns = c( 'X', 'M', 'LB', 'UB' ),
+  columns = c( 'X', 'M', 'UI_LB', 'UI_UB' ),
   arrow = TRUE,
   pch = 21, 
   aes = c( col = 'col', col.eb = 'col', bg = 'col' )
@@ -210,10 +196,10 @@ draw_by_group(
 draw_borders_and_labels(
   xl, yl, labels = c( 'Day', 'Weight (gm)' )
 )
-add_axes( seq( yl[1], yl[2], 50 ), side = 2, line = -1.25, cex = 1 )
-add_axes( seq( 0, 20, 5 ), side = 1, line = -1.25, cex = 1 )
+draw_axes( seq( yl[1], yl[2], 50 ), side = 2, line = -1.25, cex = 1 )
+draw_axes( seq( 0, 20, 5 ), side = 1, line = -1.25, cex = 1 )
 legend(
-  'topleft', 'Diet ' %p% 1:4, fill = palettes( 1:4 ), bty = 'n'
+  0, 340, 'Diet ' %p% 1:4, fill = palettes( 1:4 ), bty = 'n'
 )
 ```
 
@@ -221,7 +207,7 @@ legend(
 
 ## 6) Example correlation heatmap {#section6}
 
-The function 'plot_correlation_heatmap' is a quick way to create a figure summarizing the set of correlations over multiple variables along with useful information on the magnitude and statistical significant of each relationship:
+The function 'plot_correlations' is a quick way to create a figure summarizing the set of correlations over multiple variables along with useful information on the magnitude and statistical significant of each relationship:
 
 ```{r}
 # Simulate data from a multivariate normal with correlated values
@@ -234,7 +220,9 @@ x <- MASS::mvrnorm( 100, rep( 0, 3 ), Sigma = Sigma )
 colnames(x) <- 'V' %p% 1:3
 x <- data.frame(x)
 
-plot_correlation_heatmap(x, new = FALSE)
+plot_correlations(
+  x, labels = list( 'Variable ' %p% 1:3, 'V' %p% 1:3 ),  new = FALSE
+)
 ```
 
 [Table of contents](#TOC)

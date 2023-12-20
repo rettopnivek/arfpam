@@ -18,7 +18,7 @@ at the specified x or y-axis coordinates."><!-- mathjax --><script src="https://
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.36.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.38.0</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ filled bar(s). If <code>NA</code>, no border is drawn.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create blank plot</span></span></span>
 <span class="r-in"><span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">yl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="blank_plot.html">blank_plot</a></span><span class="op">(</span><span class="va">xl</span>, <span class="va">yl</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="plot_blank.html">plot_blank</a></span><span class="op">(</span><span class="va">xl</span>, <span class="va">yl</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Draw vertical grey bar</span></span></span>
 <span class="r-in"><span><span class="fu">fill_plot</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, l <span class="op">=</span> <span class="va">yl</span>, col <span class="op">=</span> <span class="st">"grey90"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Also set height and border of bar</span></span></span>
@@ -108,7 +108,7 @@ filled bar(s). If <code>NA</code>, no border is drawn.</p></dd>
 <span class="r-in"><span><span class="co"># Multiple bars can be draw at once</span></span></span>
 <span class="r-in"><span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">yl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="blank_plot.html">blank_plot</a></span><span class="op">(</span><span class="va">xl</span>, <span class="va">yl</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="plot_blank.html">plot_blank</a></span><span class="op">(</span><span class="va">xl</span>, <span class="va">yl</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Multiple vertical bars</span></span></span>
 <span class="r-in"><span><span class="fu">fill_plot</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>, l <span class="op">=</span> <span class="va">yl</span>, col <span class="op">=</span> <span class="st">"grey90"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Multiple horizontal bars</span></span></span>

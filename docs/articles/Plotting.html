@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.36.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.38.0</span>
       </span>
     </div>
 
@@ -83,8 +83,7 @@
 <div class="section level2">
 <h2 id="TOC">Table of contents<a class="anchor" aria-label="anchor" href="#TOC"></a>
 </h2>
-<ol start="0" style="list-style-type: decimal">
-<li><a href="#section0">Preamble</a></li>
+<ol style="list-style-type: decimal">
 <li><a href="#section1">Example histogram</a></li>
 <li><a href="#section2">Example dot plot</a></li>
 <li><a href="#section3">Example forest plot</a></li>
@@ -94,66 +93,23 @@
 </ol>
 </div>
 <div class="section level2">
-<h2 id="section0">0) Preamble<a class="anchor" aria-label="anchor" href="#section0"></a>
-</h2>
-<p>Before providing examples of the various plotting functions, we
-define two useful functions to quickly create descriptive summaries of
-our data of interest:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">quick_mean_and_ci</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span>  <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span>  <span class="va">se</span> <span class="op">&lt;-</span> <span class="va">s</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="va">m</span>, <span class="va">m</span> <span class="op">+</span> <span class="va">se</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">qt</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">.025</span>, <span class="fl">.975</span> <span class="op">)</span>, <span class="va">n</span> <span class="op">-</span> <span class="fl">1</span>  <span class="op">)</span> <span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'M'</span>, <span class="st">'LB'</span>, <span class="st">'UB'</span> <span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">summary_by_groups</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dtf</span>, <span class="va">x</span>, <span class="va">groupings</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  </span>
-<span>  <span class="va">lst_groups</span> <span class="op">&lt;-</span> <span class="va">dtf</span><span class="op">[</span>, <span class="va">groupings</span><span class="op">]</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">groupings</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="va">lst_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">lst_groups</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">lst_groups</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">groupings</span></span>
-<span>  </span>
-<span>  <span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span></span>
-<span>    <span class="va">dtf</span><span class="op">[[</span><span class="va">x</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>    <span class="va">lst_groups</span>,</span>
-<span>    <span class="va">quick_mean_and_ci</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
-<span>      <span class="va">sm</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">groupings</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>      <span class="va">sm</span><span class="op">$</span><span class="va">x</span></span>
-<span>    <span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">groupings</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sm</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">groupings</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">is.matrix</a></span><span class="op">(</span><span class="va">sm</span><span class="op">)</span> <span class="op">)</span> <span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">sm</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">sm</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="section1">1) Example histogram<a class="anchor" aria-label="anchor" href="#section1"></a>
 </h2>
 <p>One can quickly plot a histogram for a set of values via the
 ‘plot_histogram’ function, which uses by default the Freedman-Diaconis
 rule for determining bin size (which works somewhat better then base R’s
 default using Sturge’s rule):</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulate data from normal distribution</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_histogram.html">plot_histogram</a></span><span class="op">(</span><span class="va">x</span>, main <span class="op">=</span> <span class="st">'Normal distribution'</span>, new <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Plotting_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p><img src="Plotting_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Simulate data from log-normal distribution</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span> <span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_histogram.html">plot_histogram</a></span><span class="op">(</span><span class="va">y</span>, main <span class="op">=</span> <span class="st">'Log-normal distribution'</span>, new <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Plotting_files/figure-html/unnamed-chunk-3-2.png" width="700"></p>
+<p><img src="Plotting_files/figure-html/unnamed-chunk-2-2.png" width="700"></p>
 <p><a href="#TOC">Table of contents</a></p>
 </div>
 <div class="section level2">
@@ -163,33 +119,37 @@ default using Sturge’s rule):</p>
 tendency and its variation (e.g., means and 95% confidence intervals),
 shown over a grouping factor. Such a figure can be created quickly using
 the ‘draw_dots’ function:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example data examining effect of diet on early growth of chicks</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ChickWeight"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create descriptive summary by Diet for final day</span></span>
-<span><span class="va">lgc_final</span> <span class="op">&lt;-</span> <span class="va">ChickWeight</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="fl">21</span></span>
-<span><span class="va">dtf_obs</span> <span class="op">&lt;-</span> <span class="fu">summary_by_groups</span><span class="op">(</span> <span class="va">ChickWeight</span><span class="op">[</span><span class="va">lgc_final</span>, <span class="op">]</span>, <span class="st">'weight'</span>, <span class="st">'Diet'</span> <span class="op">)</span></span>
+<span><span class="va">dtf_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stats_by_group.html">stats_by_group</a></span><span class="op">(</span> </span>
+<span>  <span class="va">ChickWeight</span><span class="op">[</span><span class="va">ChickWeight</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="fl">21</span>, <span class="op">]</span>, </span>
+<span>  <span class="st">'weight'</span>, <span class="st">'Diet'</span>, </span>
+<span>  <span class="co"># Sample size, mean, standard error of the mean, </span></span>
+<span>  <span class="co"># and associated uncertainty intervals</span></span>
+<span>  statistics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'N'</span>, <span class="st">'M'</span>, <span class="st">'SE'</span>, <span class="st">'UI'</span> <span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">dtf_obs</span><span class="op">$</span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span> <span class="va">dtf_obs</span> <span class="op">)</span></span>
-<span><span class="co"># See the package 'dplyr' for a concise way to create these summaries</span></span>
 <span></span>
 <span><span class="co"># Plot means and 95% confidence intervals for weight</span></span>
 <span></span>
 <span><span class="co"># First create blank plot</span></span>
 <span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">.5</span>, <span class="fl">4.5</span> <span class="op">)</span></span>
 <span><span class="va">yl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">120</span>, <span class="fl">340</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/blank_plot.html">blank_plot</a></span><span class="op">(</span> <span class="va">xl</span>, <span class="va">yl</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_blank.html">plot_blank</a></span><span class="op">(</span> <span class="va">xl</span>, <span class="va">yl</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Add estimates and error bars</span></span>
-<span><span class="fu"><a href="../reference/draw_dots.html">draw_dots</a></span><span class="op">(</span> <span class="va">dtf_obs</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="st">'M'</span>, <span class="st">'LB'</span>, <span class="st">'UB'</span> <span class="op">)</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/draw_dots.html">draw_dots</a></span><span class="op">(</span> <span class="va">dtf_obs</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="st">'M'</span>, <span class="st">'UI_LB'</span>, <span class="st">'UI_UB'</span> <span class="op">)</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Add borders, labels, and axes</span></span>
 <span><span class="fu"><a href="../reference/draw_borders_and_labels.html">draw_borders_and_labels</a></span><span class="op">(</span></span>
 <span>  <span class="va">xl</span>, <span class="va">yl</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Diet'</span>, <span class="st">'Weight at 21 days (gm)'</span> <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/add_axes.html">add_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="va">yl</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">yl</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">40</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">2</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/add_axes.html">add_axes</a></span><span class="op">(</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="st">'Diet '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, side <span class="op">=</span> <span class="fl">1</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Plotting_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<span><span class="fu"><a href="../reference/draw_axes.html">draw_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="va">yl</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">yl</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">40</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">2</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/draw_axes.html">draw_axes</a></span><span class="op">(</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="st">'Diet '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, side <span class="op">=</span> <span class="fl">1</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span></code></pre></div>
+<p><img src="Plotting_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <p><a href="#TOC">Table of contents</a></p>
 </div>
 <div class="section level2">
@@ -199,25 +159,42 @@ the ‘draw_dots’ function:</p>
 the forest plot, used commonly to summarize the results of a
 meta-analysis. In its most basic form, a forest plot reports a set of
 estimates and associated error bars for different variables:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">generating_means</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span> <span class="fl">6</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span> <span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span> <span class="fl">100</span>, <span class="va">generating_means</span>, <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span> <span class="op">)</span></span>
-<span><span class="va">dtf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span> <span class="va">x</span>, <span class="fl">2</span>, <span class="va">quick_mean_and_ci</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">dtf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">dtf</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">overall_m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">M</span> <span class="op">)</span></span>
+<span><span class="co"># P-value based on two-tailed one-sample t-test</span></span>
+<span><span class="va">dtf_obs</span><span class="op">$</span><span class="va">P_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">pt</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">M</span> <span class="op">-</span> <span class="va">overall_m</span> <span class="op">)</span> <span class="op">/</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">SE</span>, <span class="va">dtf_obs</span><span class="op">$</span><span class="va">N</span> <span class="op">-</span> <span class="fl">1</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span></span>
+<span><span class="co"># Identify significant differences</span></span>
+<span><span class="va">dtf_obs</span><span class="op">$</span><span class="va">Significant</span> <span class="op">&lt;-</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">P_value</span> <span class="op">&lt;</span> <span class="fl">.05</span></span>
+<span><span class="co"># Create nicely formatted results</span></span>
+<span><span class="va">dtf_obs</span><span class="op">$</span><span class="va">Results</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">M</span> <span class="op">)</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="st">' ['</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">UI_LB</span> <span class="op">)</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="st">', '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">UI_UB</span> <span class="op">)</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> </span>
+<span>  <span class="st">']; p = '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">P_value</span>, <span class="fl">3</span> <span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">3</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_forest.html">plot_forest</a></span><span class="op">(</span></span>
-<span>  <span class="va">dtf</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span><span class="op">)</span>, </span>
-<span>  labels_y <span class="op">=</span> <span class="st">'Column '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, </span>
-<span>  labels_x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">.5</span> <span class="op">)</span>, </span>
+<span>  <span class="va">dtf_obs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'M'</span>, <span class="st">'UI_LB'</span>, <span class="st">'UI_UB'</span><span class="op">)</span><span class="op">]</span>, </span>
+<span>  <span class="co"># X-axis</span></span>
+<span>  xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">140</span>, <span class="fl">340</span><span class="op">)</span>,</span>
+<span>  labels_x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">140</span>, <span class="fl">340</span>, <span class="fl">40</span> <span class="op">)</span>, </span>
 <span>  title_x <span class="op">=</span> <span class="st">'Estimated mean'</span>, </span>
+<span>  <span class="co"># Y-axis</span></span>
+<span>  labels_y <span class="op">=</span> <span class="st">'Diet '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, </span>
+<span>  <span class="co"># Add results next to each error bar</span></span>
+<span>  labels_estimates <span class="op">=</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">Results</span>,</span>
+<span>  labels_estimates_limit <span class="op">=</span> <span class="va">overall_m</span>, </span>
+<span>  <span class="co"># Show overall mean</span></span>
+<span>  vert_grid <span class="op">=</span> <span class="va">overall_m</span>, </span>
+<span>  <span class="co"># Indicate which mean significantly differs</span></span>
+<span>  point_type <span class="op">=</span> <span class="fu"><a href="../reference/replace_cases.html">replace_cases</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">Significant</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="cn">F</span>, <span class="cn">T</span> <span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">19</span>, <span class="fl">21</span> <span class="op">)</span> <span class="op">)</span>,</span>
+<span>  <span class="co"># Size of points, x/y-axis labels, and title</span></span>
+<span>  text_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">1.25</span>, <span class="fl">.8</span>, <span class="fl">1</span> <span class="op">)</span>, </span>
+<span>  <span class="co"># Specify margin (in inches) to ensure nice visibility</span></span>
+<span>  margin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">.5</span>, <span class="fl">.5</span>, <span class="fl">.25</span>, <span class="fl">1.5</span> <span class="op">)</span>,</span>
 <span>  new <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span> <span class="va">generating_means</span>, <span class="fl">6</span><span class="op">:</span><span class="fl">1</span>, pch <span class="op">=</span> <span class="fl">21</span>, bg <span class="op">=</span> <span class="st">'white'</span>, cex <span class="op">=</span> <span class="fl">1.25</span> <span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span></span>
-<span>  <span class="op">-</span><span class="fl">1.5</span>, <span class="fl">7</span>, <span class="st">'Generating mean'</span>, pch <span class="op">=</span> <span class="fl">21</span>, bty <span class="op">=</span> <span class="st">'n'</span>, horiz <span class="op">=</span> <span class="cn">TRUE</span>, xpd <span class="op">=</span> <span class="cn">NA</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plotting_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p><img src="Plotting_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <p><a href="#TOC">Table of contents</a></p>
 </div>
 <div class="section level2">
@@ -226,10 +203,11 @@ estimates and associated error bars for different variables:</p>
 <p>Another common figure in psychology is a line plot displaying change
 in a variable over time. We can quickly create such a figure using the
 ‘draw_line’ function:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create descriptive summary by time collapsing over diet</span></span>
-<span><span class="va">dtf_obs</span> <span class="op">&lt;-</span> <span class="fu">summary_by_groups</span><span class="op">(</span></span>
-<span>  <span class="va">ChickWeight</span>, <span class="st">'weight'</span>, <span class="st">'Time'</span></span>
+<span><span class="va">dtf_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stats_by_group.html">stats_by_group</a></span><span class="op">(</span></span>
+<span>  <span class="va">ChickWeight</span>, </span>
+<span>  <span class="st">'weight'</span>, <span class="st">'Time'</span>, statistics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'M'</span>, <span class="st">'UI'</span> <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot means and 95% confidence intervals for weight</span></span>
@@ -237,18 +215,20 @@ in a variable over time. We can quickly create such a figure using the
 <span><span class="co"># First create blank plot</span></span>
 <span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="op">-</span><span class="fl">.5</span>, <span class="fl">21.5</span> <span class="op">)</span></span>
 <span><span class="va">yl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">0</span>, <span class="fl">250</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/blank_plot.html">blank_plot</a></span><span class="op">(</span> <span class="va">xl</span>, <span class="va">yl</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_blank.html">plot_blank</a></span><span class="op">(</span> <span class="va">xl</span>, <span class="va">yl</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Add estimates and error bars</span></span>
-<span><span class="fu"><a href="../reference/draw_lines.html">draw_lines</a></span><span class="op">(</span> <span class="va">dtf_obs</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Time'</span>, <span class="st">'M'</span>, <span class="st">'LB'</span>, <span class="st">'UB'</span> <span class="op">)</span>, col.eb <span class="op">=</span> <span class="st">'grey'</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/draw_lines.html">draw_lines</a></span><span class="op">(</span> </span>
+<span>  <span class="va">dtf_obs</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Time'</span>, <span class="st">'M'</span>, <span class="st">'UI_LB'</span>, <span class="st">'UI_UB'</span> <span class="op">)</span>, col.eb <span class="op">=</span> <span class="st">'grey'</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Add borders, labels, and axes</span></span>
 <span><span class="fu"><a href="../reference/draw_borders_and_labels.html">draw_borders_and_labels</a></span><span class="op">(</span></span>
 <span>  <span class="va">xl</span>, <span class="va">yl</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Day'</span>, <span class="st">'Weight (gm)'</span> <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/add_axes.html">add_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="va">yl</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">yl</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">50</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">2</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/add_axes.html">add_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">0</span>, <span class="fl">20</span>, <span class="fl">5</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">1</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Plotting_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<span><span class="fu"><a href="../reference/draw_axes.html">draw_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="va">yl</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">yl</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">50</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">2</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/draw_axes.html">draw_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">0</span>, <span class="fl">20</span>, <span class="fl">5</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">1</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span></code></pre></div>
+<p><img src="Plotting_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <p><a href="#TOC">Table of contents</a></p>
 </div>
 <div class="section level2">
@@ -257,9 +237,13 @@ in a variable over time. We can quickly create such a figure using the
 <p>Often we will need to plot multiple trajectories over time for
 separate groups. The ‘draw_by_groups’ function streamlines the process
 of plotting separate lines by different groups.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create descriptive summary across both time and diet</span></span>
-<span><span class="va">dtf_obs</span> <span class="op">&lt;-</span> <span class="fu">summary_by_groups</span><span class="op">(</span><span class="va">ChickWeight</span>, <span class="st">'weight'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Diet'</span>, <span class="st">'Time'</span> <span class="op">)</span> <span class="op">)</span></span>
+<span><span class="va">dtf_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stats_by_group.html">stats_by_group</a></span><span class="op">(</span></span>
+<span>  <span class="va">ChickWeight</span>, </span>
+<span>  <span class="st">'weight'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Time'</span>, <span class="st">'Diet'</span> <span class="op">)</span>, </span>
+<span>  statistics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'M'</span>, <span class="st">'UI'</span> <span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">dtf_obs</span><span class="op">$</span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">Time</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/replace_cases.html">replace_cases</a></span><span class="op">(</span> <span class="va">dtf_obs</span><span class="op">$</span><span class="va">Diet</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="op">-</span><span class="fl">.6</span>, <span class="op">-</span><span class="fl">.2</span>, <span class="fl">.2</span>, <span class="fl">.6</span> <span class="op">)</span> <span class="op">)</span></span>
 <span><span class="va">dtf_obs</span><span class="op">$</span><span class="va">col</span> <span class="op">&lt;-</span> </span>
@@ -271,12 +255,12 @@ of plotting separate lines by different groups.</p>
 <span><span class="co"># First create blank plot</span></span>
 <span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="op">-</span><span class="fl">1</span>, <span class="fl">22</span> <span class="op">)</span></span>
 <span><span class="va">yl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">0</span>, <span class="fl">350</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/blank_plot.html">blank_plot</a></span><span class="op">(</span> <span class="va">xl</span>, <span class="va">yl</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_blank.html">plot_blank</a></span><span class="op">(</span> <span class="va">xl</span>, <span class="va">yl</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/draw_by_group.html">draw_by_group</a></span><span class="op">(</span></span>
 <span>  <span class="va">dtf_obs</span>, <span class="st">'Diet'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span>
 <span>  draw_fun <span class="op">=</span> <span class="va">draw_lines</span>,</span>
-<span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="st">'M'</span>, <span class="st">'LB'</span>, <span class="st">'UB'</span> <span class="op">)</span>,</span>
+<span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'X'</span>, <span class="st">'M'</span>, <span class="st">'UI_LB'</span>, <span class="st">'UI_UB'</span> <span class="op">)</span>,</span>
 <span>  arrow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  pch <span class="op">=</span> <span class="fl">21</span>, </span>
 <span>  aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> col <span class="op">=</span> <span class="st">'col'</span>, col.eb <span class="op">=</span> <span class="st">'col'</span>, bg <span class="op">=</span> <span class="st">'col'</span> <span class="op">)</span></span>
@@ -286,22 +270,22 @@ of plotting separate lines by different groups.</p>
 <span><span class="fu"><a href="../reference/draw_borders_and_labels.html">draw_borders_and_labels</a></span><span class="op">(</span></span>
 <span>  <span class="va">xl</span>, <span class="va">yl</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Day'</span>, <span class="st">'Weight (gm)'</span> <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/add_axes.html">add_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="va">yl</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">yl</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">50</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">2</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/add_axes.html">add_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">0</span>, <span class="fl">20</span>, <span class="fl">5</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">1</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/draw_axes.html">draw_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="va">yl</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">yl</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">50</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">2</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/draw_axes.html">draw_axes</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">0</span>, <span class="fl">20</span>, <span class="fl">5</span> <span class="op">)</span>, side <span class="op">=</span> <span class="fl">1</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1.25</span>, cex <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span></span>
-<span>  <span class="st">'topleft'</span>, <span class="st">'Diet '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, fill <span class="op">=</span> <span class="fu"><a href="../reference/palettes.html">palettes</a></span><span class="op">(</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span> <span class="op">)</span>, bty <span class="op">=</span> <span class="st">'n'</span></span>
+<span>  <span class="fl">0</span>, <span class="fl">340</span>, <span class="st">'Diet '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, fill <span class="op">=</span> <span class="fu"><a href="../reference/palettes.html">palettes</a></span><span class="op">(</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span> <span class="op">)</span>, bty <span class="op">=</span> <span class="st">'n'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plotting_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="Plotting_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p><a href="#TOC">Table of contents</a></p>
 </div>
 <div class="section level2">
 <h2 id="section6">6) Example correlation heatmap<a class="anchor" aria-label="anchor" href="#section6"></a>
 </h2>
-<p>The function ‘plot_correlation_heatmap’ is a quick way to create a
-figure summarizing the set of correlations over multiple variables along
-with useful information on the magnitude and statistical significant of
-each relationship:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p>The function ‘plot_correlations’ is a quick way to create a figure
+summarizing the set of correlations over multiple variables along with
+useful information on the magnitude and statistical significant of each
+relationship:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulate data from a multivariate normal with correlated values</span></span>
 <span><span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span> <span class="op">)</span>,</span>
@@ -312,8 +296,10 @@ each relationship:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">'V'</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plot_correlation_heatmap.html">plot_correlation_heatmap</a></span><span class="op">(</span><span class="va">x</span>, new <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Plotting_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<span><span class="fu"><a href="../reference/plot_correlations.html">plot_correlations</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> <span class="st">'Variable '</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="st">'V'</span> <span class="op"><a href="../reference/grapes-p-grapes.html">%p%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span> <span class="op">)</span>,  new <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="Plotting_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p><a href="#TOC">Table of contents</a></p>
 </div>
   </div>
