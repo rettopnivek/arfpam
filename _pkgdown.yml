@@ -62,6 +62,7 @@ reference:
   - strip_value
   - squish
   - templates
+  - update_package_version
 - title: "Plotting"
   desc: >
 

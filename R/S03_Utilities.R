@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-12-19
+# Last updated 2023-12-29
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -55,6 +55,7 @@
 #   7.2) create_vector
 #   7.3) section
 #   7.4) templates
+#   7.5) update_package_version
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -3110,3 +3111,144 @@ templates <- function(type = NULL, val = NULL) {
 
 }
 
+#### 7.5) update_package_version ####
+#' Update Package Versions in Script Documentation
+#'
+#' Function to update the documentation in an R
+#' script with a package's most up-to-date version
+#' number.
+#'
+#' @param file_name A character string, the file
+#'   name for the R script to update.
+#' @param prior_text_package A character string, the
+#'   text preceding the package name.
+#' @param prior_text_version A character string, the
+#'   text preceding the package's version number.
+#' @param post_text_version A character string, the
+#'   text following the package's version number
+#'   (can just be the initial few characters).
+#' @param overwrite Logical; if \code{TRUE} updates
+#'   the original R script by overwriting its content.
+#' @param display Logical; if \code{TRUE} displays
+#'   the updated R script content to the console window.
+#'
+#' @returns Either as a side effect overwrites the original
+#' R script content or displays the updated content to the
+#' console window.
+#'
+#' @export
+
+update_package_version <- function(
+    file_name,
+    prior_text_package = '#   * The package ',
+    prior_text_version = ' (version ',
+    post_text_version = ')',
+    overwrite = TRUE,
+    display = FALSE ) {
+
+  script_content <- scan(
+    file = file_name,
+    what = character(),
+    sep = '\n',
+    blank.lines.skip = FALSE
+  )
+
+  package_versions <- sapply(
+    seq_along( script_content ), function(r) {
+
+      lgc_match <- grepl(
+        prior_text_package, script_content[r], fixed = TRUE
+      )
+
+      # If match to package version terms
+      if ( lgc_match ) {
+
+        package_name <- strsplit(
+          script_content[r], split = prior_text_version, fixed = TRUE
+        )[[1]][1]
+        package_name <- gsub(
+          prior_text_package, '', package_name, fixed = TRUE
+        )
+        package_name <- gsub(
+          "'", "", package_name, fixed = TRUE
+        )
+
+        # print(package_name)
+
+        version_number <- installed.packages()[package_name, 'Version']
+
+        return(version_number)
+
+        # Close 'If match to package version terms'
+      } else {
+
+        return( '' )
+
+        # Close else for 'If match to package version terms'
+      }
+
+    }
+  )
+
+  # If any matches
+  if ( any( package_versions != '' ) ) {
+
+    index <- which( package_versions != '' )
+
+    # Loop over matches
+    for ( i in seq_along( index ) ) {
+
+      line_parts <- strsplit(
+        script_content[ index[i] ],
+        split = prior_text_version,
+        fixed = TRUE
+      )[[1]]
+      line_end <- strsplit(
+        line_parts[2],
+        split = post_text_version,
+        fixed = TRUE
+      )[[1]][2]
+      if ( is.na(line_end) ) line_end <- ''
+
+      new_term <- c(
+        line_parts[1],
+        prior_text_version,
+        package_versions[ index[i] ],
+        post_text_version,
+        line_end
+      ) |> paste( collapse = '' )
+
+      script_content[ index[i] ] <- new_term
+
+      # Close 'Loop over matches'
+    }
+
+    # Close 'If any matches'
+  }
+
+  # Update original script
+  if ( overwrite ) {
+
+    write(
+      script_content,
+      file = file_name,
+      sep = '\n',
+      append = FALSE
+    )
+
+    message( paste0( 'Lines updated: ', length(index) ) )
+
+    # Close 'Update original script'
+  }
+
+  # Display updated script in console
+  if ( display ) {
+
+    lst_nuisance <- sapply( script_content, message )
+
+    return( invisible() )
+
+    # Close 'Display updated script in console'
+  }
+
+}
