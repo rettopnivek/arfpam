@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-12-20
+# Last updated 2024-01-03
 
 # Table of contents
 # 1) Utility functions for plotting
@@ -213,56 +213,80 @@ palettes <- function(index = NULL,
 #'
 #' @param dtf A data frame with separate columns for
 #'   each grouping variable.
-#' @param spacing A numeric value, the space to add
-#'   between groups.
+#' @param spacing A numeric vector of two values, the
+#'   gap to add between groups and at the beginning and
+#'   end for plotting limits (given as a proportion).
+#' @param as_list Logical; if \code{TRUE} returns a list
+#'   with both the positions and the suggested lower and
+#'   upper x-axis limits; otherwise, returns the positions
+#'   as a vector.
 #'
-#' @returns A numeric vector of values.
+#' @returns A numeric vector of values. If \code{as_list} is
+#' \code{TRUE}, a list with two vectors, one for the positions
+#' and one with the lower and upper limits for the plotting
+#' boundaries.
 #'
 #' @examples
 #' # Example data set
-#' data("iris")
-#' dtf <- iris
-#' dtf$Long_petals <- dtf$Petal.Length > median( dtf$Petal.Length )
-#' dtf <- stats_by_group( dtf, 'Sepal.Length', c( 'Species', 'Long_petals' ) )
+#' data("mtcars")
+#' dtf <- stats_by_group( mtcars, 'mpg', c( 'vs', 'am' ) )
 #' specify_positions( dtf[, 1:2] )
 #'
 #' @export
 
 specify_positions <- function( dtf,
-                               spacing = 1 ) {
+                               spacing = c( .25, .25 ),
+                               as_list = FALSE ) {
 
-  n_rows <- nrow( dtf )
+  V <- ncol( dtf )
+  dtf_index <- dtf
 
-  unique_cases <- lapply(
-    1:ncol(dtf), function(k) unique( dtf[[k]] )
-  )
-  n_cases <- sapply(
-    unique_cases, function(x) length(x)
-  )
-
-  positions <- rep( NA, n_rows )
-
-  inc <- 1
-  for ( r in seq_along(positions) ) {
-
-    lgc_group <- FALSE
-
-    for ( k in 1:ncol(dtf) ) {
-      if ( dtf[[k]][r] == unique_cases[[k]][n_cases[k] ] ) {
-        lgc_group <- TRUE
-      }
-    }
-
-    positions[r] <- inc
-
-    inc <- inc + 1
-
-    if (lgc_group )
-      inc <- inc + spacing
-
+  for ( v in 1:V ) {
+    dtf_index[[ v ]] <- as.numeric(
+      as.factor( dtf_index[[ v ]] )
+    )
   }
 
-  return( positions )
+  int_max <- apply(
+    dtf_index, 2, max
+  )
+
+  num_spacing <-
+    max( dtf_index[[V]] ) * spacing[1]
+  num_endpoints <-
+    max( dtf_index[[V]] ) * spacing[2]
+
+  num_positions <- rep( NA, nrow(dtf_index) )
+  num_positions[1] <- 1
+
+  # Loop over remaining rows
+  for ( r in 2:nrow(dtf_index) ) {
+
+    num_positions[r] <- num_positions[r-1] + 1
+
+    int_indices_r <- unlist( dtf_index[r, -V] )
+    int_indices_rm1 <- unlist( dtf_index[r-1, -V] )
+
+    # If break in nesting structure
+    if ( any( int_indices_r != int_indices_rm1) ) {
+
+      num_positions[r] <- num_positions[r] + num_spacing
+
+      # Close 'If break in nesting structure'
+    }
+
+    # Close 'Loop over remaining rows'
+  }
+
+  lst_output <- list(
+    positions = num_positions,
+    limits = c(
+      min(num_positions) - num_endpoints,
+      max(num_positions) + num_endpoints
+    )
+  )
+
+  if ( as_list ) return( lst_output ) else return( lst_output$positions )
 }
 
 #### 1.8) draw_by_group ####

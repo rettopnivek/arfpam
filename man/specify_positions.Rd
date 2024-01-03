@@ -4,17 +4,26 @@
 \alias{specify_positions}
 \title{Specify Positions over Grouping Factors}
 \usage{
-specify_positions(dtf, spacing = 1)
+specify_positions(dtf, spacing = c(0.25, 0.25), as_list = FALSE)
 }
 \arguments{
 \item{dtf}{A data frame with separate columns for
 each grouping variable.}
 
-\item{spacing}{A numeric value, the space to add
-between groups.}
+\item{spacing}{A numeric vector of two values, the
+gap to add between groups and at the beginning and
+end for plotting limits (given as a proportion).}
+
+\item{as_list}{Logical; if \code{TRUE} returns a list
+with both the positions and the suggested lower and
+upper x-axis limits; otherwise, returns the positions
+as a vector.}
 }
 \value{
-A numeric vector of values.
+A numeric vector of values. If \code{as_list} is
+\code{TRUE}, a list with two vectors, one for the positions
+and one with the lower and upper limits for the plotting
+boundaries.
 }
 \description{
 Function to create positions for a figure based
@@ -23,10 +32,8 @@ data frame.
 }
 \examples{
 # Example data set
-data("iris")
-dtf <- iris
-dtf$Long_petals <- dtf$Petal.Length > median( dtf$Petal.Length )
-dtf <- stats_by_group( dtf, 'Sepal.Length', c( 'Species', 'Long_petals' ) )
+data("mtcars")
+dtf <- stats_by_group( mtcars, 'mpg', c( 'vs', 'am' ) )
 specify_positions( dtf[, 1:2] )
 
 }
