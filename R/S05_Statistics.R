@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-12-18
+# Last updated 2024-04-05
 
 # Table of contents
 # 1) sem
@@ -984,7 +984,7 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
     # Close 'Inter-quartile range'
   }
 
-  #<Counts/frequencies
+  # Counts/frequencies
   if (grepl("[[C]]", syntax, fixed = TRUE)) {
     if (is.null(categories)) {
       categories <- TRUE
@@ -1044,6 +1044,60 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
     out <- gsub("[[Pr]]", prp, out, fixed = TRUE)
 
     # Close 'Proportion'
+  }
+
+  # Counts/frequencies for NA values
+  if (grepl("[[NAC]]", syntax, fixed = TRUE)) {
+    if (is.null(categories)) {
+      categories <- TRUE
+    }
+
+    cnt <- sum( is.na(x) )
+
+    out <- gsub("[[NAC]]", cnt, out, fixed = TRUE)
+
+    # Close 'Counts/frequencies for NA values'
+  }
+
+  # Percentage of NA values
+  if (grepl("[[NAP]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 1
+    } else {
+      dgt <- digits
+    }
+
+    per <- 100 * mean( is.na(x) )
+    per <- round(per, dgt)
+    if (pad) {
+      per <- format(per, nsmall = dgt)
+    }
+
+    out <- gsub("[[NAP]]", per, out, fixed = TRUE)
+
+    # Close 'Percentage of NA values'
+  }
+
+  # Proportion of NA values
+  if (grepl("[[NAPr]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 2
+    } else {
+      dgt <- digits
+    }
+
+    prp <- round(mean(is.na(x)), dgt)
+    if (pad) {
+      prp <- format(prp, nsmall = dgt)
+    }
+
+    out <- gsub("[[NAPr]]", prp, out, fixed = TRUE)
+
+    # Close 'Proportion of NA values'
   }
 
   # Custom function
