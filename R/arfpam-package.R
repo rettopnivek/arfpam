@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2024-04-05
+# Last updated 2024-07-05
 
 # Package development
 # - To test functions
@@ -17,7 +17,6 @@
 
 #' Assorted R Functions for Processing, Analysis, and Modeling
 #'
-#' @docType package
 #' @name arfpam-package
 #'
 #' @description
@@ -28,4 +27,4 @@
 #' and modeling data. See
 #' \url{https://rettopnivek.github.io/arfpam/}
 #' for more details.
-NULL
+"_PACKAGE"

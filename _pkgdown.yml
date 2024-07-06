@@ -91,6 +91,7 @@ reference:
   - bounds
   - boxcox_transform
   - density_points
+  - pool_over_imputations
   - principal_components_analysis
   - pvalues
   - sem

@@ -2,6 +2,7 @@
 % Please edit documentation in R/arfpam-package.R
 \docType{package}
 \name{arfpam-package}
+\alias{arfpam}
 \alias{arfpam-package}
 \title{Assorted R Functions for Processing, Analysis, and Modeling}
 \description{
@@ -11,4 +12,15 @@ tasks when processing, plotting, analyzing,
 and modeling data. See
 \url{https://rettopnivek.github.io/arfpam/}
 for more details.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://rettopnivek.github.io/arfpam}
+}
+
+}
+\author{
+\strong{Maintainer}: Kevin Potter \email{kevin.w.potter@gmail.com}
+
 }

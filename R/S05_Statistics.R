@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2024-04-05
+# Last updated 2024-07-05
 
 # Table of contents
 # 1) sem
@@ -19,6 +19,7 @@
 # 11) yeo_johnson_transform
 # 12) principal_components_analysis
 # 13) stats_by_group
+# 14) pool_over_imputations
 
 # TO DO
 # - Add unit tests for 'sem', 'statistic', 'boxcox_transform',
@@ -2156,3 +2157,221 @@ stats_by_group <- function( dtf,
 
   return( dtf_summary )
 }
+
+#### 14) pool_over_imputations ####
+#' Pool Parameter Estimates Over Imputations
+#'
+#' Function to pool parameter estimates as
+#' well as their squared standard errors and
+#' associated degrees of freedom over imputation
+#' sets when using multiple imputation via
+#' chained equations (MICE). Estimates are
+#' pooled according to Rubin's rules. Input notation
+#' assumes I imputations and P parameters.
+#'
+#' @param estimates An I x P matrix of parameter estimates.
+#' @param standard_errors An I x P matrix of standard errors.
+#' @param degrees_of_freedom An I x P matrix of degrees of freedom.
+#'
+#' @details Pools over multiple imputations using Rubin's rules.
+#' Final parameter estimates are the average over imputations,
+#' while standard errors are the combination of within variance
+#' (average of the estimates' variance, the square of the standard
+#' error, across imputations) and between variance (the variance of the
+#' point estimates across imputations). Finally, a correction is applied
+#' to the parameters' degrees of freedom.
+#'
+#' @references
+#' Rubin, D. B. (1987). Multiple imputation for nonresponse
+#'   in surveys. John Wiley & Sons.
+#'
+#' van Buuren, S., & Groothuis-Oudshoorn, K. (2011). mice:
+#'   Multivariate imputation by chained equations in R.
+#'   Journal of Statistical Software, 45 (3), 1-67.
+#'   https://doi.org/10.18637/jss.v045.i03.
+#'
+#' @returns A matrix with the pooled estimates, standard errors,
+#'   and associated degrees of freedom for the set of parameters.
+#'
+#' @examples
+#' \dontrun{
+#' # Simulation example
+#' set.seed( 222 ) # For reproducibility
+#'
+#' # Simulate 200 observations from
+#' # 3 correlated variables
+#' n <- 200
+#' Sigma <- rbind(
+#'   c(  1.0,  0.3,  0.2 ),
+#'   c(  0.3,  1.0,  0.7 ),
+#'   c(  0.2,  0.7,  1.0 )
+#' )
+#' Y <- MASS::mvrnorm(
+#'   n, c( 0, 0, 0 ), Sigma
+#' )
+#' colnames(Y) <- c( 'Y1', 'Y2', 'Y3' )
+#' Y <- data.frame( Y )
+#'
+#' # Missing values for Y2 depend on both Y1 and Y2
+#' Y$R2 <- rbinom(
+#'   n, 1, logistic(
+#'     logit(.3) + log(2)*Y$Y1 + log(4)*Y$Y2
+#'   )
+#' )
+#' Y$Y2.M <- Y$Y2
+#' Y$Y2.M[ Y$R2 == 1 ] <- NA
+#'
+#' # Predict Y1 from Y2 (All cases)
+#' lm_Y1_from_Y2 <- lm(
+#'   Y1 ~ Y2, data = Y
+#' )
+#' print( round(
+#'   summary( lm_Y1_from_Y2 )$coefficients[2, c(1:2, 4)], 3
+#' ) )
+#'
+#' # Predict Y1 from Y2 (Complete cases)
+#' lm_Y1_from_Y2.M <- lm(
+#'   Y1 ~ Y2.M, data = Y
+#' )
+#' print( round(
+#'   summary( lm_Y1_from_Y2.M )$coefficients[2, c(1:2, 4)], 3
+#' ) )
+#'
+#' # Impute missing values of Y2 from Y3 via a simplistic
+#' # version of predictive mean matching (Note better
+#' # methods exist, approach is for example purposes only)
+#'
+#' lm_Y2.M_from_Y3 <- lm(
+#'   Y2.M ~ Y3, data = Y[ Y$R2 == 0, ]
+#' )
+#' Y2.M_pred <- predict(
+#'   lm_Y2.M_from_Y3, newdata = Y[ Y$R2 == 1, ]
+#' )
+#'
+#' # Impute missing values 10 times, sampling randomly
+#' # from 5 closest observed values
+#' i <- sapply(
+#'   1:10, function(m) {
+#'
+#'     sapply(
+#'       Y2.M_pred, function( yhat ) {
+#'         smallest_diff <-
+#'           order( abs( Y$Y2.M[ Y$R2 == 0 ] - yhat ) )
+#'         return(
+#'           Y$Y2.M[ Y$R2 == 0 ][smallest_diff][
+#'             sample( 1:5, size = 1 )
+#'           ]
+#'         )
+#'       }
+#'     )
+#'
+#'   }
+#' )
+#'
+#' # Predict Y1 from Y2 using imputed data sets
+#' # and save estimates, standard errors, and
+#' # degrees of freedom
+#' cf <- sapply(
+#'   1:10, function(m) {
+#'
+#'     Y$Y2.I <- Y$Y2.M
+#'     Y$Y2.I[ Y$R2 == 1 ] <- i[, m]
+#'
+#'     lm_Y1_from_Y2.I <- lm(
+#'       Y1 ~ Y2.I, data = Y
+#'     )
+#'
+#'     sm <- summary( lm_Y1_from_Y2.I )
+#'
+#'     return(
+#'       cbind( sm$coefficients[, 1:2], sm$df[2] )
+#'     )
+#'
+#'   }
+#' )
+#' cf <- array(
+#'   cf, dim = c( 2, 3, 10 )
+#' )
+#'
+#' pooled <- pool_over_imputations(
+#'   t( cf[, 1, ] ), # Coefficients
+#'   t( cf[, 2, ] ), # Squared standard errors
+#'   t( cf[, 3, ] ) # Degrees of freedom
+#' )
+#' print( round(
+#'     c( pooled[2, 1:2],
+#'        pt(
+#'          abs( pooled[2, 1]/pooled[2, 2] ), pooled[2, 3], lower.tail = F
+#'          )*2
+#'   ), 3
+#' ) )
+#' }
+#'
+#' @export
+
+pool_over_imputations <- function(
+    estimates,
+    standard_errors,
+    degrees_of_freedom ) {
+
+  # If single statistic provided
+  if ( !is.matrix(estimates) ) {
+    estimates <- cbind( estimates )
+    standard_errors <- cbind( standard_errors )
+    degrees_of_freedom <- cbind( degrees_of_freedom )
+  }
+
+  # Convert to variances
+  variances <- standard_errors^2
+
+  # Number of imputations
+  m <- nrow(estimates)
+
+  # Average over imputations
+  M <- apply( estimates, 2, mean )
+
+  # Variance [Between]
+  VB <- apply( estimates, 2, var )
+
+  # Variance [Within]
+  VW <- apply( variances, 2, mean )
+
+  # Total variance
+  VT <- VW + (1 + 1/m) * VB
+
+  # Degrees of freedom correction
+
+  # Code adapted from the function mice::::barnard.rubin
+  # (van Buuren & Groothuis-Oudshoorn, 2011)
+
+
+  # Prop. variance attr. to missing data
+  lambda <- (1 + 1/m) * VB / VT
+
+  # Avoid underflow problems
+  lambda[lambda < 1e-04] <- 1e-04
+
+  # Degrees of freedom adjustment per Rubin (1987)
+  dfold <- (m - 1) / lambda^2
+
+  # Small sample adaptation to avoid degrees of
+  # freedom that exceed sample size
+  dof <- degrees_of_freedom # Simplify notation
+  dfobs <- (dof + 1) / (dof + 3) * dof * (1 - lambda)
+  DOF <- sapply(
+    1:ncol( degrees_of_freedom ), function(s) {
+      ifelse(
+        is.infinite(dof[s]),
+        dfold[s], dfold[s] * dfobs[s] / (dfold[s] + dfobs[s])
+      )
+    }
+  )
+
+  output <- cbind(
+    M = M, SE = sqrt( VT ), DOF = DOF
+  )
+
+  return( output )
+}
+
+
