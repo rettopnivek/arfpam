@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-12-29
+# Last updated 2024-09-03
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -27,20 +27,22 @@
 #   3.1) assign_by_interval
 #   3.2) match_and_reorder
 #   3.3) match_rows
-#   3.4) replace_cases
+#   3.4) recode
+#   3.5) replace_cases
 # 4) Functions for miscellaneous
-#   4.1) empty_list
-#   4.2) every
-#     4.2.1) `every`
-#     4.2.2) `every<-`
-#   4.3) find_increment
-#   4.4) lin
-#   4.5) new_limits
-#   4.6) over
-#   4.7) print_table
-#   4.8) runs_in_sequence
-#   4.9) data_first
-#   4.10) group_index
+#   4.1) add_to_list
+#   4.2) data_first
+#   4.3) empty_list
+#   4.4) every
+#     4.4.1) `every`
+#     4.4.2) `every<-`
+#   4.5) find_increment
+#   4.6) group_index
+#   4.7) lin
+#   4.8) new_limits
+#   4.9) over
+#   4.10) print_table
+#   4.11) runs_in_sequence
 # 5) Functions for strings
 #   5.1) align_strings
 #   5.2) format_numbers
@@ -56,6 +58,7 @@
 #   7.3) section
 #   7.4) templates
 #   7.5) update_package_version
+
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -1619,8 +1622,153 @@ match_rows <- function(
   return( lst_index )
 }
 
+#### 3.4) recode ####
+#' Recode a Variable
+#'
+#' Function to flexibly recode values of a variable. Can
+#' match values and replace with new codes, assign codes
+#' based on intervals for a continuous variable, or code
+#' a linear trend given a start and end point.
+#'
+#' @param x A vector.
+#' @param values Either a vector of values to
+#'   replace, or a list of vectors for the sets of values
+#'   to replace. Values of the form \code{'(x,y)'} or
+#'   \code{'[x,y]'} result in assignment based on an interval
+#'   from x to y, while values of the form \code{'x,y'}
+#'   result in a linear trend ranging from 0 to 1 over the
+#'   range x to y.
+#' @param codes A vector of values, either a single
+#' value or a vector matching in length with \code{to_replace}.
+#' @param default The default value to return as output
+#'   for all cases that are not recoded.
+#'
+#' @return A vector.
+#'
+#' @examples
+#' # Assigning by matching categories
+#' x <- rep( LETTERS[1:3], each = 3 )
+#' recode( x, list( 'A', c('B', 'C') ) )
+#' recode( x, c( 'A', 'B', 'C' ), c( -1, 0, 1 ) )
+#'
+#' # Assigning by intervals
+#' x <- seq( -1.5, 1.5, .5 )
+#' cbind(x, recode( x, c( '(-Inf,0]', '(0,Inf]' ) ) )
+#'
+#' # Linear trend
+#' cbind(x, recode( x, '-1,1' ) )
+#'
+#' @export
 
-#### 3.4) replace_cases ####
+recode <- function( x,
+                    values,
+                    codes = NULL,
+                    default = 0 ) {
+
+  # Default type of recoding
+  type <- 'replace'
+
+  # Initialize output
+  output <- rep( default, length(x) )
+
+  # Convert vector to list
+  if ( !is.list(values) ) {
+
+    values <- as.list(values)
+
+    # Close 'Convert vector to list'
+  }
+
+  # Default codes
+  if ( is.null(codes) ) {
+
+    codes <- seq_along(values)
+
+    # Close 'Default codes'
+  }
+
+  # Set type appropriately
+  if ( grepl( ',', values[[1]], fixed = TRUE ) ) {
+
+    type <- 'linear'
+
+    # Close 'Set type appropriately'
+  }
+
+  # Set type appropriately
+  if ( grepl( '(', values[[1]], fixed = TRUE ) |
+       grepl( '[', values[[1]], fixed = TRUE ) ) {
+
+    type <- 'interval'
+
+    # Close 'Set type appropriately'
+  }
+
+  # Replace values
+  if ( type == 'replace' ) {
+
+    # Loop over values
+    for ( v in seq_along(values) ) {
+
+      lgc_subset <-
+        x %in% values[[v]]
+      output[lgc_subset] <- codes[v]
+
+      # Close 'Loop over values'
+    }
+
+    # Close 'Replace values'
+  }
+
+  # Replace intervals
+  if ( type == 'interval' ) {
+
+    # Loop over values
+    for ( v in seq_along(values) ) {
+
+      chr_expr <- values[[v]]
+      chr_expr <-
+        gsub( '(', 'x > ', chr_expr, fixed = TRUE )
+      chr_expr <-
+        gsub( '[', 'x >= ', chr_expr, fixed = TRUE )
+      chr_expr <-
+        gsub( ')', ' > x', chr_expr, fixed = TRUE )
+      chr_expr <-
+        gsub( ']', ' >= x', chr_expr, fixed = TRUE )
+      chr_expr <-
+        gsub( ',', ' & ', chr_expr, fixed = TRUE )
+
+      lgc_subset <- eval( parse(text = chr_expr) )
+
+      output[lgc_subset] <- codes[v]
+
+      # Close 'Loop over values'
+    }
+
+    # Close 'Replace intervals'
+  }
+
+  # Linear trend
+  if ( type == 'linear' ) {
+
+    num_start_stop <- strsplit(
+      values[[1]], split = ',', fixed = TRUE
+    )[[1]] |> as.numeric()
+    output <- (x - num_start_stop[1])/diff(num_start_stop)
+    output[
+      output < 0
+    ] <- 0
+    output[
+      output > 1
+    ] <- 1
+
+    # Close 'Linear trend'
+  }
+
+  return(output)
+}
+
+#### 3.5) replace_cases ####
 #' Replace Cases
 #'
 #' Function that matches cases in a vector and
@@ -1700,7 +1848,6 @@ replace_cases <- function( x, to_replace, replace_with, default = NA ) {
 
   return( out )
 }
-
 
 #### 4) Functions for miscellaneous ####
 

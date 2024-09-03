@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2024-01-03
+# Last updated 2024-09-03
 
 # Table of contents
 # 1) Utility functions for plotting

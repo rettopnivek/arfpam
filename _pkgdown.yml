@@ -53,15 +53,16 @@ reference:
   - percent_that_sums_to_100
   - print_table
   - pull_id
-  - replace_cases
   - source_R_scripts
-  - take_x_by_y
+  - recode
+  - replace_cases
   - replace_string
   - runs_in_sequence
   - save_png_figure
   - section
   - strip_value
   - squish
+  - take_x_by_y
   - templates
   - update_package_version
 - title: "Plotting"
