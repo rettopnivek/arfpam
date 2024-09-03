@@ -1694,6 +1694,8 @@ plot_blank <- function( x = c(0, 1),
 #'   automatically).
 #' @param n An integer, the sample size for the correlations
 #'   (computed automatically if \code{dtf} is provided).
+#' @param p_values A matrix of p-values (must have same dimensions
+#'   as \code{R}).
 #' @param labels Either a character vector with the
 #'   labels for the rows of the correlation matrix, or a
 #'   list of character vectors with the labels for the
@@ -1771,6 +1773,7 @@ plot_blank <- function( x = c(0, 1),
 plot_correlations <- function( dtf = NULL,
                                R = NULL,
                                n = NULL,
+                               p_values = NULL,
                                labels = NULL,
                                label_pos = c( .2, .25 ),
                                only_upper_tri = TRUE,
@@ -1878,47 +1881,68 @@ plot_correlations <- function( dtf = NULL,
     # Close else for 'Plot upper triangle'
   }
 
-  # Initialize matrix of p-values
-  mat_p <- matrix( NA, nrow(R), ncol(R) )
+  # User-supplied p-values
+  if ( !is.null(p_values) ) {
 
-  # If sample size is provided
-  if ( !is.null(n) ) {
+    mat_p <- p_values
 
-    # Loop over rows
-    for ( j in seq_along( int_row_index ) ) {
+    # Confirm dimensions match
+    if ( !all( dim(mat_p) == dim(R) ) ) {
 
-      # Loop over columns
-      for ( k in seq_along( lst_col_index[[j]] ) ) {
-
-        cr <- int_row_index[j]
-        cc <- lst_col_index[[j]][k]
-
-        r <- R[ cr, cc ]
-
-        z <- atanh(r)
-        z.se <- 1/sqrt( n - 3 )
-
-        mat_p[ cr, cc ] <- pt(
-          abs( z/z.se ), df = n - 1, lower.tail = F
-        )*2
-
-        # Close 'Loop over columns'
-      }
-
-      # Close 'Loop over rows'
-    }
-
-    # Adjust for multiple comparisons
-    if ( method != '' ) {
-      mat_p[ upper.tri(mat_p) ] <- p.adjust(
-        mat_p[ upper.tri(mat_p) ],
-        method = method
+      stop(
+        'Matrix of p-values must have same number of rows and columns as R'
       )
 
-      # Close 'Adjust for multiple comparisons'
+      # Close 'Confirm dimensions match'
     }
 
-    # Close 'If sample size is provided'
+    # Close 'User-supplied p-values'
+  } else {
+
+    # Initialize matrix of p-values
+    mat_p <- matrix( NA, nrow(R), ncol(R) )
+
+    # If sample size is provided
+    if ( !is.null(n) ) {
+
+      # Loop over rows
+      for ( j in seq_along( int_row_index ) ) {
+
+        # Loop over columns
+        for ( k in seq_along( lst_col_index[[j]] ) ) {
+
+          cr <- int_row_index[j]
+          cc <- lst_col_index[[j]][k]
+
+          r <- R[ cr, cc ]
+
+          z <- atanh(r)
+          z.se <- 1/sqrt( n - 3 )
+
+          mat_p[ cr, cc ] <- pt(
+            abs( z/z.se ), df = n - 1, lower.tail = F
+          )*2
+
+          # Close 'Loop over columns'
+        }
+
+        # Close 'Loop over rows'
+      }
+
+      # Adjust for multiple comparisons
+      if ( method != '' ) {
+        mat_p[ upper.tri(mat_p) ] <- p.adjust(
+          mat_p[ upper.tri(mat_p) ],
+          method = method
+        )
+
+        # Close 'Adjust for multiple comparisons'
+      }
+
+      # Close 'If sample size is provided'
+    }
+
+    # Close else for 'User-supplied p-values'
   }
 
   # Function to add square with correlation magnitude

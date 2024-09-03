@@ -1789,7 +1789,7 @@ data_first <- function( data_obj, fun_to_apply, ... ) {
 
 empty_list <- function(size, labels = NULL) {
 
-  lst <- rep( list(NULL), size )
+  lst <- vector( "list", size )
 
   if (!is.null(labels)) {
     if (length(labels) == length(lst)) {

@@ -8,6 +8,7 @@ plot_correlations(
   dtf = NULL,
   R = NULL,
   n = NULL,
+  p_values = NULL,
   labels = NULL,
   label_pos = c(0.2, 0.25),
   only_upper_tri = TRUE,
@@ -35,6 +36,9 @@ automatically).}
 
 \item{n}{An integer, the sample size for the correlations
 (computed automatically if \code{dtf} is provided).}
+
+\item{p_values}{A matrix of p-values (must have same dimensions
+as \code{R}).}
 
 \item{labels}{Either a character vector with the
 labels for the rows of the correlation matrix, or a
