@@ -64,6 +64,9 @@ reference:
   - squish
   - take_x_by_y
   - templates
+  - term_coding
+  - term_new
+  - term_prep
   - update_package_version
 - title: "Plotting"
   desc: >

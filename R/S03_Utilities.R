@@ -441,7 +441,344 @@ pull_id <- function( dtf, subject = TRUE, id = NULL ) {
   return( out )
 }
 
-#### 1.6) take_x_by_y ####
+#### 1.6) term ####
+
+#### 1.6.1) term_new ####
+#' Template for Creating New Term
+#'
+#' Function to help format input to the
+#' [arfpam::term_prep] function. Initializes
+#' the sublist with the parameters for creating
+#' a new term based on an existing variable in a
+#' data frame.
+#'
+#' @param label An optional label for the new term.
+#' @param coding A list with the parameters for
+#'   recoding the base variable (see [arfpam::term_coding]).
+#' @param transformation A character string with an
+#'   R expression for transforming the base variable.
+#' @param range A vector with the range for the term.
+#' @param scale Either a logical value, or a named
+#'   vector of the form \code{c(m = ..., sd = ...)}
+#'   for standardizing the term.
+#' @param order A character vector that can be used
+#'   to specify the order in which coding (\code{'c'}),
+#'   transformations (\code{'t'}), and scaling (\code{'s'})
+#'   are done.
+#'
+#' @returns A list.
+#'
+#' @export
+
+term_new <- function( label = '',
+                      coding = NULL,
+                      transformation = NULL,
+                      range = NULL,
+                      scale = NULL,
+                      order = NULL ) {
+
+  output <- list()
+  if ( !is.null( label ) )
+    output$label <- label
+  if ( !is.null( coding ) )
+    output$coding <- coding
+  if ( !is.null( transformation ) )
+    output$transformation <- transformation
+  if ( !is.null( range ) )
+    output$range <- range
+  if ( !is.null( scale ) )
+    output$scale <- scale
+  if ( !is.null( scale ) )
+    output$scale <- scale
+  if ( !is.null( order ) )
+    output$order <- order
+
+  return( output )
+}
+
+#### 1.6.2) term_coding ####
+#' Parameters for Recoding Variables
+#'
+#' Function to help format input to the
+#' [arfpam::term_prep] function. Initializes
+#' a list with the specific parameters to be
+#' passed to the [arfpam::recode] function
+#' when creating a new term.
+#'
+#' @param values A vector or list of values. Must
+#'   equal in length to \code{codes}.
+#' @param codes A vector of values.
+#' @param default. A value.
+#' @param categories A vector of values, all cases
+#'   to be coded as 1 (dummy coding and effect coding).
+#' @param referent A vector of values, all cases
+#'   to be coded as -1 (effect coding).
+#'
+#' @returns A list.
+#'
+#' @name term_coding
+#'
+#' @export
+
+term_coding <- function( values,
+                         codes,
+                         default = 0 ) {
+
+  output <- list(
+    values = values,
+    codes = codes,
+    default = default
+  )
+
+  return( output )
+}
+
+#### 1.6.2.1) term_coding_dummy ####
+#' @rdname term_coding
+#' @export
+
+term_coding_dummy <- function( categories ) {
+
+  output <- term_coding(
+    values = list( categories ),
+    codes = 1,
+    default = 0
+  )
+
+  return( output )
+}
+
+#### 1.6.2.2) term_coding_effect ####
+#' @rdname term_coding
+#' @export
+
+term_coding_effect <- function( categories,
+                                referent ) {
+
+  output <- term_coding(
+    values = list( categories, referent ),
+    codes = c( 1, -1 ),
+    default = 0
+  )
+
+  return( output )
+}
+
+#### 1.6.3) term_prep ####
+#' Create New Terms for Data
+#'
+#' Function that takes a list specifying base variables and
+#' new terms to create and updates a data frame appropriately.
+#' Allows for easy pre-processing of multiple data frames in
+#' the same manner for analyses (e.g., when prepping training
+#' and validation sets for data).
+#'
+#' @param x A data frame.
+#' @param settings A named list, in the form:
+#'   \code{list(column = list( new1 = list(...), new2 = list(...)))},
+#'   where \code{column} is a pre-existing variable in \code{x},
+#'   and \code{new1}, \code{new2}, etc. are new terms to be created
+#'   using variable \code{column}.
+#' @param output A character string, the type of output to return,
+#'   where \code{'x'} (the default) returns an updated data frame,
+#'   \code{'settings'} returns an updated list, and \code{'both'}
+#'   returns a list with both the data frame and list of settings.
+#'
+#' @returns Either a data frame, a list of settings, or a list with
+#' both the data frame and list of settings.
+#'
+#' @examples
+#' data("mtcars")
+#' # Split into two sets of data
+#' x1 <- mtcars[ seq( 1, 32, 2), ] # Odd
+#' x2 <- mtcars[ seq( 1, 32, 2), ] # Even
+#'
+#' lst <- list(
+#'    mpg = list(
+#'      outcome = term_new(
+#'       label = 'Miles per gallon'
+#'     )
+#'   ),
+#'   hp = list(
+#'     log_hp = term_new(
+#'       label = 'Log(Horsepower)',
+#'       transformation = 'log(x)',
+#'       scale = TRUE,
+#'       order = c( 't', 's' )
+#'     )
+#'   ),
+#'   vs = list(
+#'     vs_0v1 = term_new(
+#'       label = 'Engine: V-shaped vs. straight',
+#'       coding = term_coding_effect( 1, 0 ),
+#'       scale = TRUE,
+#'       order = c( 'c', 's' )
+#'     )
+#'   )
+#' )
+#' # Add info on mean/SD from 'x1' data
+#' lst <- x1 |> term_prep( lst, output = 'settings' )
+#' # Update 'x1' and 'x2'
+#' x1 <- x1 |> term_prep( lst )
+#' x2 <- x2 |> term_prep( lst )
+#'
+#' # Fit 'x1' data
+#' fit <- lm( outcome ~ log_hp + vs_0v1, data = x1)
+#' # Predict 'x2' data
+#' predict( fit, newdata = x2 )
+#' @export
+
+term_prep <- function( x,
+                       settings,
+                       output = 'x' ) {
+
+
+  # Function to apply transformation based on char. string
+  fun_transform <- function(
+    x,
+    chr_expr ) {
+
+    num_output <-
+      eval( parse(text = chr_expr ) )
+
+    return( num_output )
+  }
+
+  # Loop over variables
+  for ( v in seq_along(settings ) ) {
+
+    chr_variable <- names( settings )[v]
+
+    chr_new_columns <- names( settings[[v]] )
+    mat_new <- matrix(
+      NA, nrow(x), length(chr_new_columns)
+    )
+    colnames(mat_new) <- chr_new_columns
+
+    # Loop over new columns
+    for ( n in seq_along(chr_new_columns) ) {
+
+      # Initialize new variable
+      mat_new[, n] <- x[[ chr_variable ]]
+
+      # Default order
+      chr_order <- c( 'c', 't', 's' )
+      # User-supplied order
+      if ( 'order' %in% names( settings[[v]][[n]] ) ) {
+
+        chr_order <- settings[[v]][[n]]$order
+        chr_order[
+          settings[[v]][[n]]$order %in% c(
+            'coding', 'c', '1'
+          )
+        ] <- 'c'
+        chr_order[
+          settings[[v]][[n]]$order %in% c(
+            'transformation', 'transform', 't', '2'
+          )
+        ] <- 't'
+        chr_order[
+          settings[[v]][[n]]$order %in% c(
+            'scale', 'standardize', 's', '3'
+          )
+        ] <- 's'
+
+        # Close 'User-supplied order'
+      }
+
+      # Loop over preparations to run
+      for ( p in seq_along(chr_order) ) {
+
+        # Prepare: Coding
+        if ( chr_order[p] == 'c' ) {
+
+          # Recode
+          if ( 'coding' %in% names( settings[[v]][[n]] ) ) {
+
+            lst_codes <- settings[[v]][[n]]$coding
+
+            mat_new[, n] <- arfpam::recode(
+              mat_new[, n],
+              values = lst_codes$values,
+              codes = lst_codes$codes,
+              default = lst_codes$default
+            )
+
+            # Close 'Recode'
+          }
+
+          # Close 'Prepare: Coding'
+        }
+
+        # Prepare: Transformation
+        if ( chr_order[p] == 't' ) {
+
+          # Transformation
+          if ( 'transformation' %in% names( settings[[v]][[n]] ) ) {
+
+            chr_expr <- settings[[v]][[n]]$transformation
+
+            mat_new[, n] <- fun_transform( x = mat_new[, n], chr_expr )
+
+            # Close 'Transformation'
+          }
+
+          # Close 'Prepare: Transformation'
+        }
+
+        # Prepare: Scale
+        if (chr_order[p] == 's' ) {
+
+          # Standardize
+          if ( 'scale' %in% names( settings[[v]][[n]] ) ) {
+
+            vec_scale <- settings[[v]][[n]]$scale
+
+            # Use mean/SD from current data
+            if ( length(vec_scale) == 1 & is.logical(vec_scale) ) {
+
+              vec_scale <- c(
+                m = mean( mat_new[, n], na.rm = T ),
+                sd = sd( mat_new[, n], na.rm = T )
+              )
+              settings[[v]][[n]]$scale <- vec_scale
+
+              # Close 'Use mean/SD from current data'
+            }
+
+            # Use pre-specified mean/SD
+            if ( all( names(vec_scale) %in% c( 'm', 'sd' ) ) ) {
+
+              mat_new[, n] <-
+                ( mat_new[, n] - vec_scale['m'] ) / vec_scale['sd']
+
+              # Close 'Use pre-specified mean/SD'
+            }
+
+            # Close 'Standardize'
+          }
+
+          # Close 'Prepare: Scale'
+        }
+
+        # Close 'Loop over preparations to run'
+      }
+
+      # Close 'Loop over new columns'
+    }
+
+    x <- cbind( x, mat_new )
+
+    # Close 'Loop over variables'
+  }
+
+  if (output %in% 'settings') return(settings)
+  if (output %in% 'both') return( list(x = x, settings = settings) )
+
+  return( x )
+}
+
+#### 1.7) take_x_by_y ####
 #' Repeat Column Values by Unique Cases in Another Column
 #'
 #' Function to duplicate values in column \code{x} by
