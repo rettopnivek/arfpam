@@ -13,7 +13,11 @@ term_prep(x, settings, output = "x")
 \code{list(column = list( new1 = list(...), new2 = list(...)))},
 where \code{column} is a pre-existing variable in \code{x},
 and \code{new1}, \code{new2}, etc. are new terms to be created
-using variable \code{column}.}
+using variable \code{column}. If new terms are to be
+combined (e.g., interaction effects), provide a list with
+(1) the element \code{'new'} for the terms to create and
+(2) the element \code{'combo'} for the terms to combine
+(see example).}
 
 \item{output}{A character string, the type of output to return,
 where \code{'x'} (the default) returns an updated data frame,
@@ -33,30 +37,47 @@ and validation sets for data).
 }
 \examples{
 data("mtcars")
-# Split into two sets of data
+#' Split into two sets of data
 x1 <- mtcars[ seq( 1, 32, 2), ] # Odd
 x2 <- mtcars[ seq( 1, 32, 2), ] # Even
 
 lst <- list(
-   mpg = list(
-     outcome = term_new(
-      label = 'Miles per gallon'
+  new = list(
+    mpg = list(
+      outcome = term_new(
+        label = 'Miles per gallon'
+      )
+    ),
+    hp = list(
+      log_hp = term_new(
+        label = 'Log(Horsepower)',
+        transformation = 'log(x)',
+        scale = TRUE,
+        order = c( 't', 's' )
+      )
+    ),
+    vs = list(
+      vs_0v1 = term_new(
+        label = 'Engine: V-shaped vs. straight',
+        coding = term_coding_effect( 1, 0 ),
+        scale = TRUE,
+        order = c( 'c', 's' )
+      )
+    ),
+    am = list(
+      am_0v1 = term_new(
+        label = 'Transmission: Automatic vs. manual',
+        coding = term_coding_effect( 1, 0 ),
+        scale = TRUE,
+        order = c( 'c', 's' )
+      )
     )
   ),
-  hp = list(
-    log_hp = term_new(
-      label = 'Log(Horsepower)',
-      transformation = 'log(x)',
-      scale = TRUE,
-      order = c( 't', 's' )
-    )
-  ),
-  vs = list(
-    vs_0v1 = term_new(
-      label = 'Engine: V-shaped vs. straight',
-      coding = term_coding_effect( 1, 0 ),
-      scale = TRUE,
-      order = c( 'c', 's' )
+  combo = list(
+    vs_x_am = term_combo(
+      combine = c( vs = 'vs_0v1', am = 'am_0v1' ),
+      transformation = 'vs*am',
+      scale = TRUE
     )
   )
 )
@@ -67,7 +88,7 @@ x1 <- x1 |> term_prep( lst )
 x2 <- x2 |> term_prep( lst )
 
 # Fit 'x1' data
-fit <- lm( outcome ~ log_hp + vs_0v1, data = x1)
+fit <- lm( outcome ~ log_hp + vs_0v1 + am_0v1 + vs_x_am, data = x1)
 # Predict 'x2' data
 predict( fit, newdata = x2 )
 }

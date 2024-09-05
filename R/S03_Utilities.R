@@ -488,6 +488,51 @@ term_new <- function( label = '',
     output$range <- range
   if ( !is.null( scale ) )
     output$scale <- scale
+  if ( !is.null( order ) )
+    output$order <- order
+
+  return( output )
+}
+
+#### 1.6.2) term_combo ####
+#' Template for Combining Terms
+#'
+#' Function to help format input to the
+#' [arfpam::term_prep] function. Initializes
+#' the sublist with the parameters for creating
+#' a new term by combining other existing
+#' terms (e.g., an interaction).
+#'
+#' @param combine A character vector, the names
+#'   of the terms/variables to combine. Providing a
+#'   named vector
+#' @param label An optional label for the new term.
+#' @param transformation An optional character string
+#'   specifying an R expression indicating how terms
+#'   should be combined. Variables are matched to the
+#'   named elements of \code{combine}. If not provided
+#'   defaults to multiplying all terms together (i.e.,
+#'   an interaction).
+#' @param scale Either a logical value, or a named
+#'   vector of the form \code{c(m = ..., sd = ...)}
+#'   for standardizing the term.
+#'
+#' @returns A list.
+#'
+#' @export
+
+term_combo <- function( combine,
+                        label = '',
+                        transformation = NULL,
+                        scale = NULL ) {
+
+  output <- list(
+    combine = combine
+  )
+  if ( !is.null( label ) )
+    output$label <- label
+  if ( !is.null( transformation ) )
+    output$transformation <- transformation
   if ( !is.null( scale ) )
     output$scale <- scale
   if ( !is.null( order ) )
@@ -496,7 +541,7 @@ term_new <- function( label = '',
   return( output )
 }
 
-#### 1.6.2) term_coding ####
+#### 1.6.3) term_coding ####
 #' Parameters for Recoding Variables
 #'
 #' Function to help format input to the
@@ -533,7 +578,7 @@ term_coding <- function( values,
   return( output )
 }
 
-#### 1.6.2.1) term_coding_dummy ####
+#### 1.6.3.1) term_coding_dummy ####
 #' @rdname term_coding
 #' @export
 
@@ -548,7 +593,7 @@ term_coding_dummy <- function( categories ) {
   return( output )
 }
 
-#### 1.6.2.2) term_coding_effect ####
+#### 1.6.3.2) term_coding_effect ####
 #' @rdname term_coding
 #' @export
 
@@ -564,7 +609,7 @@ term_coding_effect <- function( categories,
   return( output )
 }
 
-#### 1.6.3) term_prep ####
+#### 1.6.4) term_prep ####
 #' Create New Terms for Data
 #'
 #' Function that takes a list specifying base variables and
@@ -578,7 +623,11 @@ term_coding_effect <- function( categories,
 #'   \code{list(column = list( new1 = list(...), new2 = list(...)))},
 #'   where \code{column} is a pre-existing variable in \code{x},
 #'   and \code{new1}, \code{new2}, etc. are new terms to be created
-#'   using variable \code{column}.
+#'   using variable \code{column}. If new terms are to be
+#'   combined (e.g., interaction effects), provide a list with
+#'   (1) the element \code{'new'} for the terms to create and
+#'   (2) the element \code{'combo'} for the terms to combine
+#'   (see example).
 #' @param output A character string, the type of output to return,
 #'   where \code{'x'} (the default) returns an updated data frame,
 #'   \code{'settings'} returns an updated list, and \code{'both'}
@@ -589,30 +638,47 @@ term_coding_effect <- function( categories,
 #'
 #' @examples
 #' data("mtcars")
-#' # Split into two sets of data
+#' #' Split into two sets of data
 #' x1 <- mtcars[ seq( 1, 32, 2), ] # Odd
 #' x2 <- mtcars[ seq( 1, 32, 2), ] # Even
 #'
 #' lst <- list(
-#'    mpg = list(
-#'      outcome = term_new(
-#'       label = 'Miles per gallon'
+#'   new = list(
+#'     mpg = list(
+#'       outcome = term_new(
+#'         label = 'Miles per gallon'
+#'       )
+#'     ),
+#'     hp = list(
+#'       log_hp = term_new(
+#'         label = 'Log(Horsepower)',
+#'         transformation = 'log(x)',
+#'         scale = TRUE,
+#'         order = c( 't', 's' )
+#'       )
+#'     ),
+#'     vs = list(
+#'       vs_0v1 = term_new(
+#'         label = 'Engine: V-shaped vs. straight',
+#'         coding = term_coding_effect( 1, 0 ),
+#'         scale = TRUE,
+#'         order = c( 'c', 's' )
+#'       )
+#'     ),
+#'     am = list(
+#'       am_0v1 = term_new(
+#'         label = 'Transmission: Automatic vs. manual',
+#'         coding = term_coding_effect( 1, 0 ),
+#'         scale = TRUE,
+#'         order = c( 'c', 's' )
+#'       )
 #'     )
 #'   ),
-#'   hp = list(
-#'     log_hp = term_new(
-#'       label = 'Log(Horsepower)',
-#'       transformation = 'log(x)',
-#'       scale = TRUE,
-#'       order = c( 't', 's' )
-#'     )
-#'   ),
-#'   vs = list(
-#'     vs_0v1 = term_new(
-#'       label = 'Engine: V-shaped vs. straight',
-#'       coding = term_coding_effect( 1, 0 ),
-#'       scale = TRUE,
-#'       order = c( 'c', 's' )
+#'   combo = list(
+#'     vs_x_am = term_combo(
+#'       combine = c( vs = 'vs_0v1', am = 'am_0v1' ),
+#'       transformation = 'vs*am',
+#'       scale = TRUE
 #'     )
 #'   )
 #' )
@@ -623,7 +689,7 @@ term_coding_effect <- function( categories,
 #' x2 <- x2 |> term_prep( lst )
 #'
 #' # Fit 'x1' data
-#' fit <- lm( outcome ~ log_hp + vs_0v1, data = x1)
+#' fit <- lm( outcome ~ log_hp + vs_0v1 + am_0v1 + vs_x_am, data = x1)
 #' # Predict 'x2' data
 #' predict( fit, newdata = x2 )
 #' @export
@@ -631,6 +697,22 @@ term_coding_effect <- function( categories,
 term_prep <- function( x,
                        settings,
                        output = 'x' ) {
+
+  #### 1.6.4.1) Setup ####
+
+  # Separate lists for new terms and combinations
+  if ( all( names(settings) %in% c( 'new', 'combo' ) ) ) {
+
+    settings_combo <- settings$combo
+    settings <- settings$new
+
+    # Close 'Separate lists for new terms and combinations'
+  } else {
+
+    settings_combo <- NULL
+
+    # Close else for 'Separate lists for new terms and combinations'
+  }
 
 
   # Function to apply transformation based on char. string
@@ -643,6 +725,31 @@ term_prep <- function( x,
 
     return( num_output )
   }
+
+  # Function to apply transformation based on
+  # char. string for multiple variables
+  fun_transform_combo <- function(
+    lst,
+    chr_expr ) {
+
+    # Update expression
+    for ( i in seq_along(lst) ) {
+
+      chr_expr <- gsub(
+        names(lst)[i], paste0( 'lst$', names(lst)[i] ),
+        chr_expr, fixed = TRUE
+      )
+
+      # Close 'Update expression'
+    }
+
+    num_output <-
+      eval( parse(text = chr_expr ) )
+
+    return( num_output )
+  }
+
+  #### 1.6.4.2) New terms ####
 
   # Loop over variables
   for ( v in seq_along(settings ) ) {
@@ -772,8 +879,121 @@ term_prep <- function( x,
     # Close 'Loop over variables'
   }
 
-  if (output %in% 'settings') return(settings)
-  if (output %in% 'both') return( list(x = x, settings = settings) )
+  #### 1.6.4.3) Combinations ####
+
+  # If terms are to be combined
+  if ( !is.null(settings_combo) ) {
+
+
+    chr_new_columns <- names( settings_combo )
+    mat_new <- matrix(
+      NA, nrow(x), length(chr_new_columns)
+    )
+    colnames(mat_new) <- chr_new_columns
+
+    # Loop over variables
+    for ( v in seq_along(settings_combo) ) {
+
+      # Extract terms/variables to combine
+      chr_combine <- settings_combo[[v]]$combine
+      print(chr_combine)
+
+      # List of inputs for transformation function
+      lst_inputs <- lapply(
+        seq_along(chr_combine), function(j) {
+          x[[ chr_combine[j] ]]
+        }
+      )
+
+      # Default labels for transformation expression
+      if ( is.null( names(chr_combine ) ) ) {
+
+        names( lst_inputs ) <- paste0( 'x', seq_along(chr_combine) )
+
+        # Close 'Default labels for transformation expression'
+      } else {
+
+        names( lst_inputs ) <- names( chr_combine )
+
+        # Close else for 'Default labels for transformation expression'
+      }
+
+      print( str(lst_inputs) )
+
+      # Custom transformation
+      if ( 'transformation' %in% names( settings_combo[[v]] ) ) {
+
+        chr_expr <- settings_combo[[v]]$transformation
+
+        # Close 'Custom transformation'
+      } else {
+
+        chr_expr <- paste( names(lst_inputs), collapse = '*' )
+
+        # Close 'Custom transformation'
+      }
+
+      mat_new[, n] <- fun_transform_combo(
+        lst_inputs, chr_expr
+      )
+
+      # Standardize
+      if ( 'scale' %in% names( settings_combo[[v]] ) ) {
+
+        vec_scale <- settings_combo[[v]]$scale
+
+        # Use mean/SD from current data
+        if ( length(vec_scale) == 1 & is.logical(vec_scale) ) {
+
+          vec_scale <- c(
+            m = mean( mat_new[, n], na.rm = T ),
+            sd = sd( mat_new[, n], na.rm = T )
+          )
+          settings_combo[[v]]$scale <- vec_scale
+
+          # Close 'Use mean/SD from current data'
+        }
+
+        # Use pre-specified mean/SD
+        if ( all( names(vec_scale) %in% c( 'm', 'sd' ) ) ) {
+
+          mat_new[, n] <-
+            ( mat_new[, n] - vec_scale['m'] ) / vec_scale['sd']
+
+          # Close 'Use pre-specified mean/SD'
+        }
+
+        # Close 'Standardize'
+      }
+
+      # Close 'Loop over variables'
+    }
+
+    x <- cbind( x, mat_new )
+
+    # Close 'If terms are to be combined'
+  }
+
+  # Return list with settings
+  if (output %in% c( 'settings', 'both' ) ) {
+
+    # Merge lists
+    if ( !is.null(settings_combo) ) {
+
+      settings <- list(
+        new = settings,
+        combo = settings_combo
+      )
+
+      # Close 'Merge lists'
+    }
+
+    if (output %in% 'both') return( list(x = x, settings = settings) )
+
+    return(settings)
+
+    # Close 'Return list with settings'
+  }
 
   return( x )
 }

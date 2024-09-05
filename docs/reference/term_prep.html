@@ -21,7 +21,7 @@ and validation sets for data)."><!-- mathjax --><script src="https://cdnjs.cloud
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.44.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.44.1</span>
       </span>
     </div>
 
@@ -76,7 +76,11 @@ and validation sets for data).</p>
 <code>list(column = list( new1 = list(...), new2 = list(...)))</code>,
 where <code>column</code> is a pre-existing variable in <code>x</code>,
 and <code>new1</code>, <code>new2</code>, etc. are new terms to be created
-using variable <code>column</code>.</p></dd>
+using variable <code>column</code>. If new terms are to be
+combined (e.g., interaction effects), provide a list with
+(1) the element <code>'new'</code> for the terms to create and
+(2) the element <code>'combo'</code> for the terms to combine
+(see example).</p></dd>
 
 
 <dt>output</dt>
@@ -97,51 +101,86 @@ both the data frame and list of settings.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"mtcars"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Split into two sets of data</span></span></span>
+<span class="r-in"><span><span class="co">#' Split into two sets of data</span></span></span>
 <span class="r-in"><span><span class="va">x1</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">1</span>, <span class="fl">32</span>, <span class="fl">2</span><span class="op">)</span>, <span class="op">]</span> <span class="co"># Odd</span></span></span>
 <span class="r-in"><span><span class="va">x2</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span> <span class="fl">1</span>, <span class="fl">32</span>, <span class="fl">2</span><span class="op">)</span>, <span class="op">]</span> <span class="co"># Even</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">lst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>   mpg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>     outcome <span class="op">=</span> <span class="fu"><a href="term_new.html">term_new</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      label <span class="op">=</span> <span class="st">'Miles per gallon'</span></span></span>
+<span class="r-in"><span>  new <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    mpg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      outcome <span class="op">=</span> <span class="fu"><a href="term_new.html">term_new</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        label <span class="op">=</span> <span class="st">'Miles per gallon'</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    hp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      log_hp <span class="op">=</span> <span class="fu"><a href="term_new.html">term_new</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        label <span class="op">=</span> <span class="st">'Log(Horsepower)'</span>,</span></span>
+<span class="r-in"><span>        transformation <span class="op">=</span> <span class="st">'log(x)'</span>,</span></span>
+<span class="r-in"><span>        scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'t'</span>, <span class="st">'s'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    vs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      vs_0v1 <span class="op">=</span> <span class="fu"><a href="term_new.html">term_new</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        label <span class="op">=</span> <span class="st">'Engine: V-shaped vs. straight'</span>,</span></span>
+<span class="r-in"><span>        coding <span class="op">=</span> <span class="fu"><a href="term_coding.html">term_coding_effect</a></span><span class="op">(</span> <span class="fl">1</span>, <span class="fl">0</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>        scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'c'</span>, <span class="st">'s'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    am <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      am_0v1 <span class="op">=</span> <span class="fu"><a href="term_new.html">term_new</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        label <span class="op">=</span> <span class="st">'Transmission: Automatic vs. manual'</span>,</span></span>
+<span class="r-in"><span>        coding <span class="op">=</span> <span class="fu"><a href="term_coding.html">term_coding_effect</a></span><span class="op">(</span> <span class="fl">1</span>, <span class="fl">0</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>        scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'c'</span>, <span class="st">'s'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  hp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    log_hp <span class="op">=</span> <span class="fu"><a href="term_new.html">term_new</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      label <span class="op">=</span> <span class="st">'Log(Horsepower)'</span>,</span></span>
-<span class="r-in"><span>      transformation <span class="op">=</span> <span class="st">'log(x)'</span>,</span></span>
-<span class="r-in"><span>      scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>      order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'t'</span>, <span class="st">'s'</span> <span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  vs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    vs_0v1 <span class="op">=</span> <span class="fu"><a href="term_new.html">term_new</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      label <span class="op">=</span> <span class="st">'Engine: V-shaped vs. straight'</span>,</span></span>
-<span class="r-in"><span>      coding <span class="op">=</span> <span class="fu"><a href="term_coding.html">term_coding_effect</a></span><span class="op">(</span> <span class="fl">1</span>, <span class="fl">0</span> <span class="op">)</span>,</span></span>
-<span class="r-in"><span>      scale <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>      order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'c'</span>, <span class="st">'s'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span>  combo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    vs_x_am <span class="op">=</span> <span class="fu"><a href="term_combo.html">term_combo</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      combine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> vs <span class="op">=</span> <span class="st">'vs_0v1'</span>, am <span class="op">=</span> <span class="st">'am_0v1'</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>      transformation <span class="op">=</span> <span class="st">'vs*am'</span>,</span></span>
+<span class="r-in"><span>      scale <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Add info on mean/SD from 'x1' data</span></span></span>
 <span class="r-in"><span><span class="va">lst</span> <span class="op">&lt;-</span> <span class="va">x1</span> <span class="op">|&gt;</span> <span class="fu">term_prep</span><span class="op">(</span> <span class="va">lst</span>, output <span class="op">=</span> <span class="st">'settings'</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       vs       am </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "vs_0v1" "am_0v1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ vs: num [1:16] -0.653 1.436 -0.653 -0.653 1.436 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ am: num [1:16] 1.25 1.25 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 1.25 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span><span class="co"># Update 'x1' and 'x2'</span></span></span>
 <span class="r-in"><span><span class="va">x1</span> <span class="op">&lt;-</span> <span class="va">x1</span> <span class="op">|&gt;</span> <span class="fu">term_prep</span><span class="op">(</span> <span class="va">lst</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       vs       am </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "vs_0v1" "am_0v1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ vs: num [1:16] -0.653 1.436 -0.653 -0.653 1.436 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ am: num [1:16] 1.25 1.25 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 1.25 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span><span class="va">x2</span> <span class="op">&lt;-</span> <span class="va">x2</span> <span class="op">|&gt;</span> <span class="fu">term_prep</span><span class="op">(</span> <span class="va">lst</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       vs       am </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "vs_0v1" "am_0v1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ vs: num [1:16] -0.653 1.436 -0.653 -0.653 1.436 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ am: num [1:16] 1.25 1.25 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 1.25 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit 'x1' data</span></span></span>
-<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span> <span class="va">outcome</span> <span class="op">~</span> <span class="va">log_hp</span> <span class="op">+</span> <span class="va">vs_0v1</span>, data <span class="op">=</span> <span class="va">x1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span> <span class="va">outcome</span> <span class="op">~</span> <span class="va">log_hp</span> <span class="op">+</span> <span class="va">vs_0v1</span> <span class="op">+</span> <span class="va">am_0v1</span> <span class="op">+</span> <span class="va">vs_x_am</span>, data <span class="op">=</span> <span class="va">x1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Predict 'x2' data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span> <span class="va">fit</span>, newdata <span class="op">=</span> <span class="va">x2</span> <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          Mazda RX4         Datsun 710  Hornet Sportabout         Duster 360 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           22.00394           22.60395           17.56263           14.34412 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           23.27412           24.12912           16.46534           13.60518 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Merc 230          Merc 280C         Merc 450SL Cadillac Fleetwood </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           22.40042           19.92959           17.29317           16.04915 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           21.49094           19.29522           16.22587           15.12037 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Chrysler Imperial        Honda Civic      Toyota Corona        AMC Javelin </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           14.94845           28.16490           22.20114           19.03716 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           14.14223           29.07088           21.31384           17.77568 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Pontiac Firebird      Porsche 914-2     Ford Pantera L      Maserati Bora </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           17.56263           23.81775           13.62966           11.35135 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           16.46534           24.88598           15.83227           13.80763 </span>
 </code></pre></div>
     </div>
   </div>
