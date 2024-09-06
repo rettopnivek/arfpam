@@ -21,7 +21,7 @@ and validation sets for data)."><!-- mathjax --><script src="https://cdnjs.cloud
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.44.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.44.2</span>
       </span>
     </div>
 
@@ -147,27 +147,9 @@ both the data frame and list of settings.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Add info on mean/SD from 'x1' data</span></span></span>
 <span class="r-in"><span><span class="va">lst</span> <span class="op">&lt;-</span> <span class="va">x1</span> <span class="op">|&gt;</span> <span class="fu">term_prep</span><span class="op">(</span> <span class="va">lst</span>, output <span class="op">=</span> <span class="st">'settings'</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       vs       am </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "vs_0v1" "am_0v1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ vs: num [1:16] -0.653 1.436 -0.653 -0.653 1.436 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ am: num [1:16] 1.25 1.25 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 1.25 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span><span class="co"># Update 'x1' and 'x2'</span></span></span>
 <span class="r-in"><span><span class="va">x1</span> <span class="op">&lt;-</span> <span class="va">x1</span> <span class="op">|&gt;</span> <span class="fu">term_prep</span><span class="op">(</span> <span class="va">lst</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       vs       am </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "vs_0v1" "am_0v1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ vs: num [1:16] -0.653 1.436 -0.653 -0.653 1.436 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ am: num [1:16] 1.25 1.25 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 1.25 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span><span class="va">x2</span> <span class="op">&lt;-</span> <span class="va">x2</span> <span class="op">|&gt;</span> <span class="fu">term_prep</span><span class="op">(</span> <span class="va">lst</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       vs       am </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "vs_0v1" "am_0v1" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ vs: num [1:16] -0.653 1.436 -0.653 -0.653 1.436 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ am: num [1:16] 1.25 1.25 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 -0.75 1.25 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit 'x1' data</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span> <span class="va">outcome</span> <span class="op">~</span> <span class="va">log_hp</span> <span class="op">+</span> <span class="va">vs_0v1</span> <span class="op">+</span> <span class="va">am_0v1</span> <span class="op">+</span> <span class="va">vs_x_am</span>, data <span class="op">=</span> <span class="va">x1</span><span class="op">)</span></span></span>

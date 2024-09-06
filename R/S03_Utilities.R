@@ -757,16 +757,18 @@ term_prep <- function( x,
     chr_variable <- names( settings )[v]
 
     chr_new_columns <- names( settings[[v]] )
-    mat_new <- matrix(
-      NA, nrow(x), length(chr_new_columns)
+    lst_new <- lapply(
+      seq_along(chr_new_columns), function(n) {
+        rep( NA, nrow(x) )
+      }
     )
-    colnames(mat_new) <- chr_new_columns
+    names(lst_new) <- chr_new_columns
 
     # Loop over new columns
     for ( n in seq_along(chr_new_columns) ) {
 
       # Initialize new variable
-      mat_new[, n] <- x[[ chr_variable ]]
+      lst_new[[n]] <- x[[ chr_variable ]]
 
       # Default order
       chr_order <- c( 'c', 't', 's' )
@@ -804,8 +806,8 @@ term_prep <- function( x,
 
             lst_codes <- settings[[v]][[n]]$coding
 
-            mat_new[, n] <- arfpam::recode(
-              mat_new[, n],
+            lst_new[[n]] <- arfpam::recode(
+              lst_new[[n]],
               values = lst_codes$values,
               codes = lst_codes$codes,
               default = lst_codes$default
@@ -825,7 +827,7 @@ term_prep <- function( x,
 
             chr_expr <- settings[[v]][[n]]$transformation
 
-            mat_new[, n] <- fun_transform( x = mat_new[, n], chr_expr )
+            lst_new[[n]] <- fun_transform( x = lst_new[[n]], chr_expr )
 
             # Close 'Transformation'
           }
@@ -845,8 +847,8 @@ term_prep <- function( x,
             if ( length(vec_scale) == 1 & is.logical(vec_scale) ) {
 
               vec_scale <- c(
-                m = mean( mat_new[, n], na.rm = T ),
-                sd = sd( mat_new[, n], na.rm = T )
+                m = mean( lst_new[[n]], na.rm = T ),
+                sd = sd( lst_new[[n]], na.rm = T )
               )
               settings[[v]][[n]]$scale <- vec_scale
 
@@ -856,8 +858,8 @@ term_prep <- function( x,
             # Use pre-specified mean/SD
             if ( all( names(vec_scale) %in% c( 'm', 'sd' ) ) ) {
 
-              mat_new[, n] <-
-                ( mat_new[, n] - vec_scale['m'] ) / vec_scale['sd']
+              lst_new[[n]] <-
+                ( lst_new[[n]] - vec_scale['m'] ) / vec_scale['sd']
 
               # Close 'Use pre-specified mean/SD'
             }
@@ -874,7 +876,7 @@ term_prep <- function( x,
       # Close 'Loop over new columns'
     }
 
-    x <- cbind( x, mat_new )
+    x <- cbind( x, data.frame( lst_new ) )
 
     # Close 'Loop over variables'
   }
@@ -886,22 +888,23 @@ term_prep <- function( x,
 
 
     chr_new_columns <- names( settings_combo )
-    mat_new <- matrix(
-      NA, nrow(x), length(chr_new_columns)
+    lst_new <- lapply(
+      seq_along(chr_new_columns), function(n) {
+        rep( NA, nrow(x) )
+      }
     )
-    colnames(mat_new) <- chr_new_columns
+    names(lst_new) <- chr_new_columns
 
     # Loop over variables
-    for ( v in seq_along(settings_combo) ) {
+    for ( n in seq_along(settings_combo) ) {
 
       # Extract terms/variables to combine
-      chr_combine <- settings_combo[[v]]$combine
-      print(chr_combine)
+      chr_combine <- settings_combo[[n]]$combine
 
       # List of inputs for transformation function
       lst_inputs <- lapply(
-        seq_along(chr_combine), function(j) {
-          x[[ chr_combine[j] ]]
+        seq_along(chr_combine), function(v) {
+          x[[ chr_combine[v] ]]
         }
       )
 
@@ -918,12 +921,10 @@ term_prep <- function( x,
         # Close else for 'Default labels for transformation expression'
       }
 
-      print( str(lst_inputs) )
-
       # Custom transformation
-      if ( 'transformation' %in% names( settings_combo[[v]] ) ) {
+      if ( 'transformation' %in% names( settings_combo[[n]] ) ) {
 
-        chr_expr <- settings_combo[[v]]$transformation
+        chr_expr <- settings_combo[[n]]$transformation
 
         # Close 'Custom transformation'
       } else {
@@ -933,23 +934,23 @@ term_prep <- function( x,
         # Close 'Custom transformation'
       }
 
-      mat_new[, n] <- fun_transform_combo(
+      lst_new[[n]] <- fun_transform_combo(
         lst_inputs, chr_expr
       )
 
       # Standardize
-      if ( 'scale' %in% names( settings_combo[[v]] ) ) {
+      if ( 'scale' %in% names( settings_combo[[n]] ) ) {
 
-        vec_scale <- settings_combo[[v]]$scale
+        vec_scale <- settings_combo[[n]]$scale
 
         # Use mean/SD from current data
         if ( length(vec_scale) == 1 & is.logical(vec_scale) ) {
 
           vec_scale <- c(
-            m = mean( mat_new[, n], na.rm = T ),
-            sd = sd( mat_new[, n], na.rm = T )
+            m = mean( lst_new[[n]], na.rm = T ),
+            sd = sd( lst_new[[n]], na.rm = T )
           )
-          settings_combo[[v]]$scale <- vec_scale
+          settings_combo[[n]]$scale <- vec_scale
 
           # Close 'Use mean/SD from current data'
         }
@@ -957,8 +958,8 @@ term_prep <- function( x,
         # Use pre-specified mean/SD
         if ( all( names(vec_scale) %in% c( 'm', 'sd' ) ) ) {
 
-          mat_new[, n] <-
-            ( mat_new[, n] - vec_scale['m'] ) / vec_scale['sd']
+          lst_new[[n]] <-
+            ( lst_new[[n]] - vec_scale['m'] ) / vec_scale['sd']
 
           # Close 'Use pre-specified mean/SD'
         }
@@ -969,7 +970,7 @@ term_prep <- function( x,
       # Close 'Loop over variables'
     }
 
-    x <- cbind( x, mat_new )
+    x <- cbind( x, data.frame( lst_new ) )
 
     # Close 'If terms are to be combined'
   }
