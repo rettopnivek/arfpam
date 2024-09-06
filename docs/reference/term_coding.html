@@ -62,7 +62,7 @@ when creating a new term.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">term_coding</span><span class="op">(</span><span class="va">values</span>, <span class="va">codes</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">term_coding</span><span class="op">(</span><span class="va">values</span>, codes <span class="op">=</span> <span class="cn">NULL</span>, default <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">term_coding_dummy</span><span class="op">(</span><span class="va">categories</span><span class="op">)</span></span>
 <span></span>
@@ -78,6 +78,12 @@ equal in length to <code>codes</code>.</p></dd>
 
 <dt>codes</dt>
 <dd><p>A vector of values.</p></dd>
+
+
+<dt>type</dt>
+<dd><p>A character string, either <code>'replace'</code>,
+<code>'linear'</code>, or <code>'interval'</code>. If not provided
+function attempts to determine from input to <code>values</code>.</p></dd>
 
 
 <dt>categories</dt>

@@ -6,7 +6,7 @@
 \alias{term_coding_effect}
 \title{Parameters for Recoding Variables}
 \usage{
-term_coding(values, codes, default = 0)
+term_coding(values, codes = NULL, default = 0, type = NULL)
 
 term_coding_dummy(categories)
 
@@ -17,6 +17,10 @@ term_coding_effect(categories, referent)
 equal in length to \code{codes}.}
 
 \item{codes}{A vector of values.}
+
+\item{type}{A character string, either \code{'replace'},
+\code{'linear'}, or \code{'interval'}. If not provided
+function attempts to determine from input to \code{values}.}
 
 \item{categories}{A vector of values, all cases
 to be coded as 1 (dummy coding and effect coding).}

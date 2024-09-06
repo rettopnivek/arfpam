@@ -554,6 +554,9 @@ term_combo <- function( combine,
 #'   equal in length to \code{codes}.
 #' @param codes A vector of values.
 #' @param default. A value.
+#' @param type A character string, either \code{'replace'},
+#'   \code{'linear'}, or \code{'interval'}. If not provided
+#'   function attempts to determine from input to \code{values}.
 #' @param categories A vector of values, all cases
 #'   to be coded as 1 (dummy coding and effect coding).
 #' @param referent A vector of values, all cases
@@ -566,13 +569,15 @@ term_combo <- function( combine,
 #' @export
 
 term_coding <- function( values,
-                         codes,
-                         default = 0 ) {
+                         codes = NULL,
+                         default = 0,
+                         type = NULL ) {
 
   output <- list(
     values = values,
     codes = codes,
-    default = default
+    default = default,
+    type = type
   )
 
   return( output )
@@ -587,7 +592,8 @@ term_coding_dummy <- function( categories ) {
   output <- term_coding(
     values = list( categories ),
     codes = 1,
-    default = 0
+    default = 0,
+    type = 'replace'
   )
 
   return( output )
@@ -603,7 +609,8 @@ term_coding_effect <- function( categories,
   output <- term_coding(
     values = list( categories, referent ),
     codes = c( 1, -1 ),
-    default = 0
+    default = 0,
+    type = 'replace'
   )
 
   return( output )
@@ -810,7 +817,8 @@ term_prep <- function( x,
               lst_new[[n]],
               values = lst_codes$values,
               codes = lst_codes$codes,
-              default = lst_codes$default
+              default = lst_codes$default,
+              type = lst_codes$type
             )
 
             # Close 'Recode'
@@ -2200,6 +2208,9 @@ match_rows <- function(
 #' value or a vector matching in length with \code{to_replace}.
 #' @param default The default value to return as output
 #'   for all cases that are not recoded.
+#' @param type A character string, either \code{'replace'},
+#'   \code{'linear'}, or \code{'interval'}. If not provided
+#'   function attempts to determine from input to \code{values}.
 #'
 #' @return A vector.
 #'
@@ -2221,10 +2232,8 @@ match_rows <- function(
 recode <- function( x,
                     values,
                     codes = NULL,
-                    default = 0 ) {
-
-  # Default type of recoding
-  type <- 'replace'
+                    default = 0,
+                    type = NULL ) {
 
   # Initialize output
   output <- rep( default, length(x) )
@@ -2245,21 +2254,36 @@ recode <- function( x,
     # Close 'Default codes'
   }
 
-  # Set type appropriately
-  if ( grepl( ',', values[[1]], fixed = TRUE ) ) {
+  # Specify type
+  if ( is.null(type) ) {
 
-    type <- 'linear'
+    # Default type of recoding
+    type <- 'replace'
 
-    # Close 'Set type appropriately'
-  }
+    # Linear/Interval need only one value
+    if ( length( values[[1]] ) == 1 ) {
 
-  # Set type appropriately
-  if ( grepl( '(', values[[1]], fixed = TRUE ) |
-       grepl( '[', values[[1]], fixed = TRUE ) ) {
+      # Set type appropriately
+      if ( grepl( ',', values[[1]], fixed = TRUE ) ) {
 
-    type <- 'interval'
+        type <- 'linear'
 
-    # Close 'Set type appropriately'
+        # Close 'Set type appropriately'
+      }
+
+      # Set type appropriately
+      if ( grepl( '(', values[[1]], fixed = TRUE ) |
+           grepl( '[', values[[1]], fixed = TRUE ) ) {
+
+        type <- 'interval'
+
+        # Close 'Set type appropriately'
+      }
+
+      # Close 'Linear/Interval need only one value'
+    }
+
+    # Close 'Specify type'
   }
 
   # Replace values

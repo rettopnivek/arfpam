@@ -60,7 +60,7 @@ a linear trend given a start and end point.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">recode</span><span class="op">(</span><span class="va">x</span>, <span class="va">values</span>, codes <span class="op">=</span> <span class="cn">NULL</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">recode</span><span class="op">(</span><span class="va">x</span>, <span class="va">values</span>, codes <span class="op">=</span> <span class="cn">NULL</span>, default <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -87,6 +87,12 @@ value or a vector matching in length with <code>to_replace</code>.</p></dd>
 <dt>default</dt>
 <dd><p>The default value to return as output
 for all cases that are not recoded.</p></dd>
+
+
+<dt>type</dt>
+<dd><p>A character string, either <code>'replace'</code>,
+<code>'linear'</code>, or <code>'interval'</code>. If not provided
+function attempts to determine from input to <code>values</code>.</p></dd>
 
 </dl></div>
     <div id="value">

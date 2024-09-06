@@ -4,7 +4,7 @@
 \alias{recode}
 \title{Recode a Variable}
 \usage{
-recode(x, values, codes = NULL, default = 0)
+recode(x, values, codes = NULL, default = 0, type = NULL)
 }
 \arguments{
 \item{x}{A vector.}
@@ -22,6 +22,10 @@ value or a vector matching in length with \code{to_replace}.}
 
 \item{default}{The default value to return as output
 for all cases that are not recoded.}
+
+\item{type}{A character string, either \code{'replace'},
+\code{'linear'}, or \code{'interval'}. If not provided
+function attempts to determine from input to \code{values}.}
 }
 \value{
 A vector.
