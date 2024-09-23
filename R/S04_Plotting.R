@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2024-09-03
+# Last updated 2024-09-23
 
 # Table of contents
 # 1) Utility functions for plotting
@@ -18,7 +18,8 @@
 #   2.4) draw_dots
 #   2.5) draw_error_bars
 #   2.6) draw_hv
-#   2.7) draw_lines
+#   2.7) draw_legend
+#   2.8) draw_lines
 # 3) Functions to plot specific types of plots
 #   3.1) plot_blank
 #   3.2) plot_correlations
@@ -1327,7 +1328,66 @@ draw_hv <- function( h = NULL,
 
 }
 
-#### 2.7) draw_lines ####
+#### 2.7) draw_legend ####
+#' Add a Legend to an Existing Plot
+#'
+#' Function to add a legend to an
+#' existing plot.
+#'
+#' @param x The lower and upper boundaries for the
+#'   x-axis.
+#' @param y The lower and upper boundaries for the
+#'   y-axis.
+#' @param legend A character vector, the text for the
+#'   legend (see [graphics::legend]).
+#' @param bty A character string, either \code{"o"} or
+#'   \code{"n"} (the default), the type of box to
+#'   draw around the legend (see [graphics::legend]).
+#' @param xpd A logical value or \code{NA}, determining
+#'   how the legend should be clipped relative to the
+#'   figure region (see [graphics::par]). Defaults to \code{NA}.
+#' @param adj A numeric vector of two values, the
+#'   relative x and y-axis position of the legend,
+#'   where values are ratios (e.g., values of
+#'   1 will place the legend exactly at the top right
+#'   corner of the figure boundary).
+#' @param ... Additional arguments to pass to [graphics::legend].
+#'
+#' @returns Adds a legend to an existing plot.
+#'
+#' @examples
+#' # Example figure
+#' x <- 0:1; y <- 0:1
+#' plot_blank(x, y)
+#'
+#' # Add legend in middle of figure
+#' draw_legend(
+#'   x, y, 'Example',
+#'   adj = c( .5, .5 )
+#' )
+#'
+#' @export
+
+draw_legend <- function( x,
+                         y,
+                         legend,
+                         bty = 'n',
+                         xpd = NA,
+                         adj = c( 0, 1.2 ),
+                         ... ) {
+
+  legend(
+    x = x[1] + diff(x) * adj[1],
+    y = y[1] + diff(y) * adj[2],
+    legend = legend,
+    bty = bty,
+    xpd = xpd,
+    ...
+  )
+
+}
+
+#### 2.8) draw_lines ####
 #' Add Lines and Error Bars to an Existing Plot
 #'
 #' Function to add lines and error bars to an

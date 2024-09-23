@@ -81,6 +81,7 @@ reference:
   - draw_error_bars
   - draw_dots
   - draw_hv
+  - draw_legend
   - draw_lines
   - palettes
   - plot_blank
