@@ -12,9 +12,11 @@ with options for...
 \itemize{
 \item 'Function (function documentation);
 \item 'Header' (header for a R script);
+\item 'Package' (package version);
 \item 'Progress' (progress bar for a loop);
 \item 'Loop' (a \code{for} loop statement);
 \item 'Conditional' (a \code{if} statement);
+\item 'Roxygen2' (function documentation using Roxygen2);
 \item 'recode' (values for the 'dplyr'
 function \code{\link[dplyr]{recode}}).
 }}
@@ -37,6 +39,9 @@ templates("Function")
 
 # Header for R script
 templates("Header")
+
+# Package version
+templates("Package", "stats")
 
 # Progress bar for loop
 templates("Progress")

@@ -19,7 +19,7 @@ easy copying and pasting."><!-- mathjax --><script src="https://cdnjs.cloudflare
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.45.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.45.1</span>
       </span>
     </div>
 
@@ -67,9 +67,11 @@ easy copying and pasting.</p>
 <dd><p>The type of template to return,
 with options for...</p><ul><li><p>'Function (function documentation);</p></li>
 <li><p>'Header' (header for a R script);</p></li>
+<li><p>'Package' (package version);</p></li>
 <li><p>'Progress' (progress bar for a loop);</p></li>
 <li><p>'Loop' (a <code>for</code> loop statement);</p></li>
 <li><p>'Conditional' (a <code>if</code> statement);</p></li>
+<li><p>'Roxygen2' (function documentation using Roxygen2);</p></li>
 <li><p>'recode' (values for the 'dplyr'
 function <code><a href="https://dplyr.tidyverse.org/reference/recode.html" class="external-link">recode</a></code>).</p></li>
 </ul></dd>
@@ -89,6 +91,7 @@ with <code>type = 'recode'</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Available template options:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   - Function</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   - Header</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   - Package version</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   - Progress</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   - Loop</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   - Conditional</span>
@@ -121,24 +124,30 @@ with <code>type = 'recode'</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> # email: kevin.w.potter@gmail.com</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> # Please email me directly if you </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> # have any questions or comments</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> # Last updated 2024-09-23</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> # Last updated 2024-10-15</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> # Table of contents</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> # 1)</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Package version</span></span></span>
+<span class="r-in"><span><span class="fu">templates</span><span class="op">(</span><span class="st">"Package"</span>, <span class="st">"stats"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> #   * The R package 'stats' (version 4.4.0)</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Progress bar for loop</span></span></span>
 <span class="r-in"><span><span class="fu">templates</span><span class="op">(</span><span class="st">"Progress"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> n_cases &lt;- 10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> int_cases &lt;- 10</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> # Create a progress bar using a base R function</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> pb &lt;- txtProgressBar( min = 1, max = n_cases, style = 3 )</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> obj_pb &lt;- txtProgressBar(</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   min = 1, max = int_cases, style = 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> )</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> # Loop over cases</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> for (i in 1:n_cases) {</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   # Update the progress bar</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   setTxtProgressBar(pb,i)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   setTxtProgressBar(obj_pb, i)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   # Close 'Loop over cases'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> close(pb)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> close(obj_pb)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Loop</span></span></span>
 <span class="r-in"><span><span class="fu">templates</span><span class="op">(</span><span class="st">"Loop"</span><span class="op">)</span></span></span>

@@ -1,6 +1,6 @@
 Package: arfpam
 Title: Assorted R Functions for Processing, Analysis, and Modeling
-Version: 2.45.0
+Version: 2.45.1
 Authors@R: person("Kevin", "Potter", 
   email = "kevin.w.potter@gmail.com", role = c("aut", "cre"))
 Description:

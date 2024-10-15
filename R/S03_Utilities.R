@@ -3593,9 +3593,11 @@ section <- function(x, run = TRUE,
 #'   \itemize{
 #'     \item 'Function (function documentation);
 #'     \item 'Header' (header for a R script);
+#'     \item 'Package' (package version);
 #'     \item 'Progress' (progress bar for a loop);
 #'     \item 'Loop' (a \code{for} loop statement);
 #'     \item 'Conditional' (a \code{if} statement);
+#'     \item 'Roxygen2' (function documentation using Roxygen2);
 #'     \item 'recode' (values for the 'dplyr'
 #'       function \code{\link[dplyr]{recode}}).
 #'   }
@@ -3612,6 +3614,9 @@ section <- function(x, run = TRUE,
 #'
 #' # Header for R script
 #' templates("Header")
+#'
+#' # Package version
+#' templates("Package", "stats")
 #'
 #' # Progress bar for loop
 #' templates("Progress")
@@ -3653,40 +3658,47 @@ templates <- function(type = NULL, val = NULL) {
       "SD", "sd",
       "2"
     ),
+    package_versions = c(
+      'Package version',
+      'package version',
+      'Package',
+      'package',
+      '3'
+    ),
     progress_bar = c(
       "Progress", "progress",
       "Prog", "prog",
-      "3"
+      "5"
     ),
     loop = c(
       "Loop", "loop",
-      "for", "4"
+      "for", "6"
     ),
     conditional = c(
       "Conditional", "conditional",
-      "if", "5"
+      "if", "7"
     ),
     roxygen_documentation = c(
       'Roxygen2', 'Roxygen', 'roxygen', 'roxygen2',
       'roxy',
-      '6'
+      '8'
     ),
     recode = c(
-      "recode", "7"
+      "recode", "9"
     ),
     html_links = c(
       "HTML links", "html links",
       "HTML link", "html link",
       "Internal links", "internal links",
       "Internal link", "internal link",
-      "8"
+      "10"
     ),
     rmd_glossary = c(
       "Rmd glossary", "rmd glossary",
       "Nomenclature and glossary",
       "nomenclature and glossary",
       "nom-gloss",
-      "9"
+      "11"
     )
     # plot_function = c()
   )
@@ -3748,19 +3760,34 @@ templates <- function(type = NULL, val = NULL) {
     message(string)
   }
 
+  if (type %in% types$package_version) {
+
+    string <- paste0(
+      "#   * The R package '",
+      val,
+      "' (version ",
+      installed.packages()[val, 'Version'],
+      ")"
+    )
+
+    message(string)
+  }
+
   if (type %in% types$progress_bar) {
     string <- paste0(
-      "n_cases <- 10\n",
+      "int_cases <- 10\n",
       "# Create a progress bar using a base R function\n",
-      "pb <- txtProgressBar( min = 1, max = n_cases, style = 3 )\n",
+      "obj_pb <- txtProgressBar(\n",
+      "  min = 1, max = int_cases, style = 3\n",
+      ")\n",
       "\n",
       "# Loop over cases\n",
       "for (i in 1:n_cases) {\n",
       "  # Update the progress bar\n",
-      "  setTxtProgressBar(pb,i)\n",
+      "  setTxtProgressBar(obj_pb, i)\n",
       "  # Close 'Loop over cases'\n",
       "}\n",
-      "close(pb)\n"
+      "close(obj_pb)\n"
     )
 
     message(string)
