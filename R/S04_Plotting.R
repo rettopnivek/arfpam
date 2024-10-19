@@ -2913,3 +2913,100 @@ plot_scatter <- function( x,
 
 }
 
+#### 4) Functions to save figures as files ####
+
+#### 4.1) save_png ####
+#' Save PNG file
+#'
+#' Function that generates a figure and saves
+#' as a PNG file using common settings.
+#'
+#' @param file_name A character string, the
+#'   desired path to the PNG file.
+#' @param fun_plot A function that generates
+#'   a figure as output.
+#' @param dmn A numeric vector of two values,
+#'   the width and height of the figure
+#'   to save (default is in inches).
+#' @param units A character string, the
+#'   units for figure dimensions (see
+#'   [grDevices::png]).
+#' @param res An integer value, the
+#'   figure resolution (see
+#'   [grDevices::png]).
+#' @param return_file_name A logical value,
+#'   if \code{TRUE} returns the file name
+#'   as a character string.
+#' @param ... Additional arguments for the
+#'   \code{fun_plot} function.
+#'
+#' @returns A PNG file, and optionally the
+#'   file name.
+#'
+#' @export
+
+save_png <- function(
+    file_name,
+    fun_plot,
+    dmn = c( 5, 5 ),
+    units = 'in', res = 300,
+    return_file_name = FALSE,
+    ... ) {
+
+  png(
+    file_name,
+    width = dmn[1], height = dmn[2],
+    units = units, res = res
+  )
+
+  fun_plot( ... )
+
+  dev.off()
+
+  if ( return_file_name ) return( file_name )
+}
+
+#### 4.2) save_pdf ####
+#' Save PDF file
+#'
+#' Function that generates a figure and saves
+#' as a PDF file using common settings.
+#'
+#' @param file_name A character string, the
+#'   desired path to the PNG file.
+#' @param fun_plot A function that generates
+#'   a figure as output.
+#' @param dmn A numeric vector of two values,
+#'   the width and height of the figure
+#'   to save (default is in inches).
+#' @param return_file_name A logical value,
+#'   if \code{TRUE} returns the file name
+#'   as a character string.
+#' @param ... Additional arguments for the
+#'   \code{fun_plot} function.
+#'
+#' @returns A PDF file, and optionally the
+#'   file name.
+#'
+#' @export
+
+save_pdf <- function(
+    file_name,
+    fun_plot,
+    dmn = c( 5, 5 ),
+    return_file_name = FALSE,
+    ... ) {
+
+  pdf(
+    file_name,
+    width = dmn[1], height = dmn[2]
+  )
+
+  fun_plot( ... )
+
+  dev.off()
+
+  if ( return_file_name ) return( file_name )
+}
+
+

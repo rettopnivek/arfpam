@@ -89,6 +89,8 @@ reference:
   - plot_histogram
   - plot_forest
   - plot_scatter
+  - save_pdf
+  - save_png
   - specify_positions
 - title: "Statistics"
   desc: >
