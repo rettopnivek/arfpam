@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2024-09-23
+# Last updated 2025-10-09
 
 # Table of contents
 # 1) Utility functions for plotting
@@ -2254,6 +2254,8 @@ plot_correlations <- function( dtf = NULL,
 #'   estimates visually.
 #' @param horiz_color  A character vector specifying
 #'   the color for the horizontal grid lines.
+#' @param border An integer vector specifying the sides
+#'   to add a border to (1 = bottom, 2 = left, 3 = top, and 4 = right).
 #' @param new Logical; if \code{TRUE} a new plotting window
 #'   is generated.
 #' @param w An integer value, the width of a new plotting window.
@@ -2322,6 +2324,7 @@ plot_forest <- function(x,
                         vert_type = 1,
                         horiz_grid = FALSE,
                         horiz_color = 'grey80',
+                        border = c( 1, 2 ),
                         new = FALSE,
                         w = 5,
                         h = 5 ) {
@@ -2449,6 +2452,18 @@ plot_forest <- function(x,
   par( mai = margin )
   arfpam::plot_blank( xlim, ylim )
 
+  # Add horizontal grid lines
+  if ( horiz_grid ) {
+
+    arfpam::draw_hv(
+      h = seq( ylim[1], ylim[2], 1 ), l = xlim,
+      lwd = line_width[2],
+      col = horiz_color
+    )
+
+    # Close 'Add vertical grid lines'
+  }
+
   # Add vertical grid lines
   if ( !is.null( vert_grid ) ) {
 
@@ -2457,18 +2472,6 @@ plot_forest <- function(x,
       lwd = line_width[2],
       col = vert_color,
       lty = vert_type
-    )
-
-    # Close 'Add vertical grid lines'
-  }
-
-  # Add horizontal grid lines
-  if ( horiz_grid ) {
-
-    arfpam::draw_hv(
-      h = seq( ylim[1], ylim[2], 1 ), l = xlim,
-      lwd = line_width[2],
-      col = horiz_color
     )
 
     # Close 'Add vertical grid lines'
@@ -2556,17 +2559,30 @@ plot_forest <- function(x,
     cex = text_size[1]
   )
 
-  arfpam::draw_hv( h = ylim[1], l = xlim, lwd = line_width[3] )
-  arfpam::draw_hv( v = xlim[1], l = ylim, lwd = line_width[3] )
+  if ( 1 %in% border )
+    arfpam::draw_hv( h = ylim[1], l = xlim, lwd = line_width[3] )
+  if ( 2 %in% border )
+    arfpam::draw_hv( v = xlim[1], l = ylim, lwd = line_width[3] )
+  if ( 3 %in% border )
+    arfpam::draw_hv( h = ylim[2], l = xlim, lwd = line_width[3] )
+  if ( 4 %in% border )
+    arfpam::draw_hv( v = xlim[2], l = ylim, lwd = line_width[3] )
+
 
   # If y-axis labels provided
   if ( !is.null(labels_y) ) {
 
-    arfpam::draw_axes(
-      y, labels_y,
-      side = 2, line = labels_position[1],
-      xpd = NA, las = 1, cex = text_size[2]
-    )
+    # Loop over values
+    for ( r in seq_along(y) ) {
+
+      arfpam::draw_axes(
+        y[r], labels_y[r],
+        side = 2, line = labels_position[1],
+        xpd = NA, las = 1, cex = text_size[2]
+      )
+
+      # Close 'Loop over values'
+    }
 
     # Close 'If y-axis labels provided'
   }

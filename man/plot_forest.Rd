@@ -28,6 +28,7 @@ plot_forest(
   vert_type = 1,
   horiz_grid = FALSE,
   horiz_color = "grey80",
+  border = c(1, 2),
   new = FALSE,
   w = 5,
   h = 5
@@ -117,6 +118,9 @@ estimates visually.}
 
 \item{horiz_color}{A character vector specifying
 the color for the horizontal grid lines.}
+
+\item{border}{An integer vector specifying the sides
+to add a border to (1 = bottom, 2 = left, 3 = top, and 4 = right).}
 
 \item{new}{Logical; if \code{TRUE} a new plotting window
 is generated.}

@@ -19,7 +19,7 @@ error bars)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arfpam</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.46.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.46.1</span>
       </span>
     </div>
 
@@ -82,6 +82,7 @@ error bars).</p>
 <span>  vert_type <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  horiz_grid <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  horiz_color <span class="op">=</span> <span class="st">"grey80"</span>,</span>
+<span>  border <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  new <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  w <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  h <span class="op">=</span> <span class="fl">5</span></span>
@@ -216,6 +217,11 @@ estimates visually.</p></dd>
 <dt>horiz_color</dt>
 <dd><p>A character vector specifying
 the color for the horizontal grid lines.</p></dd>
+
+
+<dt>border</dt>
+<dd><p>An integer vector specifying the sides
+to add a border to (1 = bottom, 2 = left, 3 = top, and 4 = right).</p></dd>
 
 
 <dt>new</dt>
