@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2024-09-03
+# Last updated 2025-12-30
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -43,6 +43,7 @@
 #   4.9) over
 #   4.10) print_table
 #   4.11) runs_in_sequence
+#   4.12) start_of_new
 # 5) Functions for strings
 #   5.1) align_strings
 #   5.2) format_numbers
@@ -3066,6 +3067,30 @@ runs_in_sequence <- function( x, codes_for_hit = 1 ) {
   )
 
   return( out )
+}
+
+#### 4.12) start_of_new ####
+#' Identify Start of New Repetition
+#'
+#' Function that identifies when a new repetition
+#' of values in a vector starts.
+#'
+#' @param x A vector.
+#'
+#' @return A logical vector equal to \code{TRUE}
+#' for each instance in which a subsequent value
+#' differs from a prior value.
+#'
+#' @examples
+#' x <- rep( 1:4, each = 3 )
+#' start_of_new( x )
+#'
+#' @export
+
+start_of_new <- function(x) {
+
+  return( !c( x[1] == x[2], x[-length(x)] == x[-1] ) )
+
 }
 
 #### 5) Functions for strings ####

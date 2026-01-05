@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2025-10-09
+# Last updated 2026-01-05
 
 # Package development
 # - To test functions

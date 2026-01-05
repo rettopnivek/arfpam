@@ -29,6 +29,6 @@ A PDF file, and optionally the
 file name.
 }
 \description{
-Function that generates a figure and saves
+Function that generates a figure and saves it
 as a PDF file using common settings.
 }

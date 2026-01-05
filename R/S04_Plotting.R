@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2025-10-09
+# Last updated 2026-01-05
 
 # Table of contents
 # 1) Utility functions for plotting
@@ -26,6 +26,13 @@
 #   3.3) plot_forest
 #   3.4) plot_histogram
 #   3.5) plot_scatter
+#   3.6) plot_barplot
+# 4) Functions to save figures as files
+#   4.1) save_png
+#   4.2) save_pdf
+#   4.3) save_jpeg
+#     4.3.1) save_jpg
+#   4.4) save_tiff
 
 #### 1) Utility functions for plotting ####
 
@@ -1051,7 +1058,7 @@ draw_dots <- function( x,
 
   # Add error bars to figure
   if ( !is.null(lb) & !is.null(ub) ) {
-
+    #### !FIX! ####
     error_bars(
       x, lb = lb, ub = ub, lwd = lwd, length = length, col = col.eb
     )
@@ -2929,12 +2936,182 @@ plot_scatter <- function( x,
 
 }
 
+#### 3.6) plot_barplot ####
+
+plot_barplot <- function( y,
+                          x = NULL,
+                          columns = NULL,
+                          widths = c( .2, 0, .2 ),
+                          ylim = NULL,
+                          fill = 'grey',
+                          border = 'black',
+                          density = NA,
+                          lwd = 1,
+                          background = 'white',
+                          xlab = 'X',
+                          ylab = 'Y',
+                          main = '',
+                          lines = 1.5,
+                          cex = 1 ) {
+
+  # Data frame provided
+  if ( is.data.frame(y) ) {
+
+    dtf <- y
+
+    # Close 'Data frame provided'
+  } else {
+
+    dtf <- data.frame( y = y )
+
+    # Close else for 'Data frame provided'
+  }
+
+  # Indicator for spacing provided
+  if ( !is.null(x) & !is.data.frame(y) ) {
+
+    dtf$x <- x
+    columns <- c( 'y', 'x' )
+
+    # Close 'Indicator for spacing provided'
+  }
+
+  # Default column names
+  if ( is.null( columns ) ) {
+
+    columns <- c( 'y', '' )
+
+    if ( !columns[1] %in% colnames(dtf) )
+      columns[1] <- colnames(dtf)[1]
+
+    # Close 'Default column names'
+  }
+
+  # No column for indicator provided
+  if ( length(columns) == 1 ) {
+
+    columns <- c( columns, '' )
+
+    # Close 'No column for indicator provided'
+  }
+
+  # No y-axis limits provided
+  if ( is.null(ylim) ) {
+
+    num_yl <- c( 0, max( dtf[[ columns[1] ]], na.rm = TRUE ) )
+
+    # Close 'No y-axis limits provided'
+  } else {
+
+    num_yl <- ylim
+
+    # Close else for 'No y-axis limits provided'
+  }
+
+  # Indicator provided
+  if ( columns[2] != '' ) {
+
+    int_gap <- dtf[[ columns[2] ]]
+
+    # Convert to 0 and 1
+    if ( !all( int_gap %in% 0:1 ) ) {
+
+      int_gap <- arfpam::start_of_new(
+        int_gap
+      ) |> as.numeric()
+
+      # Close 'Convert to 0 and 1'
+    }
+
+    # Close 'Indicator provided'
+  } else {
+
+    int_gap <- rep( 0, nrow(dtf) )
+
+    # Close else for 'Indicator provided'
+  }
+
+  num_x_start <- rep( widths[1] + widths[2], nrow(dtf) )
+  num_x_end <- rep( widths[1]*2 + widths[2], nrow(dtf) )
+
+  # More than 1 row
+  if ( nrow(dtf) > 1 ) {
+
+    # Loop over rows
+    for ( r in 2:nrow(dtf) ) {
+
+      num_x_start[r] <-
+        num_x_end[r - 1] +
+        widths[2] +
+        int_gap[r]*widths[3]
+      num_x_end[r] <-
+        num_x_start[r] +
+        widths[1]
+
+      # Close 'Loop over rows'
+    }
+
+    # Close 'More than 1 row'
+  }
+
+  chr_fill <- rep_len( fill, nrow(dtf) )
+  chr_border <- rep_len( border, nrow(dtf) )
+  int_density <- rep_len( density, nrow(dtf) )
+  int_lwd <- rep_len( lwd, nrow(dtf) )
+
+  num_xl <- c( 0, max( num_x_end ) + widths[1] + widths[2] )
+
+  arfpam::plot_blank(
+    num_xl,
+    num_yl
+  )
+
+  # Loop over rows
+  for ( r in 1:nrow(dtf) ) {
+
+    # Add background color for each bar
+    if ( !is.null(background) ) {
+
+      polygon(
+        c( num_x_start[r], num_x_end[r] ) |> rep( each = 2 ),
+        c( 0, dtf[[ columns[1] ]][ c( r, r ) ], 0 ),
+        col = background
+      )
+
+      # Close 'Add background color for each bar'
+    }
+
+    polygon(
+      c( num_x_start[r], num_x_end[r] ) |> rep( each = 2 ),
+      c( 0, dtf[[ columns[1] ]][ c( r, r ) ], 0 ),
+      col = chr_fill[r],
+      border = chr_border[r],
+      density = int_density[r],
+      lwd = int_lwd[r]
+    )
+
+    # Close 'Loop over rows'
+  }
+
+  lines <- rep_len( lines, 3 )
+  cex <- rep_len( cex, 3 )
+
+  arfpam::draw_borders_and_labels(
+    num_xl,
+    num_yl,
+    labels = c( xlab, ylab, main ),
+    lines = lines[1:3],
+    cex = cex[1:3]
+  )
+
+}
+
 #### 4) Functions to save figures as files ####
 
 #### 4.1) save_png ####
 #' Save PNG file
 #'
-#' Function that generates a figure and saves
+#' Function that generates a figure and saves it
 #' as a PNG file using common settings.
 #'
 #' @param file_name A character string, the
@@ -2948,8 +3125,17 @@ plot_scatter <- function( x,
 #'   units for figure dimensions (see
 #'   [grDevices::png]).
 #' @param res An integer value, the
-#'   figure resolution (see
-#'   [grDevices::png]).
+#'   figure resolution (see [grDevices::png]).
+#' @param pointsize An integer value, the point
+#'   size of text (see [grDevices::png]).
+#' @param bg a character string, the background
+#'   color (see [grDevices::png]).
+#' @param family A character string specifying the
+#'   font family (see [grDevices::png]).
+#' @param type A character string governing how
+#'   plotting is done (see [grDevices::png]).
+#' @param symbolfamily A character stringth for
+#'   cairographics options (see [grDevices::png]).
 #' @param return_file_name A logical value,
 #'   if \code{TRUE} returns the file name
 #'   as a character string.
@@ -2966,13 +3152,17 @@ save_png <- function(
     fun_plot,
     dmn = c( 5, 5 ),
     units = 'in', res = 300,
+    pointsize = 12, bg = 'white',
+    family = "", type = c( "windows", "cairo", "cairo-png" ),
+    symbolfamily = "default",
     return_file_name = FALSE,
     ... ) {
 
   png(
     file_name,
     width = dmn[1], height = dmn[2],
-    units = units, res = res
+    units = units, res = res, pointsize = pointsize,
+    family = family, type = type, symbolfamily = symbolfamily
   )
 
   fun_plot( ... )
@@ -2985,7 +3175,7 @@ save_png <- function(
 #### 4.2) save_pdf ####
 #' Save PDF file
 #'
-#' Function that generates a figure and saves
+#' Function that generates a figure and saves it
 #' as a PDF file using common settings.
 #'
 #' @param file_name A character string, the
@@ -3025,4 +3215,175 @@ save_pdf <- function(
   if ( return_file_name ) return( file_name )
 }
 
+#### 4.3) save_jpeg ####
+#' Save JPEG file
+#'
+#' Function that generates a figure and saves it
+#' as a JPEG file using common settings.
+#'
+#' @param file_name A character string, the
+#'   desired path to the PNG file.
+#' @param fun_plot A function that generates
+#'   a figure as output.
+#' @param dmn A numeric vector of two values,
+#'   the width and height of the figure
+#'   to save (default is in inches).
+#' @param units A character string, the
+#'   units for figure dimensions (see
+#'   [grDevices::jpeg]).
+#' @param res An integer value, the
+#'   figure resolution (see
+#'   [grDevices::jpeg]).
+#' @param quality A numeric value from 0 100, a
+#'   percentage governing compression (lower values
+#'   give more compression but worse quality; see
+#'   [grDevices::jpeg]).
+#' @param pointsize An integer value, the point
+#'   size of text (see [grDevices::jpeg]).
+#' @param bg a character string, the background
+#'   color (see [grDevices::jpeg]).
+#' @param family A character string specifying the
+#'   font family (see [grDevices::jpeg]).
+#' @param type A character string governing how
+#'   plotting is done (see [grDevices::jpeg]).
+#' @param symbolfamily A character string for
+#'   cairographics options (see [grDevices::jpeg]).
+#' @param return_file_name A logical value,
+#'   if \code{TRUE} returns the file name
+#'   as a character string.
+#' @param ... Additional arguments for the
+#'   \code{fun_plot} function.
+#'
+#' @returns A JEPG file, and optionally the
+#'   file name.
+#'
+#' @export
 
+save_jpeg <- function(
+    file_name,
+    fun_plot,
+    dmn = c( 5, 5 ),
+    units = 'in', res = 300, quality = 90,
+    pointsize = 12, bg = 'white',
+    family = "", type = c( "windows", "cairo" ),
+    symbolfamily = "default",
+    return_file_name = FALSE,
+    ... ) {
+
+  jpeg(
+    file_name,
+    width = dmn[1], height = dmn[2],
+    units = units, res = res, quality = quality,
+    pointsize = pointsize, family = family,
+    type = type, symbolfamily = symbolfamily
+  )
+
+  fun_plot( ... )
+
+  dev.off()
+
+  if ( return_file_name ) return( file_name )
+}
+
+#### 4.3.1) save_jpg ####
+#' @rdname save_jpeg
+#' @export
+
+save_jpg <- function(
+    file_name,
+    fun_plot,
+    dmn = c( 5, 5 ),
+    units = 'in', res = 300, quality = 90,
+    pointsize = 12, bg = 'white',
+    family = "", type = c( "windows", "cairo" ),
+    symbolfamily = "default",
+    return_file_name = FALSE,
+    ... ) {
+
+  jpeg(
+    file_name,
+    width = dmn[1], height = dmn[2],
+    units = units, res = res, quality = quality,
+    pointsize = pointsize, family = family,
+    type = type, symbolfamily = symbolfamily
+  )
+
+  fun_plot( ... )
+
+  dev.off()
+
+  if ( return_file_name ) return( file_name )
+}
+
+#### 4.4) save_tiff ####
+#' Save TIFF file
+#'
+#' Function that generates a figure and saves it
+#' as a TIFF file using common settings.
+#'
+#' @param file_name A character string, the
+#'   desired path to the PNG file.
+#' @param fun_plot A function that generates
+#'   a figure as output.
+#' @param dmn A numeric vector of two values,
+#'   the width and height of the figure
+#'   to save (default is in inches).
+#' @param units A character string, the
+#'   units for figure dimensions (see
+#'   [grDevices::tiff]).
+#' @param res An integer value, the
+#'   figure resolution (see
+#'   [grDevices::tiff]).
+#' @param compression A character string, the type
+#'   of compression to use; see [grDevices::tiff]).
+#' @param restoreConsole A logical value, see
+#'   [grDevices::tiff]).
+#' @param pointsize An integer value, the point
+#'   size of text (see [grDevices::tiff]).
+#' @param bg a character string, the background
+#'   color (see [grDevices::tiff]).
+#' @param family A character string specifying the
+#'   font family (see [grDevices::tiff]).
+#' @param type A character string governing how
+#'   plotting is done (see [grDevices::tiff]).
+#' @param symbolfamily A character stringth for
+#'   cairographics options (see [grDevices::tiff]).
+#' @param return_file_name A logical value,
+#'   if \code{TRUE} returns the file name
+#'   as a character string.
+#' @param ... Additional arguments for the
+#'   \code{fun_plot} function.
+#'
+#' @returns A JEPG file, and optionally the
+#'   file name.
+#'
+#' @export
+
+save_tiff <- function(
+    file_name,
+    fun_plot,
+    dmn = c( 5, 5 ),
+    units = 'in', res = 300,
+    compression = 'none',
+    restoreConsole = TRUE,
+    pointsize = 12, bg = 'white',
+    family = "", type = c( "windows", "cairo" ),
+    symbolfamily = "default",
+    return_file_name = FALSE,
+    ... ) {
+
+  tiff(
+    file_name,
+    width = dmn[1], height = dmn[2],
+    units = units, res = res,
+    compression = compression, restoreConsole = restoreConsole,
+    pointsize = pointsize, family = family,
+    type = type, symbolfamily = symbolfamily
+  )
+
+  fun_plot( ... )
+
+  dev.off()
+
+  if ( return_file_name ) return( file_name )
+}

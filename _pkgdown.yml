@@ -60,6 +60,7 @@ reference:
   - runs_in_sequence
   - save_png_figure
   - section
+  - start_of_new
   - strip_value
   - squish
   - take_x_by_y
@@ -91,6 +92,9 @@ reference:
   - plot_scatter
   - save_pdf
   - save_png
+  - save_jpeg
+  - save_jpg
+  - save_tiff
   - specify_positions
 - title: "Statistics"
   desc: >
