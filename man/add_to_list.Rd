@@ -10,7 +10,8 @@ add_to_list(l, name, e)
 \item{l}{A list.}
 
 \item{name}{A character string, the name of the new
-element being added.}
+element being added. Non-standard evaluation
+possible.}
 
 \item{e}{An R object, the new element to add to
 the list.}

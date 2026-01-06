@@ -41,8 +41,12 @@ dtf_example <- data.frame(
 shuffled_x <- sample( 1:4, size = 4, replace = TRUE )
 # Create a reordered data frame based on the resampled values
 dtf_shuffled <- data.frame(
-  X = match_and_reorder( dtf_example$X, shuffled_x, dtf_example$X ),
-  Y = match_and_reorder( dtf_example$X, shuffled_x, dtf_example$Y )
+  X = match_and_reorder(
+    dtf_example$X, shuffled_x, dtf_example$X
+  ),
+  Y = match_and_reorder(
+    dtf_example$X, shuffled_x, dtf_example$Y
+  )
 )
 
 }

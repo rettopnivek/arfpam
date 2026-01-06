@@ -9,15 +9,17 @@ group_index(..., levels = NULL)
 \arguments{
 \item{...}{Vectors of equal length.}
 
-\item{levels}{A list with the order of the unique levels for
-each input vector (indices assigned from first to last level).}
+\item{levels}{A list with the order of the unique
+levels for each input vector (indices assigned
+from first to last level).}
 }
 \value{
-An integer vector from 1 to the number of unique levels.
+An integer vector from 1 to the number of
+unique levels.
 }
 \description{
-Create a numeric index over the unique levels of a
-variable or a set of variables.
+Create a numeric index over the unique levels
+of a variable or a set of variables.
 }
 \examples{
 # Convert to numeric index
@@ -25,7 +27,8 @@ group_index( rep( LETTERS[3:1], each = 3 ) )
 
 # Can control assignment of indices
 group_index(
-  rep( LETTERS[3:1], each = 3 ), levels = list( c( 'C', 'B', 'A' ) )
+  rep( LETTERS[3:1], each = 3 ),
+  levels = list( c( 'C', 'B', 'A' ) )
 )
 
 # Can create single index over all

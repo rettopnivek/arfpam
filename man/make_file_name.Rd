@@ -61,6 +61,8 @@ environmental variables.
 \examples{
 
 make_file_name( 'Example', 'R' )
-make_file_name( 'Example_2', 'RData', project = 'EX', script = 'S01' )
+make_file_name(
+  'Example_2', 'RData', project = 'EX', script = 'S01'
+)
 
 }

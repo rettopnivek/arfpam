@@ -23,7 +23,9 @@ the row in one data frame that matches the
 row in another data frame.
 }
 \examples{
-dtf_example_1 <- data.frame( c( LETTERS[3:1], 'Z' ), V2 = c( 3:1, 26 ) )
+dtf_example_1 <- data.frame(
+  c( LETTERS[3:1], 'Z' ), V2 = c( 3:1, 26 )
+)
 dtf_example_2 <- data.frame( LETTERS[1:6], V2 = 1:6 )
 match_rows( dtf_example_1, dtf_example_2 )
 

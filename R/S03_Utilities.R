@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2025-12-30
+# Last updated 2026-01-06
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -12,7 +12,17 @@
 #   1.3) duplicate_wide_to_long
 #   1.4) has_NA
 #   1.5) pull_id
-#   1.6) take_x_by_y
+#   1.6) term
+#     1.6.1) term_new
+#     1.6.2) term_combo
+#     1.6.3) term_coding
+#       1.6.3.1) term_coding_dummy
+#       1.6.3.2) term_coding_effect
+#     1.6.4) term_prep
+#       1.6.4.1) Setup
+#       1.6.4.2) New terms
+#       1.6.4.3) Combinations
+#   1.7) take_x_by_y
 # 2) Functions for files
 #   2.1) date_and_time
 #   2.2) find_file_name
@@ -22,7 +32,6 @@
 #   2.6) path_to_file
 #   2.7) source_R_scripts
 #   2.8) copy_from_source
-#   2.9) save_png_figure
 # 3) Functions for matching and assignment
 #   3.1) assign_by_interval
 #   3.2) match_and_reorder
@@ -42,8 +51,9 @@
 #   4.8) new_limits
 #   4.9) over
 #   4.10) print_table
-#   4.11) runs_in_sequence
-#   4.12) start_of_new
+#   4.11) nq
+#   4.12) runs_in_sequence
+#   4.13) start_of_new
 # 5) Functions for strings
 #   5.1) align_strings
 #   5.2) format_numbers
@@ -59,7 +69,6 @@
 #   7.3) section
 #   7.4) templates
 #   7.5) update_package_version
-
 
 # TO DO
 # - Add Custom tests for file/folder functions
@@ -208,7 +217,11 @@ column_by_other <- function( dtf, col1, col2 ) {
 
   # Non-standard evaluation
   V <- as.character( substitute( col1 ) )
+  V <- gsub( "\'", "", V, fixed = TRUE )
+  V <- gsub( '\"', '', V, fixed = TRUE )
   L <- as.character( substitute( col2 ) )
+  L <- gsub( "\'", "", L, fixed = TRUE )
+  L <- gsub( '\"', '', L, fixed = TRUE )
 
   dtf$Cur_values = dtf[[ V ]]
   dtf$Cur_labels = dtf[[ L ]]
@@ -998,7 +1011,8 @@ term_prep <- function( x,
       # Close 'Merge lists'
     }
 
-    if (output %in% 'both') return( list(x = x, settings = settings) )
+    if (output %in% 'both')
+      return( list(x = x, settings = settings) )
 
     return(settings)
 
@@ -1340,7 +1354,9 @@ find_file_name <- function(string,
 #' @examples
 #'
 #' make_file_name( 'Example', 'R' )
-#' make_file_name( 'Example_2', 'RData', project = 'EX', script = 'S01' )
+#' make_file_name(
+#'   'Example_2', 'RData', project = 'EX', script = 'S01'
+#' )
 #'
 #' @export
 
@@ -1460,7 +1476,6 @@ load_package <- function( pkg = c( 'dplyr', 'arfpam' ),
   # Packages on Github repo for 'rettopwnivek'
   rettopwnivek_packages <- c(
     'arfpam',
-    'extbrms',
     'extofficer',
     'ffcar',
     'pathdiagrams'
@@ -1676,7 +1691,9 @@ source_R_scripts = function( files_to_include = NULL,
 
       } else {
         # Exact matching to file names
-        files_to_source <- all_files[ all_files %in% files_to_include ]
+        files_to_source <- all_files[
+          all_files %in% files_to_include
+        ]
       }
 
     }
@@ -1825,60 +1842,6 @@ copy_from_source <- function( source_path = '',
 
 }
 
-#### 2.9) save_png_figure ####
-#' Create and save PNG file
-#'
-#' Function to create and save a PNG file
-#' given a plotting function to run.
-#'
-#' @param plotting_fun A function, with the
-#'   creation of a figure as a side effect.
-#' @param file_name A character string, the
-#'   file name for the PNG file - must end
-#'   in '.png'.
-#' @param figure_dim A numeric vector of two
-#'   values, the width and height of the
-#'   figure in inches.
-#' @param res A integer value, the resolution
-#'   for the PNG file.
-#' @param ... Additional arguments to pass to
-#'   \code{plotting_fun}.
-#'
-#' @returns Output from \code{plotting_fun}, if any.
-#'
-#' @export
-
-save_png_figure <- function(
-    plotting_fun,
-    file_name,
-    figure_dim = c( 5, 5 ),
-    res = 300,
-    ... ) {
-
-  png(
-    filename = file_name,
-    width = figure_dim[1],
-    height = figure_dim[2],
-    units = 'in',
-    res = res
-  )
-
-  obj_output <- plotting_fun(
-    ...
-  )
-
-  dev.off()
-
-  # Pass through output
-  if ( !is.null( obj_output ) ) {
-
-    return( obj_output )
-
-    # Close 'Pass through output'
-  }
-
-}
-
 #### 3) Functions for matching and assignment ####
 
 #### 3.1) assign_by_interval ####
@@ -2007,7 +1970,8 @@ assign_by_interval <- function(
 
     chr_error <- paste0(
       "Must specify set of replacement values equal to ",
-      "number of intervals (i.e., for B breakpoints there are B - 1 values)"
+      "number of intervals (i.e., for B breakpoints ",
+      "there are B - 1 values)"
     )
     stop( chr_error )
 
@@ -2110,8 +2074,12 @@ assign_by_interval <- function(
 #' shuffled_x <- sample( 1:4, size = 4, replace = TRUE )
 #' # Create a reordered data frame based on the resampled values
 #' dtf_shuffled <- data.frame(
-#'   X = match_and_reorder( dtf_example$X, shuffled_x, dtf_example$X ),
-#'   Y = match_and_reorder( dtf_example$X, shuffled_x, dtf_example$Y )
+#'   X = match_and_reorder(
+#'     dtf_example$X, shuffled_x, dtf_example$X
+#'   ),
+#'   Y = match_and_reorder(
+#'     dtf_example$X, shuffled_x, dtf_example$Y
+#'   )
 #' )
 #'
 #' @export
@@ -2152,7 +2120,9 @@ match_and_reorder <- function( x, values, y = NULL ) {
 #' returns \code{NA}.
 #'
 #' @examples
-#' dtf_example_1 <- data.frame( c( LETTERS[3:1], 'Z' ), V2 = c( 3:1, 26 ) )
+#' dtf_example_1 <- data.frame(
+#'   c( LETTERS[3:1], 'Z' ), V2 = c( 3:1, 26 )
+#' )
 #' dtf_example_2 <- data.frame( LETTERS[1:6], V2 = 1:6 )
 #' match_rows( dtf_example_1, dtf_example_2 )
 #'
@@ -2383,7 +2353,10 @@ recode <- function( x,
 #'
 #' @export
 
-replace_cases <- function( x, to_replace, replace_with, default = NA ) {
+replace_cases <- function( x,
+                           to_replace,
+                           replace_with,
+                           default = NA ) {
 
   N <- length(x)
   out <- rep( default, N )
@@ -2442,7 +2415,8 @@ replace_cases <- function( x, to_replace, replace_with, default = NA ) {
 #'
 #' @param l A list.
 #' @param name A character string, the name of the new
-#'   element being added.
+#'   element being added. Non-standard evaluation
+#'   possible.
 #' @param e An R object, the new element to add to
 #'   the list.
 #'
@@ -2458,8 +2432,13 @@ replace_cases <- function( x, to_replace, replace_with, default = NA ) {
 
 add_to_list <- function(l, name, e) {
 
+  # Attempt non-standard evaluation
+  n <- as.character( substitute( name ) )
+  n <- gsub( "\'", "", y, fixed = TRUE )
+  n <- gsub( '\"', '', y, fixed = TRUE )
+
   l[[ length(l) + 1]] <- e
-  names(l)[ length(l) ] <- name
+  names(l)[ length(l) ] <- n
 
   return(l)
 }
@@ -2645,14 +2624,16 @@ find_increment <- function(x,
 #### 4.6) group_index ####
 #' Create Index Over Groupings
 #'
-#' Create a numeric index over the unique levels of a
-#' variable or a set of variables.
+#' Create a numeric index over the unique levels
+#' of a variable or a set of variables.
 #'
 #' @param ... Vectors of equal length.
-#' @param levels A list with the order of the unique levels for
-#'   each input vector (indices assigned from first to last level).
+#' @param levels A list with the order of the unique
+#'   levels for each input vector (indices assigned
+#'   from first to last level).
 #'
-#' @returns An integer vector from 1 to the number of unique levels.
+#' @returns An integer vector from 1 to the number of
+#' unique levels.
 #'
 #' @examples
 #' # Convert to numeric index
@@ -2660,7 +2641,8 @@ find_increment <- function(x,
 #'
 #' # Can control assignment of indices
 #' group_index(
-#'   rep( LETTERS[3:1], each = 3 ), levels = list( c( 'C', 'B', 'A' ) )
+#'   rep( LETTERS[3:1], each = 3 ),
+#'   levels = list( c( 'C', 'B', 'A' ) )
 #' )
 #'
 #' # Can create single index over all
@@ -2859,7 +2841,9 @@ over <- function(x, iter,
 #' data("mtcars")
 #' tbl <- aggregate(mtcars$mpg, mtcars[, c("cyl", "vs")], mean)
 #' tbl$x <- round(tbl$x, 1)
-#' colnames(tbl) <- c("# of cylinders", "Engine type", "Miles per gallon")
+#' colnames(tbl) <- c(
+#'   "# of cylinders", "Engine type", "Miles per gallon"
+#' )
 #' print_table(tbl)
 #' @export
 
@@ -2972,7 +2956,45 @@ print_table <- function(tbl, return = F) {
   }
 }
 
-#### 4.11) runs_in_sequence ####
+#### 4.11) nq ####
+#' No Quotation Mark Character Vector
+#'
+#' Function that allows specification of a character
+#' vector without using quotation marks.
+#'
+#' @param ... Inputs to be converted to character
+#'   strings (no special characters).
+#'
+#' @returns A character vector.
+#'
+#' @examples
+#' nq( Hello, world )
+#'
+#' @export
+
+nq <- function( ... ) {
+
+  # Initialize output
+  chr <- NULL
+
+  # Extract unevaluated arguments using 'alist'
+  lst <- eval( substitute(alist(...) ) )
+
+  # If any inputs provided
+  if ( length(lst) > 0 ) {
+    chr <- rep( '', length(lst) )
+
+    # Loop over inputs
+    for ( i in seq_along(lst) )
+      chr[i] <- as.character( lst[[i]] )
+
+    # Close 'If any inputs provided'
+  }
+
+  return( chr )
+}
+
+#### 4.12) runs_in_sequence ####
 #' Determine Runs in a Sequence
 #'
 #' Given a sequence of values of which
@@ -3069,7 +3091,7 @@ runs_in_sequence <- function( x, codes_for_hit = 1 ) {
   return( out )
 }
 
-#### 4.12) start_of_new ####
+#### 4.13) start_of_new ####
 #' Identify Start of New Repetition
 #'
 #' Function that identifies when a new repetition

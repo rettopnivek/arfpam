@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2024-07-05
+# Last updated 2026-01-06
 
 # Table of contents
 # 1) sem
@@ -1023,6 +1023,31 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
     # Close 'Percent'
   }
 
+  # Percent [Variant]
+  if (grepl("[[Pe]]", syntax, fixed = TRUE)) {
+
+    # Default number of digits to round to
+    if (is.null(digits)) {
+      dgt <- 1
+    } else {
+      dgt <- digits
+    }
+
+    if (is.null(categories)) {
+      categories <- TRUE
+    }
+
+    per <- 100 * mean(x %in% categories, na.rm = na.rm)
+    per <- round(per, dgt)
+    if (pad) {
+      per <- format(per, nsmall = dgt)
+    }
+
+    out <- gsub("[[Pe]]", per, out, fixed = TRUE)
+
+    # Close 'Percent [Variant]'
+  }
+
   # Proportion
   if (grepl("[[Pr]]", syntax, fixed = TRUE)) {
 
@@ -1048,20 +1073,20 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
   }
 
   # Counts/frequencies for NA values
-  if (grepl("[[NAC]]", syntax, fixed = TRUE)) {
+  if (grepl("[[CNA]]", syntax, fixed = TRUE)) {
     if (is.null(categories)) {
       categories <- TRUE
     }
 
     cnt <- sum( is.na(x) )
 
-    out <- gsub("[[NAC]]", cnt, out, fixed = TRUE)
+    out <- gsub("[[CNA]]", cnt, out, fixed = TRUE)
 
     # Close 'Counts/frequencies for NA values'
   }
 
   # Percentage of NA values
-  if (grepl("[[NAP]]", syntax, fixed = TRUE)) {
+  if (grepl("[[PeNA]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
     if (is.null(digits)) {
@@ -1076,13 +1101,13 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
       per <- format(per, nsmall = dgt)
     }
 
-    out <- gsub("[[NAP]]", per, out, fixed = TRUE)
+    out <- gsub("[[PeNA]]", per, out, fixed = TRUE)
 
     # Close 'Percentage of NA values'
   }
 
   # Proportion of NA values
-  if (grepl("[[NAPr]]", syntax, fixed = TRUE)) {
+  if (grepl("[[PrNA]]", syntax, fixed = TRUE)) {
 
     # Default number of digits to round to
     if (is.null(digits)) {
@@ -1096,7 +1121,7 @@ summa <- function(x, syntax = "[[M]] ([[SD]])",
       prp <- format(prp, nsmall = dgt)
     }
 
-    out <- gsub("[[NAPr]]", prp, out, fixed = TRUE)
+    out <- gsub("[[PrNA]]", prp, out, fixed = TRUE)
 
     # Close 'Proportion of NA values'
   }
@@ -1856,7 +1881,16 @@ principal_components_analysis <- function( train,
 #'   \item \code{'SE'} = Standard error of the mean;
 #'   \item \code{'C'} = Counts/frequencies;
 #'   \item \code{'Pr'} = Proportions;
-#'   \item \code{'P'} = Percentages.
+#'   \item \code{'Pe'} = Percentages;
+#'   \item \code{'Mn'} = Minimum;
+#'   \item \code{'Mx'} = Maximum;
+#'   \item \code{'Q1'} = First quartile;
+#'   \item \code{'Q3'} = Third quartile;
+#'   \item \code{'Q___'} = Quantile for specified percentage
+#'   (sub \code{'001'} to \code{'100'} for \code{'___'});
+#'   \item \code{'CNA'} Counts/frequencies for \code{NA} values;
+#'   \item \code{'PrNA'} Proportions for \code{NA} values;
+#'   \item \code{'PeNA'} Percentages for \code{NA} values.
 #' }
 #'
 #' Additionally, specifying \code{'UI'} in combination with the
@@ -1870,44 +1904,63 @@ principal_components_analysis <- function( train,
 #'
 #' @examples
 #' # Example data set
-#' data(iris)
-#' dtf <- iris
+#' data("iris")
 #'
 #' # Mean/SD for sepal length by species
-#' dtf |> stats_by_group( 'Sepal.Length', 'Species' )
+#' iris |> stats_by_group( Sepal.Length, nq(Species) )
 #'
-#' # Create additional categorical variable
-#' dtf$Long_petal <- c( 'No', 'Yes' )[
-#'   ( dtf$Petal.Length > median( dtf$Petal.Length) ) + 1
-#' ]
+#' # Define categorical variable for long petals based on median split
+#' iris$Long.Petal <- assign_by_interval(
+#'   iris$Petal.Length, median(iris$Petal.Length), values = c( 'No', 'Yes' )
+#' )
 #' # Sample size, mean, and confidence intervals using Student's T
 #' # distribution by species and whether petals are long
-#' dtf |> stats_by_group(
-#'   'Sepal.Length', c( 'Species', 'Long_petal' ), c( 'N', 'M', 'UI' )
+#' iris |> stats_by_group(
+#'   Sepal.Length, nq( Species, Long.Petal ), nq( N, M, UI )
 #' )
 #'
-#' # Create additional categorical variable
-#' dtf$Long_sepal <- c( 'No', 'Yes' )[
-#'   ( dtf$Sepal.Length > median( dtf$Sepal.Length) ) + 1
-#' ]
+#' # Define categorical variable for long sepal based on median split
+#' iris$Long.Sepal <- assign_by_interval(
+#'   iris$Sepal.Length, median(iris$Sepal.Length), values = c( 'No', 'Yes' )
+#' )
 #' # Proportion and confidence intervals based on beta-binomial
-#' # distribution for long sepals by long petals
-#' dtf |> stats_by_group(
-#'   'Long_sepal', c( 'Long_petal' ), c( 'N', 'Pr', 'UI' ),
+#' # distribution for long sepal by long petal
+#' iris |> stats_by_group(
+#'   Long.Sepal, nq( Long.Petal ), nq( Pr, UI ),
 #'   categories = 'Yes', method = 'Beta-binomial'
+#' )
+#'
+#' # Standard cut-offs for boxplots (min, Q1, median, Q3, max)
+#' iris |> stats_by_group(
+#'   Sepal.Length, nq( Species ), nq( Mn, Q1, Md, Q3, Mx )
+#' )
+#'
+#' # Custom quantiles
+#' iris |> stats_by_group(
+#'   Sepal.Length, nq( Species ), nq( Q005, Q025, Q050, Q075, Q095 )
+#' )
+#'
+#' # Missing values
+#' iris$Sepal.Length[ c( 10, 30, 55:60, 120:123 ) ] <- NA
+#' iris |> stats_by_group(
+#'   Sepal.Length, nq( Species ), nq( CNA, PrNA, PeNA )
 #' )
 #'
 #' @export
 
 stats_by_group <- function( dtf,
                             column,
-                            groupings,
+                            groupings = NULL,
                             statistics = c( 'M', 'SD' ),
                             method = "Student's T",
                             categories = 1,
                             width = .95,
                             na.rm = TRUE ) {
 
+  # Attempt non-standard evaluation
+  y <- as.character( substitute( column ) )
+  y <- gsub( "\'", "", y, fixed = TRUE )
+  y <- gsub( '\"', '', y, fixed = TRUE )
 
   distribution_t <- c(
     "T-distribution",
@@ -1932,7 +1985,7 @@ stats_by_group <- function( dtf,
   # Statistic = sample size
   if ( 'N' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       if (na.rm) n <- sum( !is.na(x) ) else n <- length(x)
     }
     lst_fun[[ l + 1]] <- f
@@ -1945,7 +1998,7 @@ stats_by_group <- function( dtf,
   # Statistic = mean
   if ( 'M' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       mean(x, na.rm = na.rm)
     }
     lst_fun[[ l + 1]] <- f
@@ -1958,7 +2011,7 @@ stats_by_group <- function( dtf,
   # Statistic = median
   if ( 'Md' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       median(x, na.rm = na.rm)
     }
     lst_fun[[ l + 1]] <- f
@@ -1971,7 +2024,7 @@ stats_by_group <- function( dtf,
   # Statistic = standard deviation
   if ( 'SD' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       sd(x, na.rm = na.rm)
     }
     lst_fun[[ l + 1]] <- f
@@ -1984,7 +2037,7 @@ stats_by_group <- function( dtf,
   # Statistic = standard error
   if ( 'SE' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       if ( na.rm ) n <- sum( !is.na(x) ) else n <- length(x)
       sd(x, na.rm = na.rm) / sqrt( n )
     }
@@ -1998,20 +2051,20 @@ stats_by_group <- function( dtf,
   # Statistic = count
   if ( 'C' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       sum(x %in% categories, na.rm = na.rm)
     }
     lst_fun[[ l + 1]] <- f
     names( lst_fun )[l + 1] <- 'C'
     l <- l + 1
 
-    # Close 'Statistic = proportion'
+    # Close 'Statistic = count'
   }
 
   # Statistic = proportion
   if ( 'Pr' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       mean(x %in% categories, na.rm = na.rm)
     }
     lst_fun[[ l + 1]] <- f
@@ -2022,22 +2075,141 @@ stats_by_group <- function( dtf,
   }
 
   # Statistic = percentage
-  if ( 'P' %in% statistics ) {
+  if ( 'Pe' %in% statistics ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       100*mean(x %in% categories, na.rm = na.rm)
     }
     lst_fun[[ l + 1]] <- f
-    names( lst_fun )[l + 1] <- 'P'
+    names( lst_fun )[l + 1] <- 'Pe'
     l <- l + 1
 
     # Close 'Statistic = percentage'
   }
 
+  # Statistic = minimum
+  if ( 'Mn' %in% statistics ) {
+
+    f <- function(x, v) {
+      min( x, na.rm = na.rm )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'Mn'
+    l <- l + 1
+
+    # Close 'Statistic = minimum'
+  }
+
+  # Statistic = maximum
+  if ( 'Mx' %in% statistics ) {
+
+    f <- function(x, v) {
+      max( x, na.rm = na.rm )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'Mx'
+    l <- l + 1
+
+    # Close 'Statistic = maximum'
+  }
+
+  # Statistic = first quartile
+  if ( 'Q1' %in% statistics ) {
+
+    f <- function(x, v) {
+      quantile( x, prob = .25, na.rm = na.rm )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'Q1'
+    l <- l + 1
+
+    # Close 'Statistic = first quartile'
+  }
+
+  # Statistic = third quartile
+  if ( 'Q3' %in% statistics ) {
+
+    f <- function(x, v) {
+      quantile( x, prob = .75, na.rm = na.rm )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'Q3'
+    l <- l + 1
+
+    # Close 'Statistic = maximum'
+  }
+
+  chr_options <- paste0(
+    'Q', c( paste0( '00', 0:9 ), paste0( '0', 10:99 ), 100 )
+  )
+
+  # Statistic = quantile for given percentage
+  if ( any( chr_options %in% statistics ) ) {
+
+    # Loop over specified options
+    for ( o in 1:sum( chr_options %in% statistics ) ) {
+
+      chr_prob <- chr_options[ chr_options %in% statistics ][o]
+
+      f <- function(x, v) {
+        p <- as.numeric(
+          gsub( 'Q', '', v, fixed = TRUE )
+        )/100
+        quantile( x, prob = p, na.rm = na.rm )
+      }
+      lst_fun[[ l + 1 ]] <- f
+      names( lst_fun )[l + 1] <- chr_prob
+      l <- l + 1
+
+      # Close 'Loop over specified options'
+    }
+
+    # Close 'Statistic = quantile for given percentage'
+  }
+
+  # Statistic = count [NA]
+  if ( 'CNA' %in% statistics ) {
+
+    f <- function(x, v) {
+      sum( is.na(x) )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'CNA'
+    l <- l + 1
+
+    # Close 'Statistic = count [NA]'
+  }
+
+  # Statistic = proportion [NA]
+  if ( 'PrNA' %in% statistics ) {
+
+    f <- function(x, v) {
+      mean( is.na(x) )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'PrNA'
+    l <- l + 1
+
+    # Close 'Statistic = proportion [NA]'
+  }
+
+  # Statistic = percentage [NA]
+  if ( 'PeNA' %in% statistics ) {
+
+    f <- function(x, v) {
+      100*mean( is.na(x) )
+    }
+    lst_fun[[ l + 1]] <- f
+    names( lst_fun )[l + 1] <- 'PeNA'
+    l <- l + 1
+
+    # Close 'Statistic = percentage [NA]'
+  }
+
   # Statistic = lower limit of 95% UI [T distribution]
   if ( 'UI' %in% statistics & method %in% distribution_t ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       m <- mean(x, na.rm = na.rm)
       s <- sd(x, na.rm = na.rm)
       if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
@@ -2054,7 +2226,7 @@ stats_by_group <- function( dtf,
   # Statistic = upper limit of 95% UI [T distribution]
   if ( 'UI' %in% statistics & method %in% distribution_t ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       m <- mean(x, na.rm = na.rm)
       s <- sd(x, na.rm = na.rm)
       if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
@@ -2071,7 +2243,7 @@ stats_by_group <- function( dtf,
   # Statistic = lower limit of 95% UI [Beta-binomial distribution]
   if ( 'UI' %in% statistics & method %in% distribution_beta_binomial ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       counts <- sum(x %in% categories, na.rm = na.rm)
       if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
 
@@ -2087,7 +2259,7 @@ stats_by_group <- function( dtf,
   # Statistic = upper limit of 95% UI [Beta-binomial distribution]
   if ( 'UI' %in% statistics & method %in% distribution_beta_binomial ) {
 
-    f <- function(x) {
+    f <- function(x, v) {
       counts <- sum(x %in% categories, na.rm = na.rm)
       if ( na.rm ) n <- sum( !is.na(x) ) else n <- length( x )
 
@@ -2098,6 +2270,16 @@ stats_by_group <- function( dtf,
     l <- l + 1
 
     # Statistic = upper limit of 95% UI [Beta-binomial distribution]
+  }
+
+  # Use remaining columns
+  if ( is.null(groupings) ) {
+
+    groupings <- colnames(dtf)[
+      !colnames(dtf) %in% y
+    ]
+
+    # Close 'Use remaining columns'
   }
 
   # If only one grouping factor
@@ -2115,9 +2297,9 @@ stats_by_group <- function( dtf,
   }
 
   dtf_summary <- aggregate(
-    dtf[[ column ]], lst_groups, function(x) {
+    dtf[[ y ]], lst_groups, function(x) {
       sapply( seq_along(lst_fun), function(i) {
-        return( lst_fun[[i]](x) )
+        return( lst_fun[[i]](x, names(lst_fun)[i]) )
       } )
     }
   )

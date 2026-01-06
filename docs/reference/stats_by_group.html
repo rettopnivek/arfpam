@@ -61,7 +61,7 @@ grouping factors.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stats_by_group</span><span class="op">(</span></span>
 <span>  <span class="va">dtf</span>,</span>
 <span>  <span class="va">column</span>,</span>
-<span>  <span class="va">groupings</span>,</span>
+<span>  groupings <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  statistics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"M"</span>, <span class="st">"SD"</span><span class="op">)</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"Student's T"</span>,</span>
 <span>  categories <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -131,7 +131,16 @@ to compute.</p>
 <li><p><code>'SE'</code> = Standard error of the mean;</p></li>
 <li><p><code>'C'</code> = Counts/frequencies;</p></li>
 <li><p><code>'Pr'</code> = Proportions;</p></li>
-<li><p><code>'P'</code> = Percentages.</p></li>
+<li><p><code>'Pe'</code> = Percentages;</p></li>
+<li><p><code>'Mn'</code> = Minimum;</p></li>
+<li><p><code>'Mx'</code> = Maximum;</p></li>
+<li><p><code>'Q1'</code> = First quartile;</p></li>
+<li><p><code>'Q3'</code> = Third quartile;</p></li>
+<li><p><code>'Q___'</code> = Quantile for specified percentage
+(sub <code>'001'</code> to <code>'100'</code> for <code>'___'</code>);</p></li>
+<li><p><code>'CNA'</code> Counts/frequencies for <code>NA</code> values;</p></li>
+<li><p><code>'PrNA'</code> Proportions for <code>NA</code> values;</p></li>
+<li><p><code>'PeNA'</code> Percentages for <code>NA</code> values.</p></li>
 </ul><p>Additionally, specifying <code>'UI'</code> in combination with the
 argument <code>method</code> will compute the lower and upper limits
 of a desired uncertainty interval. The width of the interval
@@ -141,44 +150,71 @@ can be controlled by the argument <code>width</code>.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example data set</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dtf</span> <span class="op">&lt;-</span> <span class="va">iris</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"iris"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Mean/SD for sepal length by species</span></span></span>
-<span class="r-in"><span><span class="va">dtf</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span> <span class="st">'Sepal.Length'</span>, <span class="st">'Species'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">iris</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span> <span class="va">Sepal.Length</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span><span class="va">Species</span><span class="op">)</span> <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Species     M        SD</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     setosa 5.006 0.3524897</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 versicolor 5.936 0.5161711</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3  virginica 6.588 0.6358796</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create additional categorical variable</span></span></span>
-<span class="r-in"><span><span class="va">dtf</span><span class="op">$</span><span class="va">Long_petal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'No'</span>, <span class="st">'Yes'</span> <span class="op">)</span><span class="op">[</span></span></span>
-<span class="r-in"><span>  <span class="op">(</span> <span class="va">dtf</span><span class="op">$</span><span class="va">Petal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span> <span class="va">dtf</span><span class="op">$</span><span class="va">Petal.Length</span><span class="op">)</span> <span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="co"># Define categorical variable for long petals based on median split</span></span></span>
+<span class="r-in"><span><span class="va">iris</span><span class="op">$</span><span class="va">Long.Petal</span> <span class="op">&lt;-</span> <span class="fu"><a href="assign_by_interval.html">assign_by_interval</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Length</span>, <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Petal.Length</span><span class="op">)</span>, values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'No'</span>, <span class="st">'Yes'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Sample size, mean, and confidence intervals using Student's T</span></span></span>
 <span class="r-in"><span><span class="co"># distribution by species and whether petals are long</span></span></span>
-<span class="r-in"><span><span class="va">dtf</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">'Sepal.Length'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Species'</span>, <span class="st">'Long_petal'</span> <span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'N'</span>, <span class="st">'M'</span>, <span class="st">'UI'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">iris</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">Sepal.Length</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Species</span>, <span class="va">Long.Petal</span> <span class="op">)</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">N</span>, <span class="va">M</span>, <span class="va">UI</span> <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Species Long_petal  N     M    UI_LB    UI_UB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      Species Long.Petal  N     M    UI_LB    UI_UB</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     setosa         No 50 5.006 4.905824 5.106176</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 versicolor         No 25 5.616 5.462622 5.769378</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3 versicolor        Yes 25 6.256 6.074862 6.437138</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4  virginica        Yes 50 6.588 6.407285 6.768715</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create additional categorical variable</span></span></span>
-<span class="r-in"><span><span class="va">dtf</span><span class="op">$</span><span class="va">Long_sepal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'No'</span>, <span class="st">'Yes'</span> <span class="op">)</span><span class="op">[</span></span></span>
-<span class="r-in"><span>  <span class="op">(</span> <span class="va">dtf</span><span class="op">$</span><span class="va">Sepal.Length</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span> <span class="va">dtf</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span> <span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="co"># Define categorical variable for long sepal based on median split</span></span></span>
+<span class="r-in"><span><span class="va">iris</span><span class="op">$</span><span class="va">Long.Sepal</span> <span class="op">&lt;-</span> <span class="fu"><a href="assign_by_interval.html">assign_by_interval</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span>, values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'No'</span>, <span class="st">'Yes'</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Proportion and confidence intervals based on beta-binomial</span></span></span>
-<span class="r-in"><span><span class="co"># distribution for long sepals by long petals</span></span></span>
-<span class="r-in"><span><span class="va">dtf</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">'Long_sepal'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'Long_petal'</span> <span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">'N'</span>, <span class="st">'Pr'</span>, <span class="st">'UI'</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="co"># distribution for long sepal by long petal</span></span></span>
+<span class="r-in"><span><span class="va">iris</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">Long.Sepal</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Long.Petal</span> <span class="op">)</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Pr</span>, <span class="va">UI</span> <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  categories <span class="op">=</span> <span class="st">'Yes'</span>, method <span class="op">=</span> <span class="st">'Beta-binomial'</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Long_petal  N         Pr     UI_LB     UI_UB</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         No 75 0.06666667 0.0258918 0.1399343</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        Yes 75 0.86666667 0.7763800 0.9293352</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Long.Petal         Pr     UI_LB     UI_UB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         No 0.06666667 0.0258918 0.1399343</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        Yes 0.86666667 0.7763800 0.9293352</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Standard cut-offs for boxplots (min, Q1, median, Q3, max)</span></span></span>
+<span class="r-in"><span><span class="va">iris</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">Sepal.Length</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Species</span> <span class="op">)</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Mn</span>, <span class="va">Q1</span>, <span class="va">Md</span>, <span class="va">Q3</span>, <span class="va">Mx</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      Species  Md  Mn  Mx    Q1  Q3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     setosa 5.0 4.3 5.8 4.800 5.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 versicolor 5.9 4.9 7.0 5.600 6.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  virginica 6.5 4.9 7.9 6.225 6.9</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Custom quantiles</span></span></span>
+<span class="r-in"><span><span class="va">iris</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">Sepal.Length</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Species</span> <span class="op">)</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Q005</span>, <span class="va">Q025</span>, <span class="va">Q050</span>, <span class="va">Q075</span>, <span class="va">Q095</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      Species  Q005  Q025 Q050 Q075  Q095</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     setosa 4.400 4.800  5.0  5.2 5.610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 versicolor 5.045 5.600  5.9  6.3 6.755</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  virginica 5.745 6.225  6.5  6.9 7.700</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Missing values</span></span></span>
+<span class="r-in"><span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">10</span>, <span class="fl">30</span>, <span class="fl">55</span><span class="op">:</span><span class="fl">60</span>, <span class="fl">120</span><span class="op">:</span><span class="fl">123</span> <span class="op">)</span> <span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span></span>
+<span class="r-in"><span><span class="va">iris</span> <span class="op">|&gt;</span> <span class="fu">stats_by_group</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">Sepal.Length</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">Species</span> <span class="op">)</span>, <span class="fu"><a href="nq.html">nq</a></span><span class="op">(</span> <span class="va">CNA</span>, <span class="va">PrNA</span>, <span class="va">PeNA</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      Species CNA PrNA PeNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     setosa   2 0.04    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 versicolor   6 0.12   12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  virginica   4 0.08    8</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

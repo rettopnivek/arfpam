@@ -67,7 +67,8 @@ list. Allows greater compatibility with the pipe operator.</p>
 
 <dt>name</dt>
 <dd><p>A character string, the name of the new
-element being added.</p></dd>
+element being added. Non-standard evaluation
+possible.</p></dd>
 
 
 <dt>e</dt>
@@ -90,18 +91,9 @@ the list.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">l</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">add_to_list</span><span class="op">(</span> <span class="st">'A'</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span> <span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">add_to_list</span><span class="op">(</span> <span class="st">'B'</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> C <span class="op">=</span> <span class="fl">1</span>, D <span class="op">=</span> <span class="fl">2</span> <span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in add_to_list(add_to_list(list(), "A", 1:3), "B", list(C = 1, D = 2)):</span> object 'y' not found</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">l</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $B$C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $B$D</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'l' not found</span>
 </code></pre></div>
     </div>
   </div>

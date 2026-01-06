@@ -48,6 +48,7 @@ reference:
   - match_rows
   - new_limits
   - not_NA
+  - nq
   - over
   - path_to_file
   - percent_that_sums_to_100
@@ -58,7 +59,6 @@ reference:
   - replace_cases
   - replace_string
   - runs_in_sequence
-  - save_png_figure
   - section
   - start_of_new
   - strip_value
@@ -141,3 +141,4 @@ reference:
   - fill_plot
   - hv_line
   - plot_correlation_heatmap
+  - save_png_figure

@@ -26,6 +26,8 @@ a formatted table of the results.
 data("mtcars")
 tbl <- aggregate(mtcars$mpg, mtcars[, c("cyl", "vs")], mean)
 tbl$x <- round(tbl$x, 1)
-colnames(tbl) <- c("# of cylinders", "Engine type", "Miles per gallon")
+colnames(tbl) <- c(
+  "# of cylinders", "Engine type", "Miles per gallon"
+)
 print_table(tbl)
 }

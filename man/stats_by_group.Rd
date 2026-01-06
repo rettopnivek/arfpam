@@ -7,7 +7,7 @@
 stats_by_group(
   dtf,
   column,
-  groupings,
+  groupings = NULL,
   statistics = c("M", "SD"),
   method = "Student's T",
   categories = 1,
@@ -62,7 +62,16 @@ Possible univariate statistics that can be computed:
 \item \code{'SE'} = Standard error of the mean;
 \item \code{'C'} = Counts/frequencies;
 \item \code{'Pr'} = Proportions;
-\item \code{'P'} = Percentages.
+\item \code{'Pe'} = Percentages;
+\item \code{'Mn'} = Minimum;
+\item \code{'Mx'} = Maximum;
+\item \code{'Q1'} = First quartile;
+\item \code{'Q3'} = Third quartile;
+\item \code{'Q___'} = Quantile for specified percentage
+(sub \code{'001'} to \code{'100'} for \code{'___'});
+\item \code{'CNA'} Counts/frequencies for \code{NA} values;
+\item \code{'PrNA'} Proportions for \code{NA} values;
+\item \code{'PeNA'} Percentages for \code{NA} values.
 }
 
 Additionally, specifying \code{'UI'} in combination with the
@@ -72,31 +81,46 @@ can be controlled by the argument \code{width}.
 }
 \examples{
 # Example data set
-data(iris)
-dtf <- iris
+data("iris")
 
 # Mean/SD for sepal length by species
-dtf |> stats_by_group( 'Sepal.Length', 'Species' )
+iris |> stats_by_group( Sepal.Length, nq(Species) )
 
-# Create additional categorical variable
-dtf$Long_petal <- c( 'No', 'Yes' )[
-  ( dtf$Petal.Length > median( dtf$Petal.Length) ) + 1
-]
+# Define categorical variable for long petals based on median split
+iris$Long.Petal <- assign_by_interval(
+  iris$Petal.Length, median(iris$Petal.Length), values = c( 'No', 'Yes' )
+)
 # Sample size, mean, and confidence intervals using Student's T
 # distribution by species and whether petals are long
-dtf |> stats_by_group(
-  'Sepal.Length', c( 'Species', 'Long_petal' ), c( 'N', 'M', 'UI' )
+iris |> stats_by_group(
+  Sepal.Length, nq( Species, Long.Petal ), nq( N, M, UI )
 )
 
-# Create additional categorical variable
-dtf$Long_sepal <- c( 'No', 'Yes' )[
-  ( dtf$Sepal.Length > median( dtf$Sepal.Length) ) + 1
-]
+# Define categorical variable for long sepal based on median split
+iris$Long.Sepal <- assign_by_interval(
+  iris$Sepal.Length, median(iris$Sepal.Length), values = c( 'No', 'Yes' )
+)
 # Proportion and confidence intervals based on beta-binomial
-# distribution for long sepals by long petals
-dtf |> stats_by_group(
-  'Long_sepal', c( 'Long_petal' ), c( 'N', 'Pr', 'UI' ),
+# distribution for long sepal by long petal
+iris |> stats_by_group(
+  Long.Sepal, nq( Long.Petal ), nq( Pr, UI ),
   categories = 'Yes', method = 'Beta-binomial'
+)
+
+# Standard cut-offs for boxplots (min, Q1, median, Q3, max)
+iris |> stats_by_group(
+  Sepal.Length, nq( Species ), nq( Mn, Q1, Md, Q3, Mx )
+)
+
+# Custom quantiles
+iris |> stats_by_group(
+  Sepal.Length, nq( Species ), nq( Q005, Q025, Q050, Q075, Q095 )
+)
+
+# Missing values
+iris$Sepal.Length[ c( 10, 30, 55:60, 120:123 ) ] <- NA
+iris |> stats_by_group(
+  Sepal.Length, nq( Species ), nq( CNA, PrNA, PeNA )
 )
 
 }

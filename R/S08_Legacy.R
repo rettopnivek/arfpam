@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2023-12-19
+# Last updated 2026-01-06
 
 # Table of contents
 # 1) blank_plot
@@ -17,6 +17,7 @@
 # 4) add_axes
 # 5) error_bars
 # 6) fill_plot
+# 7) save_png_figure
 
 #### 1) blank_plot ####
 #' Generate a Blank Plot
@@ -38,6 +39,7 @@
 #' @examples
 #' # With margin info
 #' blank_plot(margins = TRUE)
+#'
 #' @export
 
 blank_plot <- function(xDim = c(0, 1), yDim = c(0, 1),
@@ -1112,5 +1114,59 @@ fill_plot <- function(x = NULL, y = NULL, l = NULL,
       polygon(xv[i, ], yv[i, ], border = border, ...)
     }
   }
+}
+
+#### 7) save_png_figure ####
+#' Create and save PNG file
+#'
+#' Function to create and save a PNG file
+#' given a plotting function to run.
+#'
+#' @param plotting_fun A function, with the
+#'   creation of a figure as a side effect.
+#' @param file_name A character string, the
+#'   file name for the PNG file - must end
+#'   in '.png'.
+#' @param figure_dim A numeric vector of two
+#'   values, the width and height of the
+#'   figure in inches.
+#' @param res A integer value, the resolution
+#'   for the PNG file.
+#' @param ... Additional arguments to pass to
+#'   \code{plotting_fun}.
+#'
+#' @returns Output from \code{plotting_fun}, if any.
+#'
+#' @export
+
+save_png_figure <- function(
+    plotting_fun,
+    file_name,
+    figure_dim = c( 5, 5 ),
+    res = 300,
+    ... ) {
+
+  png(
+    filename = file_name,
+    width = figure_dim[1],
+    height = figure_dim[2],
+    units = 'in',
+    res = res
+  )
+
+  obj_output <- plotting_fun(
+    ...
+  )
+
+  dev.off()
+
+  # Pass through output
+  if ( !is.null( obj_output ) ) {
+
+    return( obj_output )
+
+    # Close 'Pass through output'
+  }
+
 }
 
