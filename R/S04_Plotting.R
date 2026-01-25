@@ -2952,7 +2952,10 @@ plot_barplot <- function( y,
                           ylab = 'Y',
                           main = '',
                           lines = 1.5,
-                          cex = 1 ) {
+                          cex = 1,
+                          grid = NULL,
+                          borders = 1:2,
+                          output = FALSE ) {
 
   # Data frame provided
   if ( is.data.frame(y) ) {
@@ -3066,6 +3069,36 @@ plot_barplot <- function( y,
     num_yl
   )
 
+  # Create grid
+  if ( !is.null(grid) ) {
+
+    # Assume horizontal
+    if ( !is.list(grid) ) {
+
+      arfpam::draw_hv(
+        h = grid, l = num_xl, col = 'grey80'
+      )
+
+      # Close 'Assume horizontal'
+    } else {
+
+      # Loop over list elements
+      for ( l in seq_along(grid) ) {
+
+        do.call(
+          arfpam::draw_hv,
+          c( list(l = num_xl), grid[[1]] )
+        )
+
+        # Close 'Loop over list elements'
+      }
+
+      # Close else for 'Assume horizontal'
+    }
+
+    # Close grid
+  }
+
   # Loop over rows
   for ( r in 1:nrow(dtf) ) {
 
@@ -3099,11 +3132,16 @@ plot_barplot <- function( y,
   arfpam::draw_borders_and_labels(
     num_xl,
     num_yl,
-    labels = c( xlab, ylab, main ),
+    sides = borders,
+    labels = c( xlab, ylab, main, '' ),
     lines = lines[1:3],
     cex = cex[1:3]
   )
 
+  dtf$start <- num_x_start
+  dtf$end <- num_x_end
+
+  if ( output ) return( dtf )
 }
 
 #### 4) Functions to save figures as files ####

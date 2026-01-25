@@ -23,7 +23,7 @@ character vector into a single string.
 # Collapse a character vector
 print( squish( c( "A", "B", "C" ) ) )
 
-# Collapse a characcter vector with custom spacing
+# Collapse a character vector with custom spacing
 print( squish( c( "1", "2", "3" ), " + " ) )
 
 }

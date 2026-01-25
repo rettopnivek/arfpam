@@ -3,7 +3,7 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2026-01-06
+# Last updated 2026-01-25
 
 # Table of contents
 # 1) Functions for data frames and matrices
@@ -46,7 +46,7 @@
 #     4.4.1) `every`
 #     4.4.2) `every<-`
 #   4.5) find_increment
-#   4.6) group_index
+#   4.6) index_from_levels
 #   4.7) lin
 #   4.8) new_limits
 #   4.9) over
@@ -56,9 +56,10 @@
 #   4.13) start_of_new
 # 5) Functions for strings
 #   5.1) align_strings
-#   5.2) format_numbers
-#   5.3) replace_string
-#   5.4) squish
+#   5.2) find_pattern
+#   5.3) format_numbers
+#   5.4) replace_string
+#   5.5) squish
 # 6) Functions for vectors
 #   6.1) not_NA
 #   6.2) percent_that_sums_to_100
@@ -2621,91 +2622,58 @@ find_increment <- function(x,
   return(inc)
 }
 
-#### 4.6) group_index ####
-#' Create Index Over Groupings
+#### 4.6) index_from_levels ####
+#' Create Numeric Index Over Unique Levels
 #'
 #' Create a numeric index over the unique levels
-#' of a variable or a set of variables.
+#' of a variable.
 #'
-#' @param ... Vectors of equal length.
-#' @param levels A list with the order of the unique
-#'   levels for each input vector (indices assigned
-#'   from first to last level).
+#' @param obj_vector A vector that can be converted
+#'   into a factor.
+#' @param levels An optional vector specifying the
+#'   order for which numbers should be assigned
+#'   to levels.
 #'
 #' @returns An integer vector from 1 to the number of
 #' unique levels.
 #'
 #' @examples
+#' # Variable with 3 unique levels
+#' v <- rep( LETTERS[3:1], each = 3 )
+#'
 #' # Convert to numeric index
-#' group_index( rep( LETTERS[3:1], each = 3 ) )
+#' index_from_levels( v )
 #'
 #' # Can control assignment of indices
-#' group_index(
-#'   rep( LETTERS[3:1], each = 3 ),
-#'   levels = list( c( 'C', 'B', 'A' ) )
-#' )
+#' index_from_levels( v, levels = LETTERS[1:3] )
 #'
-#' # Can create single index over all
-#' # unique combinations of multiple variables
-#' group_index( rep( LETTERS[1:3], each = 3 ), rep( 1:3, 3 ) )
+#' # To combine over multiple variables use 'paste0'
+#' v1 <- rep( LETTERS[1:2], each = 4 )
+#' v2 <- rep( letters[1:2], 4 )
+#' index_from_levels( paste0( v1, v2 ) )
 #'
 #' @export
 
-group_index <- function( ..., levels = NULL ) {
+index_from_levels <- function( v, levels = NULL ) {
 
-  # Extract inputs
-  lst_arg <- list(...)
+  # Ordering not provided
+  if ( is.null(levels) ) {
 
-  # Number of inputs
-  n_arg <- length( lst_arg )
+    int_index <- as.numeric(
+      factor( v, levels = unique(v) )
+    )
 
-  # Length of each input
-  l <- sapply(
-    1:n_arg, function(i) length( lst_arg[[i]] )
-  )
+    # Close 'Ordering not provided'
+  } else {
 
-  # Lengths must be equal
-  if ( !all( l %in% l[1] ) ) {
+    int_index <- as.numeric(
+      factor( v, levels = levels )
+    )
 
-    stop( 'Vectors must be of equal length' )
-
-    # Close 'Lengths must be equal'
+    # Close else for 'Ordering not provided'
   }
 
-  mat_index <- matrix( NA, l[1], n_arg )
-
-  # Loop over inputs
-  for ( i in 1:n_arg ) {
-
-    # If levels not specified
-    if ( is.null(levels) ) {
-
-      mat_index[, i] <- as.numeric( as.factor( lst_arg[[i]] ) )
-
-      # Close 'If levels not specified'
-    } else {
-
-      mat_index[, i] <- as.numeric(
-        factor( lst_arg[[i]], levels = levels[[i]] )
-      )
-
-      # Close else for 'If levels not specified'
-    }
-
-    # Close 'Loop over inputs'
-  }
-
-  # Create one collapsed index over all unique combinations
-  collapsed_index <- apply(
-    mat_index, 1, function(x) {
-      paste( x, collapse = '.' )
-    }
-  )
-
-  return(
-    as.numeric( as.factor( collapsed_index ) )
-  )
-
+  return( int_index )
 }
 
 #### 4.7) lin ####
@@ -3166,7 +3134,28 @@ align_strings <- function( strings, left = TRUE ) {
 
 }
 
-#### 5.2) format_numbers ####
+#### 5.2) find_pattern ####
+#' Find Pattern in a String
+#'
+#' Function to find a pattern in a vector of
+#' strings via a call to [base::grepl].
+#'
+#' @param s A character vector.
+#'
+#' @returns A logical vector.
+#'
+#' @examples
+#' find_pattern( 'a', c( 'cat', 'dog', 'bat' ) )
+#'
+#' @export
+
+find_pattern <- function( s, pattern ) {
+
+  return( grepl( pattern, s, fixed = TRUE ) )
+
+}
+
+#### 5.3) format_numbers ####
 #' Pad Numeric Values to be the Same Length
 #'
 #' Function that pads numeric values to be
@@ -3263,7 +3252,7 @@ format_numbers <- function( x ) {
 
 }
 
-#### 5.3) replace_string ####
+#### 5.4) replace_string ####
 #' Replace String Contents
 #'
 #' Function that replaces a specified pattern found
@@ -3308,7 +3297,7 @@ replace_string <- function( s, to_replace, replace_with = '' ) {
   return( out )
 }
 
-#### 5.4) squish ####
+#### 5.5) squish ####
 #' Collapse a Character Vector
 #'
 #' Function that combines elements of a
@@ -3324,7 +3313,7 @@ replace_string <- function( s, to_replace, replace_with = '' ) {
 #' # Collapse a character vector
 #' print( squish( c( "A", "B", "C" ) ) )
 #'
-#' # Collapse a characcter vector with custom spacing
+#' # Collapse a character vector with custom spacing
 #' print( squish( c( "1", "2", "3" ), " + " ) )
 #'
 #' @export

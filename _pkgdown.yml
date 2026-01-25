@@ -35,11 +35,12 @@ reference:
   - duplicate_wide_to_long
   - empty_list
   - every
-  - find_increment
   - find_file_name
+  - find_increment
+  - find_pattern
   - format_numbers
-  - group_index
   - has_NA
+  - index_from_levels
   - lin
   - load_package
   - load_R_object
